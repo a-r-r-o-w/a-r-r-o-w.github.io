@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply font-sans;
+}
+
+svg:hover {
+  @apply scale-110;
+  transition: transform 0.3s;
+}
+
+.container {
+  max-width: 640px;
+}
+
+.toggle-button {
+  @apply w-9 h-5 flex flex-row items-center cursor-pointer relative rounded-xl;
+}
+
+.toggle-switch {
+  @apply w-4 h-4 absolute left-[2px] rounded-full;
+  transition: transform 0.3s;
+}
+
+.toggle-icon {
+  @apply flex flex-row items-center justify-between w-9 p-1;
+}
+
+.moon-icon, .sun-icon {
+  @apply text-[10px];
+  transition: opacity 0.3s;
+}
+
+.contact {
+  @apply flex flex-row items-center space-x-1;
+}
+
+.dark-mode {
+  @apply bg-zinc-800 text-gray-100;
+
+  & a:hover {
+    @apply text-gray-400 underline;
+  }
+  
+  & svg {
+    g {
+      fill: white;
+    }
+  }
+
+  .toggle-switch {
+    @apply bg-black;
+  }
+
+  .toggle-button {
+    @apply bg-white;
+  }
+
+  .moon-icon {
+    opacity: 0;
+  }
+
+  .sun-icon {
+    opacity: 1;
+  }
+
+  .links__github {
+    @apply fill-white;
+  }
+}
+
+.light-mode {
+  @apply bg-gray-100 text-zinc-800;
+
+  & a:hover {
+    @apply text-zinc-400 underline;
+  }
+
+  .toggle-switch {
+    @apply bg-white translate-x-4;
+  }
+
+  .toggle-button {
+    @apply bg-black;
+  }
+
+  .moon-icon {
+    opacity: 1;
+  }
+
+  .sun-icon {
+    opacity: 0;
+  }
+
+  .links__github {
+    @apply fill-black;
+  }
+}
