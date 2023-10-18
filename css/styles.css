@@ -574,9 +574,9 @@ video {
   margin: 1rem;
 }
 
-.mx-auto{
-  margin-left: auto;
-  margin-right: auto;
+.mx-2{
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .mt-2{
@@ -623,30 +623,13 @@ video {
   margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
 }
 
-.p-4{
-  padding: 1rem;
-}
-
 .px-2{
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
 
-.pr-8{
-  padding-right: 2rem;
-}
-
 .pt-8{
   padding-top: 2rem;
-}
-
-.text-4xl{
-  font-size: 2.25rem;
-  line-height: 2.5rem;
-}
-
-.text-\[48px\]{
-  font-size: 48px;
 }
 
 .text-lg{
@@ -664,16 +647,8 @@ video {
   line-height: 1.75rem;
 }
 
-.font-bold{
-  font-weight: 700;
-}
-
 .font-semibold{
   font-weight: 600;
-}
-
-.underline{
-  text-decoration-line: underline;
 }
 
 *{
@@ -681,10 +656,18 @@ video {
 }
 
 body{
-  min-height: 100vh;
-  align-items: center;
-  justify-content: center;
   font-family: Lato, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  max-height: 100%;
+  max-width: 100%;
+  height: 100vh;
+  width: 100vw;
+  min-height: 640px;
+  min-width: 480px;
+  /* border: 4px solid green; */
 }
 
 img {
@@ -699,8 +682,57 @@ svg:hover{
   transition: transform 0.3s;
 }
 
+.name{
+  font-size: 36px;
+  font-weight: 700;
+}
+
+@media (min-width: 768px){
+  .name{
+    font-size: 48px;
+  }
+}
+
+.navlink{
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration-line: underline;
+}
+
+@media (min-width: 768px){
+  .navlink{
+    font-size: 20px;
+  }
+}
+
+.heading{
+  font-size: 24px;
+  font-weight: 600;
+}
+
+@media (min-width: 768px){
+  .heading{
+    font-size: 36px;
+  }
+}
+
+.container{
+  max-width: 100%;
+}
+
+@media (min-width: 768px){
+  .container{
+    max-width: 75%;
+  }
+}
+
+@media (min-width: 1024px){
+  .container{
+    max-width: 50%;
+  }
+}
+
 .container {
-  max-width: 900px;
   /* border: 1px solid red; */
 }
 
@@ -760,10 +792,33 @@ svg:hover{
 
 .cards{
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  -moz-column-gap: 2rem;
-       column-gap: 2rem;
-  row-gap: 3rem;
+}
+
+@media (min-width: 640px){
+  .cards{
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    -moz-column-gap: 1rem;
+         column-gap: 1rem;
+    row-gap: 2rem;
+  }
+}
+
+@media (min-width: 768px){
+  .cards{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    -moz-column-gap: 1.5rem;
+         column-gap: 1.5rem;
+    row-gap: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px){
+  .cards{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    -moz-column-gap: 2rem;
+         column-gap: 2rem;
+    row-gap: 3rem;
+  }
 }
 
 .cards__text{
@@ -778,13 +833,14 @@ svg:hover{
 .dark-mode{
   --tw-text-opacity: 1;
   color: rgb(243 244 246 / var(--tw-text-opacity));
-  /* @apply bg-zinc-800; */
-  background: linear-gradient(
+  --tw-bg-opacity: 1;
+  background-color: rgb(39 39 42 / var(--tw-bg-opacity));
+  /* background: linear-gradient(
     to right,
-    #f4f4f5 -100%,
-    #27272a 20%,
-    #3f3f46 200%
-  );
+    theme("colors.zinc.100") -100%,
+    theme("colors.zinc.800") 20%,
+    theme("colors.zinc.700") 200%
+  ); */
   & nav {
     & a:hover{
       --tw-text-opacity: 1;
@@ -801,6 +857,7 @@ svg:hover{
     fill: #fff;
   }
   .missing-image-gradient {
+    background: #52525b;
     background: repeating-linear-gradient(
       var(--gradient-angle, 45deg),
       #71717a 0,
@@ -837,6 +894,11 @@ svg:hover{
   .cards__project{
     --tw-shadow: 0.65rem 0.65rem 0 #3f3f46;
     --tw-shadow-colored: 0.65rem 0.65rem 0 var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  }
+  .cards__project:hover{
+    --tw-shadow: 0.5rem 0.5rem 0 #3f3f46;
+    --tw-shadow-colored: 0.5rem 0.5rem 0 var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
   }
   .cards__project{
@@ -876,13 +938,14 @@ svg:hover{
 .light-mode{
   --tw-text-opacity: 1;
   color: rgb(39 39 42 / var(--tw-text-opacity));
-  /* @apply bg-gray-100; */
-  background: linear-gradient(
+  --tw-bg-opacity: 1;
+  background-color: rgb(209 213 219 / var(--tw-bg-opacity));
+  /* background: linear-gradient(
     to right,
-    #1f2937 -50%,
-    #d1d5db 20%,
-    #9ca3af 200%
-  );
+    theme("colors.gray.800") -50%,
+    theme("colors.gray.300") 20%,
+    theme("colors.gray.400") 200%
+  ); */
   & nav {
     & a:hover{
       --tw-text-opacity: 1;
@@ -903,6 +966,7 @@ svg:hover{
     fill: #000;
   }
   .missing-image-gradient {
+    background: #9ca3af;
     background: repeating-linear-gradient(
       var(--gradient-angle, 45deg),
       #9ca3af 0,
@@ -941,6 +1005,11 @@ svg:hover{
     --tw-shadow-colored: 0.65rem 0.65rem 0 var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
   }
+  .cards__project:hover{
+    --tw-shadow: 0.5rem 0.5rem 0 #9ca3af;
+    --tw-shadow-colored: 0.5rem 0.5rem 0 var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  }
   .cards__project{
     --tw-bg-opacity: 1;
     background-color: rgb(209 213 219 / var(--tw-bg-opacity));
@@ -973,4 +1042,23 @@ svg:hover{
       flex: 1 1 300px;
     }
   }
+}
+
+.cards__project{
+  --tw-grayscale: grayscale(100%);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.cards__project:hover{
+  --tw-grayscale: grayscale(0);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.cards__project{
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
 }

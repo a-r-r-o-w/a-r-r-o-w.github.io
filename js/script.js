@@ -21,18 +21,6 @@ const load_projects = () => {
         const projectDiv = document.createElement("div");
         projectDiv.classList.add("cards__project");
 
-        // let displayImg = null;
-        
-        // if (project["image"])
-        //   displayImg = `<img src='${project["image"]}' alt='${project["name"]}' />`;
-        // else {
-        //   console.log(index);
-        //   if (index % 2 == 0)
-        //     displayImg = `<img class="missing-image-gradient-45" />`;
-        //   else
-        //     displayImg = `<img class="missing-image-gradient-135" />`;
-        // }
-
         const displayImg = project.image
         ? `<img src="${project.image}" alt="${project.name}" />`
         : `<img class="missing-image-gradient" style="--gradient-angle: ${index % 2 === 0 ? '45deg' : '135deg'};" />`;

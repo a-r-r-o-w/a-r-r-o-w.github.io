@@ -9,7 +9,12 @@
 }
 
 body {
-  @apply font-serif min-h-screen items-center justify-center;
+  @apply font-serif;
+  @apply flex flex-col items-center justify-start;
+  @apply max-h-full max-w-full;
+  @apply w-screen h-screen;
+  @apply min-h-[640px] min-w-[480px];
+  /* border: 4px solid green; */
 }
 
 img {
@@ -22,8 +27,26 @@ svg:hover {
   transition: transform 0.3s;
 }
 
+.name {
+  @apply text-[36px] font-bold;
+  @apply md:text-[48px];
+}
+
+.navlink {
+  @apply text-[16px] font-bold underline;
+  @apply md:text-[20px];
+}
+
+.heading {
+  @apply text-[24px] font-semibold;
+  @apply md:text-[36px];
+}
+
 .container {
-  max-width: 900px;
+  @apply max-w-full;
+  @apply md:max-w-[75%];
+  @apply lg:max-w-[50%];
+
   /* border: 1px solid red; */
 }
 
@@ -54,7 +77,10 @@ svg:hover {
 }
 
 .cards {
-  @apply grid grid-cols-2 gap-x-8 gap-y-12;
+  @apply grid;
+  @apply sm:grid-cols-1 sm:gap-x-4 sm:gap-y-8;
+  @apply md:grid-cols-2 md:gap-x-6 md:gap-y-10;
+  @apply lg:grid-cols-2 lg:gap-x-8 lg:gap-y-12;
 }
 
 .cards__text {
@@ -64,13 +90,13 @@ svg:hover {
 .dark-mode {
   @apply text-gray-100;
 
-  /* @apply bg-zinc-800; */
-  background: linear-gradient(
+  @apply bg-zinc-800;
+  /* background: linear-gradient(
     to right,
     theme("colors.zinc.100") -100%,
     theme("colors.zinc.800") 20%,
     theme("colors.zinc.700") 200%
-  );
+  ); */
 
   & nav {
     & a:hover {
@@ -91,6 +117,7 @@ svg:hover {
   }
 
   .missing-image-gradient {
+    background: theme("colors.zinc.600");
     background: repeating-linear-gradient(
       var(--gradient-angle, 45deg),
       theme("colors.zinc.500") 0,
@@ -104,6 +131,7 @@ svg:hover {
     @apply flex flex-wrap w-full rounded-xl overflow-hidden;
     @apply border-8 border-solid border-zinc-600;
     @apply shadow-[0.65rem_0.65rem_0_theme("colors.zinc.700")];
+    @apply hover:shadow-[0.5rem_0.5rem_0_theme("colors.zinc.700")];
     @apply bg-zinc-900;
   
     & a {
@@ -121,13 +149,13 @@ svg:hover {
 .light-mode {
   @apply text-zinc-800;
 
-  /* @apply bg-gray-100; */
-  background: linear-gradient(
+  @apply bg-gray-300;
+  /* background: linear-gradient(
     to right,
     theme("colors.gray.800") -50%,
     theme("colors.gray.300") 20%,
     theme("colors.gray.400") 200%
-  );
+  ); */
 
   & nav {
     & a:hover {
@@ -152,6 +180,7 @@ svg:hover {
   }
 
   .missing-image-gradient {
+    background: theme("colors.gray.400");
     background: repeating-linear-gradient(
       var(--gradient-angle, 45deg),
       theme("colors.gray.400") 0,
@@ -165,6 +194,7 @@ svg:hover {
     @apply flex flex-wrap w-full rounded-xl overflow-hidden;
     @apply border-8 border-solid border-gray-500;
     @apply shadow-[0.65rem_0.65rem_0_theme("colors.gray.400")];
+    @apply hover:shadow-[0.5rem_0.5rem_0_theme("colors.gray.400")];
     @apply bg-gray-300;
   
     & a {
@@ -177,4 +207,9 @@ svg:hover {
       flex: 1 1 300px;
     }
   }
+}
+
+.cards__project {
+  @apply grayscale hover:grayscale-0;
+  @apply transition ease-in duration-500;
 }
