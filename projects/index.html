@@ -8,7 +8,7 @@
   <link href="/css/styles.css" rel="stylesheet">
 </head>
 
-<body class="dark-mode">
+<body class="dark-mode" onload="load_projects()">
   <!-- Header -->
   <header class="p-4">
     <nav class="container mx-auto flex flex-row justify-between items-center">
@@ -33,16 +33,19 @@
 
   <!-- Main Content -->
   <main class="container mx-auto px-2 mt-8">
-      <span class="text-4xl font-semibold">about</span>
+      <h1 class="text-4xl font-semibold">projects</h1>
       
-      <p class="mt-2 text-xl">
-          Hi! I'm Aryan, a mostly self-taught programmer with good algorithmic, problem solving and development
-          experience. I'm passionate about generative AI, reinforcement learning, cybersecurity, performance
-          engineering, cryptography, graphics, game development and competitive programming.
-      </p>
-      <p class="pt-8 text-sm">
-          This site is under development, please check back later.
-      </p>
+      <div class="cards m-4" id="projects">
+        <!-- <div class="cards__project">
+          <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio">
+            <img src='https://images.unsplash.com/photo-1600078686889-8c42747c25fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTY0NDMzMjg5Nw&ixlib=rb-1.2.1&q=80&w=400' alt='Bluetit'>
+            <div class="cards__text">
+              <h2>test</h2>
+              <p>test</p>
+            </div>
+          </a>
+        </div> -->
+      </div>
   </main>
 
   <!-- Footer -->

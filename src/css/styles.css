@@ -1,9 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&family=Pixelify+Sans&family=Poppins:wght@100&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+* {
+  @apply box-border;
+}
+
 body {
-  @apply font-sans;
+  @apply font-serif min-h-screen items-center justify-center;
+}
+
+img {
+  display: block;
+  width: 100%;
 }
 
 svg:hover {
@@ -12,20 +23,21 @@ svg:hover {
 }
 
 .container {
-  max-width: 640px;
+  max-width: 900px;
+  /* border: 1px solid red; */
 }
 
 .toggle-button {
-  @apply w-9 h-5 flex flex-row items-center cursor-pointer relative rounded-xl;
+  @apply w-10 h-5 flex flex-row items-center cursor-pointer relative rounded-xl bg-black;
 }
 
 .toggle-switch {
-  @apply w-4 h-4 absolute left-[2px] rounded-full;
+  @apply w-4 h-4 absolute left-[2px] rounded-full bg-gray-400;
   transition: transform 0.3s;
 }
 
 .toggle-icon {
-  @apply flex flex-row items-center justify-between w-9 p-1;
+  @apply flex flex-row items-center justify-between w-10 p-1;
 }
 
 .moon-icon, .sun-icon {
@@ -34,28 +46,36 @@ svg:hover {
 }
 
 .contact {
-  @apply flex flex-row items-center space-x-1;
+  @apply flex flex-row items-center space-x-2;
+}
+
+.contact_link {
+  @apply w-8;
+}
+
+.cards {
+  @apply grid grid-cols-2 gap-x-8 gap-y-12;
+}
+
+.cards__text {
+  @apply flex flex-col px-6 py-6;
 }
 
 .dark-mode {
-  @apply bg-zinc-800 text-gray-100;
+  @apply text-gray-100;
 
-  & a:hover {
-    @apply text-gray-400 underline;
-  }
-  
-  & svg {
-    g {
-      fill: white;
+  /* @apply bg-zinc-800; */
+  background: linear-gradient(
+    to right,
+    theme("colors.zinc.100") -100%,
+    theme("colors.zinc.800") 20%,
+    theme("colors.zinc.700") 200%
+  );
+
+  & nav {
+    & a:hover {
+      @apply text-gray-400;
     }
-  }
-
-  .toggle-switch {
-    @apply bg-black;
-  }
-
-  .toggle-button {
-    @apply bg-white;
   }
 
   .moon-icon {
@@ -69,21 +89,54 @@ svg:hover {
   .links__github {
     @apply fill-white;
   }
+
+  .missing-image-gradient {
+    background: repeating-linear-gradient(
+      var(--gradient-angle, 45deg),
+      theme("colors.zinc.500") 0,
+      theme("colors.zinc.500") 5%,
+      theme("colors.zinc.600") 10%,
+      theme("colors.zinc.600") 15%
+    );
+  }
+
+  .cards__project {
+    @apply flex flex-wrap w-full rounded-xl overflow-hidden;
+    @apply border-8 border-solid border-zinc-600;
+    @apply shadow-[0.65rem_0.65rem_0_theme("colors.zinc.700")];
+    @apply bg-zinc-900;
+  
+    & a {
+      @apply block w-full h-full;
+    }
+  
+    & img {
+      @apply object-cover outline outline-8 outline-zinc-600;
+      aspect-ratio: 3 / 2;
+      flex: 1 1 300px;
+    }
+  }
 }
 
 .light-mode {
-  @apply bg-gray-100 text-zinc-800;
+  @apply text-zinc-800;
 
-  & a:hover {
-    @apply text-zinc-400 underline;
+  /* @apply bg-gray-100; */
+  background: linear-gradient(
+    to right,
+    theme("colors.gray.800") -50%,
+    theme("colors.gray.300") 20%,
+    theme("colors.gray.400") 200%
+  );
+
+  & nav {
+    & a:hover {
+      @apply text-zinc-400;
+    }
   }
 
   .toggle-switch {
-    @apply bg-white translate-x-4;
-  }
-
-  .toggle-button {
-    @apply bg-black;
+    @apply translate-x-5;
   }
 
   .moon-icon {
@@ -96,5 +149,32 @@ svg:hover {
 
   .links__github {
     @apply fill-black;
+  }
+
+  .missing-image-gradient {
+    background: repeating-linear-gradient(
+      var(--gradient-angle, 45deg),
+      theme("colors.gray.400") 0,
+      theme("colors.gray.400") 5%,
+      theme("colors.gray.300") 10%,
+      theme("colors.gray.300") 15%
+    );
+  }
+
+  .cards__project {
+    @apply flex flex-wrap w-full rounded-xl overflow-hidden;
+    @apply border-8 border-solid border-gray-500;
+    @apply shadow-[0.65rem_0.65rem_0_theme("colors.gray.400")];
+    @apply bg-gray-300;
+  
+    & a {
+      @apply block w-full h-full;
+    }
+  
+    & img {
+      @apply object-cover outline outline-8 outline-gray-500;
+      aspect-ratio: 3 / 2;
+      flex: 1 1 300px;
+    }
   }
 }
