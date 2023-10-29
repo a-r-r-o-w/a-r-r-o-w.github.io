@@ -1,9 +1,15 @@
-let is_dark_mode = true;
+let is_dark_mode = localStorage.getItem("is_dark_mode") === null ? true : localStorage.getItem("is_dark_mode") === "true";
 const toggleButton = document.getElementById("toggle-button");
 const body = document.body;
 
+if (!is_dark_mode) {
+  body.classList.toggle("dark-mode");
+  body.classList.toggle("light-mode");
+}
+
 toggleButton.addEventListener("click", () => {
   is_dark_mode = !is_dark_mode;
+  localStorage.setItem("is_dark_mode", is_dark_mode);
   body.classList.toggle("dark-mode");
   body.classList.toggle("light-mode");
 });
@@ -21,16 +27,23 @@ const load_projects = () => {
         const projectDiv = document.createElement("div");
         projectDiv.classList.add("cards__project");
 
-        const displayImg = project.image
-        ? `<img src="${project.image}" alt="${project.name}" />`
-        : `<img class="missing-image-gradient" style="--gradient-angle: ${index % 2 === 0 ? '45deg' : '135deg'};" />`;
+        const canPlayVideo = document.createElement("video").canPlayType("video/mp4") !== "";
+        let displayContent = `<img class="missing-image-gradient" style="--gradient-angle: ${index % 2 === 0 ? '45deg' : '135deg'};" />`;
+
+        if (project["image"])
+          displayContent = `<img src="${project.image}" alt="${project.name}" />`;
+        else if (project["video"] && canPlayVideo)
+          displayContent = `<video loop muted playsinline src="${project.video}" alt="${project.name}" onmouseover="this.play()" onmouseout="this.pause(); this.currentTime = 0;"> Your browser does not support the video tag. </video>`;
 
         projectDiv.innerHTML = `
         <a href='${project["url"]}'>
-          ${displayImg}
+          ${displayContent}
           <div class="cards__text">
-            <h2>${project["name"]}</h2>
-            <p>${project["short_description"]}</p>
+            <span id="name">${project["name"]}</span>
+            <span id="description">${project["description"]}</span>
+            <div class="cards__languages">
+              ${project["languages"].map(language => `<span class="cards__language-container">${language}</span>`).join("")}
+            </div>
           </div>
         </a>
         `;

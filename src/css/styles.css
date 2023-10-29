@@ -14,6 +14,7 @@ body {
   @apply max-h-full max-w-full;
   @apply w-screen h-screen;
   @apply min-h-[640px] min-w-[480px];
+  @apply transition ease-in duration-200;
   /* border: 4px solid green; */
 }
 
@@ -84,7 +85,25 @@ svg:hover {
 }
 
 .cards__text {
-  @apply flex flex-col px-6 py-6;
+  @apply flex flex-col px-6 py-6 space-y-2 text-center;
+
+  #name {
+    @apply font-bold text-xl;
+  }
+
+  #description {
+    @apply text-base;
+  }
+
+  .cards__languages {
+    @apply flex flex-row items-center justify-center space-x-2;
+  }
+
+  .cards__language-container {
+    @apply inline-block rounded-full text-sm;
+    @apply px-2 py-1 mr-2 mb-2;
+    @apply bg-blue-400;
+  }
 }
 
 .dark-mode {
@@ -128,7 +147,6 @@ svg:hover {
   }
 
   .cards__project {
-    @apply flex flex-wrap w-full rounded-xl overflow-hidden;
     @apply border-8 border-solid border-zinc-600;
     @apply shadow-[0.65rem_0.65rem_0_theme("colors.zinc.700")];
     @apply hover:shadow-[0.5rem_0.5rem_0_theme("colors.zinc.700")];
@@ -210,6 +228,7 @@ svg:hover {
 }
 
 .cards__project {
+  @apply flex flex-wrap w-full h-fit rounded-xl overflow-hidden;
   @apply grayscale hover:grayscale-0;
   @apply transition ease-in duration-500;
 }
