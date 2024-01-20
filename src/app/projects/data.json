@@ -1,0 +1,101 @@
+{
+  "projects": [
+    {
+      "url": "https://github.com/a-r-r-o-w/stablefused",
+      "name": "stablefused",
+      "description": "toy library to experiment with diffusion models",
+      "languages": ["Python"],
+      "video": "/videos/stablefused.mp4"
+    },
+
+    {
+      "url": "https://github.com/a-r-r-o-w/pacman-rl",
+      "name": "pacman rl",
+      "description": "reinforcement learning environment for pacman with an api similar to openai gym",
+      "languages": ["C++", "Python"],
+      "video": "https://user-images.githubusercontent.com/72266394/274800393-591a9b7d-b287-4e28-baf8-70bae19c38c5.mp4"
+    },
+
+    {
+      "url": "https://github.com/a-r-r-o-w/ml/tree/master/label-classification/cpp/fashion-mnist-classifier",
+      "name": "fashion mnist classifier",
+      "description": "implmentation of a simple neural network library in c++",
+      "languages": ["C++"],
+      "image": "/images/fashion-mnist.png"
+    },
+
+    {
+      "url": "https://github.com/a-r-r-o-w/ml/tree/master/label-classification/c/handwritten-digit-classifier",
+      "name": "handwritten digit classifier",
+      "description": "implmentation of a simple neural network library in c",
+      "languages": ["C"],
+      "image": "/images/handwritten-digit.png"
+    },
+    
+    {
+      "url": "https://github.com/a-r-r-o-w/opengl/tree/master/interactive-objects",
+      "name": "interactive objects",
+      "description": "simple game engine in opengl",
+      "languages": ["C++", "GLSL"],
+      "image": "/images/interactive-objects.png"
+    },
+
+    {
+      "url": "https://github.com/a-r-r-o-w/opengl",
+      "name": "opengl projects",
+      "description": "collection of simple projects made with opengl",
+      "languages": ["C++", "GLSL"],
+      "video": "/videos/convex-hull.mp4"
+    },
+    
+    {
+      "url": "https://github.com/a-r-r-o-w/building-modelling-vr",
+      "name": "vr building modelling",
+      "description": "building modelling using blender and unity",
+      "languages": ["C#", "Blender", "Unity"]
+    },
+    
+    {
+      "url": "https://github.com/a-r-r-o-w/competitive-programming-dbms",
+      "name": "competitive programming dbms",
+      "description": "database management system for competitive programming",
+      "languages": ["Python", "SQL"]
+    },
+
+    {
+      "url": "https://github.com/a-r-r-o-w/chess",
+      "name": "chess",
+      "description": "game of chess",
+      "languages": ["C", "GLSL"],
+      "video": "/videos/chess.mp4"
+    }
+  ],
+
+  "github_username": "a-r-r-o-w",
+  
+  "paper_implementations": [
+    {
+      "url": "https://github.com/huggingface/diffusers/pull/6490",
+      "name": "RAVE: Randomized Noise Shuffling for Fast and Consistent Video Editing with Diffusion Models",
+      "description": "",
+      "arxiv": "https://arxiv.org/abs/2312.04524",
+      "colab": "https://colab.research.google.com/drive/1yhRG6md-QXS1YaRC1CdpL_q0ahvPyflk"
+    },
+    {
+      "url": "https://github.com/huggingface/diffusers/pull/6315",
+      "name": "FreeInit: Bridging Initialization Gap in Video Diffusion Models",
+      "description": "",
+      "arxiv": "https://arxiv.org/abs/2312.07537",
+      "colab": "https://colab.research.google.com/drive/1NbUkMPf9-2vf51ASZLGAs0cvSNB46FeG?usp=sharing",
+      "video": "/videos/freeinit.mp4"
+    },
+    {
+      "url": "https://github.com/huggingface/diffusers/pull/6489",
+      "name": "Style Aligned Image Generation via Shared Attention",
+      "description": "",
+      "arxiv": "https://arxiv.org/abs/2312.02133",
+      "colab": "https://drive.google.com/file/d/15X2E0jFPTajUIjS0FzX50OaHsCbP2lQ0/view?usp=sharing",
+      "image": "/images/style-aligned.png"
+    }
+  ]
+}

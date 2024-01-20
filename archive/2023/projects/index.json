@@ -1,0 +1,68 @@
+{
+  "projects": [
+    {
+      "url": "https://github.com/a-r-r-o-w/stablefused",
+      "name": "stablefused",
+      "description": "toy library to experiment with diffusion models",
+      "languages": ["Python"],
+      "video": "https://user-images.githubusercontent.com/72266394/267246815-a71fd7ed-5ac6-49b1-812b-73c50d6ef851.mp4"
+    },
+
+    {
+      "url": "https://github.com/a-r-r-o-w/pacman-rl",
+      "name": "pacman rl",
+      "description": "reinforcement learning environment for pacman with an api similar to openai gym",
+      "languages": ["C++", "Python"],
+      "video": "https://user-images.githubusercontent.com/72266394/274800393-591a9b7d-b287-4e28-baf8-70bae19c38c5.mp4"
+    },
+
+    {
+      "url": "https://github.com/a-r-r-o-w/ml/tree/master/label-classification/cpp/fashion-mnist-classifier",
+      "name": "fashion mnist classifier",
+      "description": "implmentation of a simple neural network library in c++",
+      "languages": ["C++"]
+    },
+
+    {
+      "url": "https://github.com/a-r-r-o-w/ml/tree/master/label-classification/c/handwritten-digit-classifier",
+      "name": "handwritten digit classifier",
+      "description": "implmentation of a simple neural network library in c",
+      "languages": ["C"]
+    },
+    
+    {
+      "url": "https://github.com/a-r-r-o-w/opengl/tree/master/interactive-objects",
+      "name": "interactive objects",
+      "description": "simple game engine in opengl",
+      "languages": ["C++", "GLSL"]
+    },
+
+    {
+      "url": "https://github.com/a-r-r-o-w/opengl",
+      "name": "opengl projects",
+      "description": "collection of simple projects made with opengl",
+      "languages": ["C++", "GLSL"]
+    },
+    
+    {
+      "url": "https://github.com/a-r-r-o-w/building-modelling-vr",
+      "name": "vr building modelling",
+      "description": "building modelling using blender and unity",
+      "languages": ["C#", "Blender", "Unity"]
+    },
+    
+    {
+      "url": "https://github.com/a-r-r-o-w/chess",
+      "name": "chess",
+      "description": "game of chess",
+      "languages": ["C", "GLSL"]
+    },
+
+    {
+      "url": "https://github.com/a-r-r-o-w/competitive-programming-dbms",
+      "name": "competitive programming dbms",
+      "description": "database management system for competitive programming",
+      "languages": ["Python", "SQL"]
+    }
+  ]
+}

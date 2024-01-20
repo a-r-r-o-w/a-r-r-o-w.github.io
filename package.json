@@ -1,8 +1,26 @@
 {
-  "devDependencies": {
-    "tailwindcss": "^3.3.3"
-  },
+  "name": "a-r-r-o-w.github.io",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "dev": "npx tailwindcss -i ./src/css/styles.css -o ./css/styles.css --watch"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.0.4",
+    "next-themes": "^0.2.1",
+    "octokit": "^3.1.2",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.4",
+    "postcss": "^8",
+    "postcss-nesting": "^12.0.2",
+    "tailwindcss": "^3.3.0"
   }
 }
