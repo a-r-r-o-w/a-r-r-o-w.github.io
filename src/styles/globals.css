@@ -103,9 +103,9 @@ body.dark-mode .missing-image-gradient {
 }
 
 .container {
-  @apply max-w-[75vw];
-  @apply md:max-w-[70vw];
-  @apply lg:max-w-[65vw];
+  @apply max-w-[95vw];
+  @apply md:max-w-[85vw];
+  @apply lg:max-w-[75vw];
   @apply xl:max-w-[60vw];
   /* border: 1px solid red; */
 }
@@ -215,7 +215,7 @@ body.dark-mode .links__github {
   /* @apply grid m-4; */
   @apply flex m-4 pb-6 overflow-x-auto;
 
-  @apply sm:grid-cols-1 sm:gap-x-4 sm:gap-y-8;
+  @apply grid-cols-1 gap-x-4 gap-y-8;
   @apply md:grid-cols-2 md:gap-x-6 md:gap-y-10;
   @apply lg:grid-cols-2 lg:gap-x-8 lg:gap-y-12;
 }
@@ -229,10 +229,7 @@ body.dark-mode .links__github {
   @apply transition ease-in duration-500;
   /* @apply rounded-xl; */
 
-  @apply sm:w-[48vh] sm:h-[72vh];
-  @apply md:w-[44vh] md:h-[66vh];
-  @apply lg:w-[40vh] lg:h-[60vh];
-  @apply xl:w-[36vh] xl:h-[54vh];
+  @apply w-[36vh] h-[54vh];
 }
 body.light-mode .cards__project {
   /* @apply border-8 border-solid border-gray-500;

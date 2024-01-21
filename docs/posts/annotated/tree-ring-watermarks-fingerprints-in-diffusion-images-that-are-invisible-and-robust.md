@@ -4,7 +4,6 @@
   "paper": "https://arxiv.org/abs/2305.20030",
   "authors": "Yuxin Wen, John Kirchenbauer, Jonas Geiping, Tom Goldstein",
   "code": "https://github.com/YuxinWenRick/tree-ring-watermark",
-  "annotated": null,
   "date": "5th January, 2024"
 }
 ---
