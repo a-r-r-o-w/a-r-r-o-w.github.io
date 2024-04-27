@@ -5,7 +5,7 @@
       "name": "stablefused",
       "description": "toy library to experiment with diffusion models",
       "languages": ["Python"],
-      "video": "/videos/stablefused.mp4"
+      "video": "/videos/stablefused"
     },
 
     {
@@ -45,7 +45,7 @@
       "name": "opengl projects",
       "description": "collection of simple projects made with opengl",
       "languages": ["C++", "GLSL"],
-      "video": "/videos/convex-hull.mp4"
+      "video": "/videos/convex-hull"
     },
     
     {
@@ -67,7 +67,7 @@
       "name": "chess",
       "description": "game of chess",
       "languages": ["C", "GLSL"],
-      "video": "/videos/chess.mp4"
+      "video": "/videos/chess"
     }
   ],
 
@@ -75,27 +75,135 @@
   
   "paper_implementations": [
     {
+      "url": "https://github.com/huggingface/diffusers/pull/7005",
+      "name": "MotionCtrl: A Unified and Flexible Motion Controller for Video Generation",
+      "description": "Implementation of the Stable Video Diffusion variant of MotionCtrl, and experiments at smaller scale with training on camera trajectory datasets.",
+      "arxiv": "https://arxiv.org/abs/2312.03641",
+      "colab": "https://colab.research.google.com/drive/17xIdW-xWk4hCAIkGq0OfiJYUqwWSPSAz?usp=sharing",
+      "video": "/videos/motionctrl"
+    },
+    {
+      "url": "https://github.com/huggingface/diffusers/pull/6721",
+      "name": "AnimateDiff",
+      "description": "Implementation of the SDXL, ControlNet, Image-to-Video and Video-to-Video tasks. Part of official Diffusers support.",
+      "arxiv": "https://arxiv.org/abs/2307.04725",
+      "colab": "",
+      "video": "/videos/animatediff"
+    },
+    {
+      "url": "https://github.com/huggingface/diffusers/pull/7442",
+      "name": "Differential Diffusion: Giving Each Pixel Its Strength",
+      "description": "",
+      "arxiv": "https://arxiv.org/abs/2306.00950",
+      "colab": "",
+      "image": "/images/differential-diffusion.png"
+    },
+    {
+      "url": "https://github.com/huggingface/diffusers/pull/6938",
+      "name": "DragNUWA: Fine-grained Control in Video Generation by Integrating Text, Image, and Trajectory",
+      "description": "",
+      "arxiv": "https://arxiv.org/abs/2308.08089",
+      "colab": ""
+    },
+    {
+      "url": "https://github.com/huggingface/diffusers/pull/7359",
+      "name": "ResAdapter: Domain Consistent Resolution Adapter for Diffusion Models",
+      "description": "Implementation of the training script.",
+      "arxiv": "https://arxiv.org/abs/2403.02084",
+      "colab": ""
+    },
+    {
+      "url": "https://github.com/a-r-r-o-w/attention-is-all-you-need",
+      "name": "Attention Is All You Need",
+      "description": "Implementation of the seminal paper in PyTorch from scratch, as faithfully as possible, live-streamed on YouTube.",
+      "arxiv": "https://arxiv.org/abs/1706.03762",
+      "colab": "",
+      "image": "/images/attention-is-all-you-need.png"
+    },
+    {
+      "url": "https://github.com/huggingface/diffusers/pull/6315",
+      "name": "FreeInit: Bridging Initialization Gap in Video Diffusion Models",
+      "description": "Implementation generically applicable to a variety of video diffusion models. Part of official Diffusers support for AnimateDiff.",
+      "arxiv": "https://arxiv.org/abs/2312.07537",
+      "colab": "https://colab.research.google.com/drive/1NbUkMPf9-2vf51ASZLGAs0cvSNB46FeG?usp=sharing",
+      "video": "/videos/freeinit"
+    },
+    {
+      "url": "https://github.com/huggingface/diffusers/pull/6489",
+      "name": "Style Aligned Image Generation via Shared Attention",
+      "description": "Implementation of the attention processor to be usable in any model. Part of community Diffusers support.",
+      "arxiv": "https://arxiv.org/abs/2312.02133",
+      "colab": "https://drive.google.com/file/d/15X2E0jFPTajUIjS0FzX50OaHsCbP2lQ0/view?usp=sharing",
+      "image": "/images/style-aligned.png"
+    },
+    {
       "url": "https://github.com/huggingface/diffusers/pull/6490",
       "name": "RAVE: Randomized Noise Shuffling for Fast and Consistent Video Editing with Diffusion Models",
       "description": "",
       "arxiv": "https://arxiv.org/abs/2312.04524",
       "colab": "https://colab.research.google.com/drive/1yhRG6md-QXS1YaRC1CdpL_q0ahvPyflk"
+    }
+  ],
+
+  "work_experiences": [
+    {
+      "company": "Microsoft Research",
+      "position": "Research Intern",
+      "start_date": "",
+      "end_date": "",
+      "description": "",
+      "skills": []
     },
     {
-      "url": "https://github.com/huggingface/diffusers/pull/6315",
-      "name": "FreeInit: Bridging Initialization Gap in Video Diffusion Models",
+      "company": "ModelsLab",
+      "position": "Machine Learning Engineer",
+      "start_date": "",
+      "end_date": "",
       "description": "",
-      "arxiv": "https://arxiv.org/abs/2312.07537",
-      "colab": "https://colab.research.google.com/drive/1NbUkMPf9-2vf51ASZLGAs0cvSNB46FeG?usp=sharing",
-      "video": "/videos/freeinit.mp4"
+      "skills": []
     },
     {
-      "url": "https://github.com/huggingface/diffusers/pull/6489",
-      "name": "Style Aligned Image Generation via Shared Attention",
+      "company": "Morgan Stanley",
+      "position": "Application Developement Intern",
+      "start_date": "",
+      "end_date": "",
       "description": "",
-      "arxiv": "https://arxiv.org/abs/2312.02133",
-      "colab": "https://drive.google.com/file/d/15X2E0jFPTajUIjS0FzX50OaHsCbP2lQ0/view?usp=sharing",
-      "image": "/images/style-aligned.png"
+      "skills": []
+    },
+    {
+      "company": "Uptrain AI (YC 23)",
+      "position": "Machine Learning Intern",
+      "start_date": "",
+      "end_date": "",
+      "description": "",
+      "skills": []
+    }
+  ],
+
+  "education": [
+    {
+      "school": "PES University",
+      "degree": "B.Tech CSE",
+      "start_date": "",
+      "end_date": "",
+      "description": "",
+      "grade": "8.64 / 10"
+    },
+    {
+      "school": "Delhi Public School North, Bangalore",
+      "degree": "Senior Secondary Education",
+      "start_date": "",
+      "end_date": "",
+      "description": "",
+      "grade": "94.8%"
+    },
+    {
+      "school": "Delhi Public School North, Bangalore",
+      "degree": "Secondary Education",
+      "start_date": "",
+      "end_date": "",
+      "description": "",
+      "grade": "96.5%"
     }
   ]
 }

@@ -7,6 +7,8 @@ import missingGradientImage from "./utils";
 export default function ProjectCard({url, name, description, languages, image, video, index}) {
   let [canPlayVideo, setCanPlayVideo] = useState(false);
   const videoRef = useRef(null);
+
+  console.log("langs", languages)
   
   useEffect(() => {
     setCanPlayVideo(document.createElement("video").canPlayType("video/mp4") !== "");
@@ -22,18 +24,37 @@ export default function ProjectCard({url, name, description, languages, image, v
       width={300}
       height={300}
     />;
-  if (video !== null && canPlayVideo) {
-    displayContent = (
-      <video
-        className="cards__vid"
-        ref={videoRef}
-        loop muted playsInline
-        alt={name}
+  else if (video !== null) {
+    if (video.endsWith("gif"))
+      displayContent = <Image
+        className="cards__img"
         src={video}
-      >
-        Your browser does not support the video tag.
-      </video>
-    );
+        alt={name}
+        width={300}
+        height={300}
+      />;
+    else if (canPlayVideo)
+      displayContent = (
+        <video
+          className="cards__vid"
+          ref={videoRef}
+          loop muted playsInline
+          alt={name}
+        >
+          {
+            video.endsWith("mp4") ?
+              <>
+                <source src={video} type="video/mp4" />
+              </> :
+              <>
+                <source src={video + ".webm"} type="video/webm" />
+                <source src={video + ".mp4"} type="video/mp4" />
+              </>
+          }
+
+          Your browser does not support the video tag.
+        </video>
+      );
   }
 
   return (
