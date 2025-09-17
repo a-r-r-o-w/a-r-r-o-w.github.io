@@ -11,6 +11,9 @@
 
 ## TODO
 
+- https://github.com/hollance/neural-engine
+- https://github.com/corsix/amx
+
 ## Completed
 
 - https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/
