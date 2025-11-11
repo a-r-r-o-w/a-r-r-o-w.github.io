@@ -5,7 +5,7 @@
   "authors": ["Xun Huang", "Zhengqi Li", "Guande He", "Mingyuan Zhou", "Eli Shechtman"],
   "code": "https://github.com/guandeh17/Self-Forcing",
   "date": "2025-09-02",
-  "tags": ["computer-vision", "diffusion", "autoregression"]
+  "tags": ["computer-vision", "diffusion", "autoregression", "world-models"]
 }
 ---
 

@@ -27,3 +27,7 @@
 ## TODO
 
 - https://www.youtube.com/watch?v=WxLi3OgLRCU
+
+## Completed
+
+- [How CPUs interact with so many different devices](https://www.youtube.com/watch?v=tadUeiNe5-g)
