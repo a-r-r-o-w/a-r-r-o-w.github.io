@@ -4,7 +4,7 @@
   "authors": ["Sasha Rush", "Keyon Vafa"],
   "url": "https://www.youtube.com/watch?v=hguIUmMsvA4",
   "date": "2025-09-07",
-  "tags": ["deep-learing", "transformer", "world-models"]
+  "tags": ["deep-learning", "transformer", "world-models"]
 }
 ---
 

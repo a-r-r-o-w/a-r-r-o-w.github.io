@@ -1,7 +1,6 @@
 ---
 {
   "title": "Video to Manimation",
-  "authors": ["Aryan V S"],
   "date": "2025-08-20",
   "tags": ["miscellaneous", "manim"]
 }

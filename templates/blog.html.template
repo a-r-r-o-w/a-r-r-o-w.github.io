@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog</title>
+    <script>
+      (function() {{
+        const t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = t;
+      }})();
+    </script>
+    <link rel="stylesheet" href="{css_path}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', 'G-R1R7JKELB2', {{
+        'page_title': 'Aryan V S - Blog',
+        'page_path': '/blog/',
+        'allow_google_signals': false,
+        'allow_ad_personalization_signals': false
+      }});
+    </script>
+</head>
+<body data-theme="dark">
+    <header>
+        <div class="header-inner">
+            <a href="/"><h1>Aryan V S</h1></a>
+            <nav>
+                <a href="/">Home</a> | <a href="/blog/" aria-current="page">Blog</a>
+            </nav>
+            <div class="theme-toggle">
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+    <div class="content-wrapper">
+        <div class="page-wrapper">
+            <div class="left-padding"></div>
+            <main class="center-content blog-page" id="blog-content">
+                {cat_html}
+            </main>
+            <aside class="right-sidebar">
+                <div class="search-fixed">
+                    <h3>Search</h3>
+                    <input type="text" id="search-input" placeholder="Type to filter...">
+                </div>
+                <div class="tags-scrollable">
+                    <h3>Tags</h3>
+                    <ul class="tag-list">
+                        {tag_list}
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+            <a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="mailto:contact.aryanvs@gmail.com" aria-label="Email">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </footer>
+    <script src="{js_path}"></script>
+</body>
+</html>

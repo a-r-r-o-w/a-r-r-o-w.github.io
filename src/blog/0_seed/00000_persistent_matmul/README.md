@@ -1,10 +1,9 @@
 ---
 {
   "title": "Persistent Matmul",
-  "authors": ["Aryan V S"],
   "code": "https://gist.github.com/a-r-r-o-w/28339b442d164084506c0967029968a8",
   "date": "2025-08-05",
-  "tags": ["deep-learning", "matmul"]
+  "tags": ["deep-learning", "matrix-multiplication"]
 }
 ---
 

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personal website of Aryan V S, AI engineer specializing in diffusion models and generative AI.">
+    <meta name="keywords" content="Aryan V S, diffusion models, generative AI, Hugging Face, a16z">
+    <title>Aryan V S</title>
+    <script>
+      (function() {{
+        const t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = t;
+      }})();
+    </script>
+    <link rel="stylesheet" href="{css_path}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', 'G-R1R7JKELB2', {{
+        'page_title': 'Aryan V S - Home',
+        'page_path': '/',
+        'allow_google_signals': false,
+        'allow_ad_personalization_signals': false
+      }});
+    </script>
+</head>
+<body data-theme="dark">
+    <header>
+        <div class="header-inner">
+            <a href="/"><h1>Aryan V S</h1></a>
+            <nav>
+                <a href="/" aria-current="page">Home</a> | <a href="/blog/">Blog</a>
+            </nav>
+            <div class="theme-toggle">
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+    <div class="content-wrapper">
+        <div class="container">
+            <main>
+                <section id="about">
+                  <p>Hello stranger. Welcome to my corner of the internet.</p>
+                  <p>Carl Sagan once said "We are a way for the cosmos to know itself." We are, indeed. My life's ambition is to build machines that can understand the cosmos and, in doing so, improve our own understanding.</p>
+                  <p>Right now, my personal interests revolve around programming at the lowest levels. Eventually, I want to go deeper: understanding the electrical, mechanical, and materials engineering that make modern computers work at all. The entire stack, from silicon to intelligence. Maybe understanding the full silicon stack, alongside biological evolution, is how we eventually put artificial souls into rocks.</p>
+                  <p>After all, we've already managed to fool rocks into thinking. I want to understand how that happened at the level where things almost don't work at all: how transistors got so tiny, how unreliable signals are coerced into stable logic, how timing, noise, power draw, and heat constrain design choices, and how layers of (fragile?) assumptions and abstractions were stacked on top of one another until computation emerged. Not the abstract diagrams from school textbooks, but the details where the different worlds of engineering collide.</p>
+                  <p>I hold a simple belief: what I cannot build, I probably don't understand very well. This is why, if you know me IRL, you'll find me reversing things and writing my own implementations constantly. It's the best way to truly learn how something works. (Though, please don't do this in production code—your coworkers will hate you.)</p>
+                  <p>I'm not much of a writer, but I wanted a place to collect thoughts and disperse them to interested readers. That place is here on the blogs page. Posts are organized by maturity: <strong>Seed</strong> for raw ideas and scattered thoughts, <strong>Sprout</strong> for concepts taking shape, <strong>Sapling</strong> for well-developed content, and <strong>Blossom</strong> for fully matured posts with comprehensive information.</p>
+                </section>
+                <section id="news">
+                    <h2 class="section-title">News</h2>
+                    <div class="scrollable-news">
+                        {news_html}
+                    </div>
+                </section>
+                <section id="experience">
+                    <h2 class="section-title">Experience</h2>
+                    <div class="experience-grid">
+                        <div class="experience-item">
+                            <div class="experience-logo-text">M</div>
+                            <div class="experience-details">
+                                <p>Staff, Stealth Startup <span class="experience-date">Sep 2025 - Present</span></p>
+                                <p>Anything and everything to build the best Video World models.</p>
+                            </div>
+                        </div>
+                        <div class="experience-item">
+                            <img class="experience-logo" src="/assets/logos/a16z.jpeg" alt="Andreessen Horowitz">
+                            <div class="experience-details">
+                                <p>Scout, Andreessen Horowitz <span class="experience-date">Sep 2025 - Present</span></p>
+                                <p>Investing in AI and Infra startups. Finding strong founders tackling hard problems.</p>
+                                <p>Seeking pre-seed/seed angel checks? <a href="mailto:contact.aryanvs@gmail.com">Reach out</a>!</p>
+                            </div>
+                        </div>
+                        <div class="experience-item">
+                            <img class="experience-logo" src="/assets/logos/huggingface.jpeg" alt="Hugging Face">
+                            <div class="experience-details">
+                                <p>Staff, Hugging Face <span class="experience-date">Jul 2024 - Sep 2025</span></p>
+                                <p>Core maintainer of <a href="https://github.com/huggingface/diffusers">Diffusers</a> and <a href="https://github.com/huggingface/finetrainers">Finetrainers</a>.</p>
+                            </div>
+                        </div>
+                        <div class="experience-item">
+                            <img class="experience-logo" src="/assets/logos/microsoft.jpeg" alt="Microsoft">
+                            <div class="experience-details">
+                                <p>Research Intern, Microsoft <span class="experience-date">Jan 2024 - Jul 2024</span></p>
+                                <p>Computer vision and human-computer interaction research.</p>
+                                <p>Real-time inference optimization for diffusion, GAN, NeRF, and Gaussian Splatting models in facial avatar and scene reconstruction settings.</p>
+                                <p>Advisor: <a href="https://en.wikipedia.org/wiki/Venkata_Padmanabhan">Dr. Venkata Padmanabhan</a></p>
+                            </div>
+                        </div>
+                        <div class="experience-item">
+                            <img class="experience-logo" src="/assets/logos/modelslab.jpeg" alt="Modelslab">
+                            <div class="experience-details">
+                                <p>Engineer, Modelslab <span class="experience-date">Oct 2023 - Jan 2024</span></p>
+                                <p>Inference optimization for generative models (image/video diffusion, voice cloning, LLMs).</p>
+                                <p>Managed production GPU deployments, improved platform stability, and supported enterprise clients.</p>
+                            </div>
+                        </div>
+                        <div class="experience-item">
+                            <img class="experience-logo" src="/assets/logos/morgan_stanley.jpeg" alt="Morgan Stanley">
+                            <div class="experience-details">
+                                <p>Application Development Intern, Morgan Stanley <span class="experience-date">May 2023 - Jul 2023</span></p>
+                                <p>Migrated internal financial tooling to SpringBoot and Angular. Optimized SQL queries.</p>
+                            </div>
+                        </div>
+                        <div class="experience-item">
+                            <img class="experience-logo" src="/assets/logos/uptrain.jpeg" alt="Uptrain">
+                            <div class="experience-details">
+                                <p>Machine Learning Intern, Uptrain <span class="experience-date">Mar 2023 - Apr 2023</span></p>
+                                <p>Helped build Uptrain's (YC W23) open-source <a href="https://github.com/uptrain-ai/uptrain">toolkit</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section id="talks">
+                    <h2 class="section-title">Talks</h2>
+                    <ul class="talks-details">
+                        <li><strong>IIT Indore</strong> - Aug 2025, "Careers in ML". Career guidance for undergrads.</li>
+                        <li><strong>MLADS Conference</strong> - Jul 2024, "Hybrid Hallway". Presented and live-demoed <a href="https://www.microsoft.com/en-us/research/project/hyway/">Hybrid Hallway</a>, and early explorations into real-time avatars and privacy-focused user state understanding, to Microsoft research leadership, professors, and hundreds of attendees.</li>
+                        <li><strong>Microsoft Research India</strong> - Mar 2024, "Hybrid Hallway". Presented and live-demoed <a href="https://www.microsoft.com/en-us/research/project/hyway/">Hybrid Hallway</a>.</li>
+                    </ul>
+                </section>
+            </main>
+        </div>
+    </div>
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+            <a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="mailto:contact.aryanvs@gmail.com" aria-label="Email">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </footer>
+    <script src="{js_path}"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+    <script>
+      (function() {{
+        const t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = t;
+      }})();
+    </script>
+    <link rel="stylesheet" href="{css_path}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {{delimiters: [{{left: '$$', right: '$$', display: true}}, {{left: '$', right: '$', display: false}}, {{left: '\\(', right: '\\)', display: false}}, {{left: '\\[', right: '\\]', display: true}}], throwOnError: false}});"></script>
+    <!-- Copy style from here: https://github.com/highlightjs/highlight.js/tree/5697ae5187746c24732e62cd625f3f83004a44ce/src/styles -->
+    <link rel="stylesheet" id="hljs-dark" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+    <link rel="stylesheet" id="hljs-light" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" disabled>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', 'G-R1R7JKELB2', {{
+        'page_title': '{title}',
+        'page_path': '/blog/{rel_path}/',
+        'allow_google_signals': false,
+        'allow_ad_personalization_signals': false
+      }});
+    </script>
+</head>
+<body data-theme="dark">
+    <!-- <header class="sticky"> -->
+    <header>
+        <div class="header-inner">
+            <a href="/"><h1>Aryan V S</h1></a>
+            <nav>
+                <a href="/">Home</a> | <a href="/blog/">Blog</a>
+            </nav>
+            <div class="theme-toggle">
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <main>
+          <div class="post-title-wrapper">
+              <div class="post-date">{date}</div>
+              <h2><div class="post-title">{title}</div></h2>
+          </div>
+            <div class="post-meta">
+                <div class="post-tags">{tags_html}</div>
+                {authors}
+                {post_links}
+            </div>
+            {body_html}
+        </main>
+    </div>
+    <div class="lightbox-overlay" id="lightbox">
+      <div class="lightbox-close" onclick="closeLightbox()">×</div>
+      <div class="lightbox-content">
+          <img class="lightbox-media" id="lightbox-media" src="" alt="">
+      </div>
+      <div class="lightbox-controls">
+          <button class="lightbox-btn" onclick="zoomOut()" title="Zoom Out (-)">−</button>
+          <div class="zoom-level" id="zoom-level">100%</div>
+          <button class="lightbox-btn" onclick="zoomIn()" title="Zoom In (+)">+</button>
+          <button class="lightbox-btn" onclick="resetZoom()" title="Reset (0)">⟲</button>
+      </div>
+  </div>
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+            <a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="mailto:contact.aryanvs@gmail.com" aria-label="Email">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </footer>
+    <script src="{js_path}"></script>
+</body>
+</html>

@@ -1,7 +1,6 @@
 ---
 {
-  "title": "Commands list for basic things I usually forget",
-  "authors": ["Aryan V S"],
+  "title": "CLI stash",
   "date": "2025-11-02",
   "tags": ["linux", "slurm", "miscellaneous"]
 }
@@ -22,7 +21,7 @@ srun --gres=gpu:8 --cpus-per-task=32 --mem=2000G --pty bash -i
 
 - Upload checkpoints to aws at a specific interval (here, 500 steps)
 ```bash
-for d in ckpt_step*; do     step=$(echo "$d" | grep -o '[0-9]\+' | sed 's/^0*//');     if (( step % 500 == 0 )); then         aws s3 cp --recursive "$d"         s3://morpheusai-data/aryan/lora/teacher-forcing/1p3b---lr-1e-4---wd-1e-5---ema-0p99---rank-256/"$d";     fi; done
+for d in ckpt_step*; do     step=$(echo "$d" | grep -o '[0-9]\+' | sed 's/^0*//');     if (( step % 500 == 0 )); then         aws s3 cp --recursive "$d"         s3://<BUCKET>/aryan/lora/teacher-forcing/1p3b---lr-1e-4---wd-1e-5---ema-0p99---rank-256/"$d";     fi; done
 ```
 
 - Read/write/random I/O test:
@@ -54,4 +53,12 @@ export ENROOT_RUNTIME_PATH=/scratch/shared/.enroot/runtime
 mkdir -p $TMPDIR $ENROOT_DATA_PATH $ENROOT_CACHE_PATH $ENROOT_RUNTIME_PATH
 enroot import docker://<USERNAME>@<ORGANIZATION>/cu128-pytorch28:latest
 export TMPDIR=$CUR_TMPDIR
+```
+
+- Setting all read/write permissions on multiple nodes
+```bash
+pssh -O StrictHostKeyChecking=no -O UserKnownHostsFile=/dev/null -t 0 -h hosts.txt -i 'bash -lc "sudo apt update && sudo apt install -y acl"'
+pssh -O StrictHostKeyChecking=no -O UserKnownHostsFile=/dev/null -t 0 -h hosts.txt -i 'bash -lc "sudo setfacl -m d:u::rwx,d:g::rwx,d:o::rwx /scratch/local"'
+pssh -O StrictHostKeyChecking=no -O UserKnownHostsFile=/dev/null -t 0 -h hosts.txt -i 'bash -lc "sudo setfacl -m u::rwx,g::rwx,o::rwx /scratch/local"'
+pssh -O StrictHostKeyChecking=no -O UserKnownHostsFile=/dev/null -t 0 -h hosts.txt -i 'bash -lc "sudo chmod 1777 /scratch/local"'
 ```

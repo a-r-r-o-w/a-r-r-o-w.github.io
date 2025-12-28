@@ -208,3 +208,5 @@ __marimo__/
 
 # manually added
 .vscode/
+*dump*
+_site/
