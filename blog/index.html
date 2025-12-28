@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog</title>
+    <script>
+      (function() {
+        const t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-R1R7JKELB2', {
+        'page_title': 'Aryan V S - Blog',
+        'page_path': '/blog/',
+        'allow_google_signals': false,
+        'allow_ad_personalization_signals': false
+      });
+    </script>
+</head>
+<body data-theme="dark">
+    <header>
+        <div class="header-inner">
+            <a href="/"><h1>Aryan V S</h1></a>
+            <nav>
+                <a href="/">Home</a> | <a href="/blog/" aria-current="page">Blog</a>
+            </nav>
+            <div class="theme-toggle">
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+    <div class="content-wrapper">
+        <div class="page-wrapper">
+            <div class="left-padding"></div>
+            <main class="center-content blog-page" id="blog-content">
+                <details open><summary><span class="cat-icon">🌸</span> Blossom</summary><ul><li class="post-item" data-tags="diffusion optimization mlsys"><div class="post-info"><div class="post-date">2025-12-29</div><a href="/blog/3_blossom/00001_productionizing_diffusion-1/index.html">Optimizing diffusion inference for production-ready speeds - I</a><div class="post-tags"><span class="tag">diffusion</span> <span class="tag">optimization</span> <span class="tag">mlsys</span></div></div></li>
+</ul></details>
+<details ><summary><span class="cat-icon">🪴</span> Sapling</summary><ul><li class="post-item" data-tags="resources apple"><div class="post-info"><div class="post-date">2025-11-11</div><a href="/blog/2_sapling/00000_apple_default_editor_vscode/index.html">Setting VS Code as the default editor on MacOS</a><div class="post-tags"><span class="tag">resources</span> <span class="tag">apple</span></div></div></li>
+</ul></details>
+<details ><summary><span class="cat-icon">🌱</span> Sprout</summary><ul><li class="post-item" data-tags="computer-vision diffusion autoregression distillation world-models"><div class="post-info"><div class="post-date">2025-11-04</div><a href="/blog/1_sprout/00003_greedy_distill/index.html">Greedy Distill: Efficient Video Generative Modeling With Linear Time Complexity</a><div class="post-tags"><span class="tag">computer-vision</span> <span class="tag">diffusion</span> <span class="tag">autoregression</span> <span class="tag">distillation</span> <span class="tag">world-models</span></div></div></li>
+<li class="post-item" data-tags="computer-vision diffusion autoregression world-models"><div class="post-info"><div class="post-date">2025-10-03</div><a href="/blog/1_sprout/00002_matrix_game_2_0/index.html">Matrix-Game 2.0: An Open-Source, Real-Time, and Streaming Interactive World Model</a><div class="post-tags"><span class="tag">computer-vision</span> <span class="tag">diffusion</span> <span class="tag">autoregression</span> <span class="tag">world-models</span></div></div></li>
+<li class="post-item" data-tags="computer-vision diffusion autoregression world-models"><div class="post-info"><div class="post-date">2025-09-02</div><a href="/blog/1_sprout/00001_self_forcing/index.html">Self Forcing: Bridging the Train-Test Gap in Autoregressive Video Diffusion</a><div class="post-tags"><span class="tag">computer-vision</span> <span class="tag">diffusion</span> <span class="tag">autoregression</span> <span class="tag">world-models</span></div></div></li>
+<li class="post-item" data-tags="deep-learning computer-vision diffusion"><div class="post-info"><div class="post-date">2025-08-02</div><a href="/blog/1_sprout/00000_pulid/index.html">PuLID: Pure and Lightning ID Customization via Contrastive Alignment</a><div class="post-tags"><span class="tag">deep-learning</span> <span class="tag">computer-vision</span> <span class="tag">diffusion</span></div></div></li>
+</ul></details>
+<details ><summary><span class="cat-icon">🌰</span> Seed</summary><ul><li class="post-item" data-tags="linux slurm miscellaneous"><div class="post-info"><div class="post-date">2025-11-02</div><a href="/blog/0_seed/00005_commands_list/index.html">CLI stash</a><div class="post-tags"><span class="tag">linux</span> <span class="tag">slurm</span> <span class="tag">miscellaneous</span></div></div></li>
+<li class="post-item" data-tags="miscellaneous"><div class="post-info"><div class="post-date">2025-09-11</div><a href="/blog/0_seed/00004_reading_list/index.html">Read/Watch List</a><div class="post-tags"><span class="tag">miscellaneous</span></div></div></li>
+<li class="post-item" data-tags="deep-learning transformer world-models"><div class="post-info"><div class="post-date">2025-09-07</div><a href="/blog/0_seed/00003_sasha_rush_world_models/index.html">AI World Models (Keyon Vafa)</a><div class="post-tags"><span class="tag">deep-learning</span> <span class="tag">transformer</span> <span class="tag">world-models</span></div></div></li>
+<li class="post-item" data-tags="miscellaneous manim"><div class="post-info"><div class="post-date">2025-08-20</div><a href="/blog/0_seed/00002_video_to_manimation/index.html">Video to Manimation</a><div class="post-tags"><span class="tag">miscellaneous</span> <span class="tag">manim</span></div></div></li>
+<li class="post-item" data-tags="taxonomy"><div class="post-info"><div class="post-date">2025-08-05</div><a href="/blog/0_seed/00001_tagging_system/index.html">Exhaustive Machine Learning Taxonomy - All Fields & Subfields</a><div class="post-tags"><span class="tag">taxonomy</span></div></div></li>
+<li class="post-item" data-tags="deep-learning matrix-multiplication"><div class="post-info"><div class="post-date">2025-08-05</div><a href="/blog/0_seed/00000_persistent_matmul/index.html">Persistent Matmul</a><div class="post-tags"><span class="tag">deep-learning</span> <span class="tag">matrix-multiplication</span></div></div></li>
+</ul></details>
+
+            </main>
+            <aside class="right-sidebar">
+                <div class="search-fixed">
+                    <h3>Search</h3>
+                    <input type="text" id="search-input" placeholder="Type to filter...">
+                </div>
+                <div class="tags-scrollable">
+                    <h3>Tags</h3>
+                    <ul class="tag-list">
+                        <li><label><input type="checkbox" class="tag-filter" data-tag="apple"> apple</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="autoregression"> autoregression</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="computer-vision"> computer-vision</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="deep-learning"> deep-learning</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="diffusion"> diffusion</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="distillation"> distillation</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="linux"> linux</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="manim"> manim</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="matrix-multiplication"> matrix-multiplication</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="miscellaneous"> miscellaneous</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="mlsys"> mlsys</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="optimization"> optimization</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="resources"> resources</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="slurm"> slurm</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="taxonomy"> taxonomy</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="transformer"> transformer</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="world-models"> world-models</label></li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+            <a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="mailto:contact.aryanvs@gmail.com" aria-label="Email">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </footer>
+    <script src="/assets/script.js"></script>
+</body>
+</html>

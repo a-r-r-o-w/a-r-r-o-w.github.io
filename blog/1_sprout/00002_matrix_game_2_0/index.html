@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Matrix-Game 2.0: An Open-Source, Real-Time, and Streaming Interactive World Model</title>
+    <script>
+      (function() {
+        const t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}, {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}], throwOnError: false});"></script>
+    <!-- Copy style from here: https://github.com/highlightjs/highlight.js/tree/5697ae5187746c24732e62cd625f3f83004a44ce/src/styles -->
+    <link rel="stylesheet" id="hljs-dark" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+    <link rel="stylesheet" id="hljs-light" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" disabled>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-R1R7JKELB2', {
+        'page_title': 'Matrix-Game 2.0: An Open-Source, Real-Time, and Streaming Interactive World Model',
+        'page_path': '/blog/1_sprout/00002_matrix_game_2_0/',
+        'allow_google_signals': false,
+        'allow_ad_personalization_signals': false
+      });
+    </script>
+</head>
+<body data-theme="dark">
+    <!-- <header class="sticky"> -->
+    <header>
+        <div class="header-inner">
+            <a href="/"><h1>Aryan V S</h1></a>
+            <nav>
+                <a href="/">Home</a> | <a href="/blog/">Blog</a>
+            </nav>
+            <div class="theme-toggle">
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <main>
+          <div class="post-title-wrapper">
+              <div class="post-date">2025-10-03</div>
+              <h2><div class="post-title">Matrix-Game 2.0: An Open-Source, Real-Time, and Streaming Interactive World Model</div></h2>
+          </div>
+            <div class="post-meta">
+                <div class="post-tags"><span class="tag">computer-vision</span> <span class="tag">diffusion</span> <span class="tag">autoregression</span> <span class="tag">world-models</span></div>
+                <div class="post-authors"><a href=https://xianglonghe.github.io/>Xianglong He</a> • Chunli Peng • <a href=https://scholar.google.com/citations?user=bkPJckwAAAAJ>Zexiang Liu</a> • <a href=https://scholar.google.com/citations?user=hSVNCIQAAAAJ>Boyang Wang</a> • <a href=https://sites.google.com/view/yifan-zhang/>Yifan Zhang</a> • Qi Cui • Fei Kang • <a href=https://scholar.google.com/citations?user=PsUFNaIAAAAJ>Biao Jiang</a> • Mengyin An • Yangyang Ren • <a href=https://scholar.google.com/citations?user=WpN22HAAAAAJ>Baixin Xu</a> • <a href=https://scholar.google.com/citations?user=HojKXRoAAAAJ>Hao-Xiang Guo</a> • <a href=https://scholar.google.com/citations?user=kBVshUUAAAAJ>Kaixiong Gong</a> • Cyrus Wu • Wei Li • <a href=https://www.linkedin.com/in/shawn-xuchen-song-297149118/>Xuchen Song</a> • Yang Liu • Eric Li • Yahui Zhou</div>
+                <div class="post-links"><a href="https://github.com/SkyworkAI/Matrix-Game/" class="post-link code"><i class="fab fa-github"></i> Code</a> <a href="https://arxiv.org/abs/2508.13009" class="post-link paper"><i class="fas fa-file-pdf"></i> Paper</a></div>
+            </div>
+            <p>Challenges of existing methods for interactive video generation:</p>
+<ul>
+<li>lack of large-scale interactive video datasets with rich annotations for training (accuracte actions, camera dynamics, etc. due to high cost of collection)</li>
+<li>generating a single frame requires full bidirectional diffusion model</li>
+<li>unsuitable for real-time, streaming applications where model must adapt to dynamic user commands and produce frames on the fly</li>
+<li>computationally intensive and economically impractical -- quadratic scaling of compute and memory wrt. frame length + large number of denoising iterations</li>
+<li>severe error accumulation in existing autoregressive diffusion models</li>
+</ul>
+<p>Questions:</p>
+<ul>
+<li>action injection module enables frame-level mouse and keyboard inputs as interactive conditions -- assuming a standard 4x temporal VAE, is this frame-level at latents or pixel-space?</li>
+<li>continuous mouse actions are directly concatenated to the input latent representations (pass through MLP + temporal self attention alyer), but keyboard actions are queried by fused features through a cross-attention layer. how are these design choices made?</li>
+<li>as the oldest KV cache tokens are evicted when exceeding capacity, this model should not be able to maintain a consistent world. it's great that infinite generation is possible, but consistency and history of the world really matter in a real game. what architectural and algorithmic design choices would have to be made to make that possible?</li>
+</ul>
+<p>generalization
+real-time long video generation (25 FPS+, minute-level)
+long term consistency (memory and anti-drift)</p>
+<p>Sometimes datasets only have camera trajectory data</p>
+<ul>
+<li>if user is climbing a mountain, camera trajectory is moving up and forward (slanting), but keyboard will be just moving forward. how do we create annotated keyboard and mouse actions from camera trajectory data?</li>
+</ul>
+<p>todo reading list:</p>
+<ul>
+<li>GameFactory: Creating New Games with Generative Interactive Video</li>
+<li>CameraCtrol II: Dynamic Scene Exploration via Camera-controlled Video Diffusion Models</li>
+<li>DeepVerse: 4D Autoregressive Video Generation as a World Model</li>
+<li>CausVid: From Slow Bidrectional to Fast Autoregressive Video Diffusion Models</li>
+<li>Self Forcing: Bridging the Train-Test Gap in Autoregressive Video Diffusion</li>
+<li>Self Forcing+: Towards Minute-Scale High-Quality Video Generation</li>
+<li>Video World Models with Long-term Spatial Memory</li>
+<li>Context as Memory: Scene-Consistent Interactive Long Video Generation</li>
+<li>Mixture of Contexts for Long Video Generation</li>
+<li>One-Minute Video Generation with Test-Time Training</li>
+</ul>
+
+        </main>
+    </div>
+    <div class="lightbox-overlay" id="lightbox">
+      <div class="lightbox-close" onclick="closeLightbox()">×</div>
+      <div class="lightbox-content">
+          <img class="lightbox-media" id="lightbox-media" src="" alt="">
+      </div>
+      <div class="lightbox-controls">
+          <button class="lightbox-btn" onclick="zoomOut()" title="Zoom Out (-)">−</button>
+          <div class="zoom-level" id="zoom-level">100%</div>
+          <button class="lightbox-btn" onclick="zoomIn()" title="Zoom In (+)">+</button>
+          <button class="lightbox-btn" onclick="resetZoom()" title="Reset (0)">⟲</button>
+      </div>
+  </div>
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+            <a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="mailto:contact.aryanvs@gmail.com" aria-label="Email">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </footer>
+    <script src="/assets/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Read/Watch List</title>
+    <script>
+      (function() {
+        const t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}, {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}], throwOnError: false});"></script>
+    <!-- Copy style from here: https://github.com/highlightjs/highlight.js/tree/5697ae5187746c24732e62cd625f3f83004a44ce/src/styles -->
+    <link rel="stylesheet" id="hljs-dark" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+    <link rel="stylesheet" id="hljs-light" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" disabled>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-R1R7JKELB2', {
+        'page_title': 'Read/Watch List',
+        'page_path': '/blog/0_seed/00004_reading_list/',
+        'allow_google_signals': false,
+        'allow_ad_personalization_signals': false
+      });
+    </script>
+</head>
+<body data-theme="dark">
+    <!-- <header class="sticky"> -->
+    <header>
+        <div class="header-inner">
+            <a href="/"><h1>Aryan V S</h1></a>
+            <nav>
+                <a href="/">Home</a> | <a href="/blog/">Blog</a>
+            </nav>
+            <div class="theme-toggle">
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <main>
+          <div class="post-title-wrapper">
+              <div class="post-date">2025-09-11</div>
+              <h2><div class="post-title">Read/Watch List</div></h2>
+          </div>
+            <div class="post-meta">
+                <div class="post-tags"><span class="tag">miscellaneous</span></div>
+                
+                
+            </div>
+            <h1 id="reading-list">Reading List</h1>
+<h2 id="todo">TODO</h2>
+<ul>
+<li><a href="https://github.com/hollance/neural-engine">https://github.com/hollance/neural-engine</a></li>
+<li><a href="https://github.com/corsix/amx">https://github.com/corsix/amx</a></li>
+<li><a href="https://github.com/ridiculousfish/libdivide" target="_blank" rel="noopener noreferrer">Library dedicated to optimizing division</a></li>
+<li><a href="https://medium.com/@davidfan/entering-industry-ml-ai-research-without-a-phd-e56761979c8f" target="_blank" rel="noopener noreferrer">Breaking into Industry ML/AI Research Without a PhD</a></li>
+<li><a href="https://fabiensanglard.net/cuda/">https://fabiensanglard.net/cuda/</a></li>
+</ul>
+<h3 id="gpus">GPUs</h3>
+<ul>
+<li><a href="https://github.com/redplait/denvdis">https://github.com/redplait/denvdis</a></li>
+<li><a href="https://redplait.blogspot.com/search/label/cuda">https://redplait.blogspot.com/search/label/cuda</a></li>
+</ul>
+<h3 id="papers">Papers</h3>
+<ul>
+<li><a href="https://arxiv.org/abs/2512.15702" target="_blank" rel="noopener noreferrer">End-to-End Training for Autoregressive Video Diffusion via Self-Resampling</a></li>
+</ul>
+<h2 id="completed">Completed</h2>
+<details>
+<summary> click me </summary>
+<ul>
+<li><a href="https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/">https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/</a></li>
+<li><a href="https://thinkingmachines.ai/blog/lora/">https://thinkingmachines.ai/blog/lora/</a></li>
+</ul>
+<h3 id="hpc">HPC</h3>
+<ul>
+<li><a href="https://www.unitary.ai/articles/intro-to-multi-node-machine-learning-1-setting-up-an-hpc-cluster">https://www.unitary.ai/articles/intro-to-multi-node-machine-learning-1-setting-up-an-hpc-cluster</a></li>
+</ul>
+<h3 id="gpus">GPUs</h3>
+<ul>
+<li><a href="https://modal.com/gpu-glossary/readme">https://modal.com/gpu-glossary/readme</a></li>
+<li><a href="https://research.colfax-intl.com/cutlass-tutorial-wgmma-hopper/">https://research.colfax-intl.com/cutlass-tutorial-wgmma-hopper/</a></li>
+</ul>
+</details>
+<h1 id="watching-list">Watching List</h1>
+<h2 id="todo">TODO</h2>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=WxLi3OgLRCU">https://www.youtube.com/watch?v=WxLi3OgLRCU</a></li>
+</ul>
+<h2 id="completed">Completed</h2>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=tadUeiNe5-g" target="_blank" rel="noopener noreferrer">How CPUs interact with so many different devices</a></li>
+</ul>
+<h2 id="authors-list">Authors List</h2>
+<ul>
+<li>Blake Crouch</li>
+<li>Adam Becker</li>
+<li>Cixin Liu</li>
+</ul>
+
+        </main>
+    </div>
+    <div class="lightbox-overlay" id="lightbox">
+      <div class="lightbox-close" onclick="closeLightbox()">×</div>
+      <div class="lightbox-content">
+          <img class="lightbox-media" id="lightbox-media" src="" alt="">
+      </div>
+      <div class="lightbox-controls">
+          <button class="lightbox-btn" onclick="zoomOut()" title="Zoom Out (-)">−</button>
+          <div class="zoom-level" id="zoom-level">100%</div>
+          <button class="lightbox-btn" onclick="zoomIn()" title="Zoom In (+)">+</button>
+          <button class="lightbox-btn" onclick="resetZoom()" title="Reset (0)">⟲</button>
+      </div>
+  </div>
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+            <a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="mailto:contact.aryanvs@gmail.com" aria-label="Email">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </footer>
+    <script src="/assets/script.js"></script>
+</body>
+</html>

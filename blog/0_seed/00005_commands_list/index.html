@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CLI stash</title>
+    <script>
+      (function() {
+        const t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}, {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}], throwOnError: false});"></script>
+    <!-- Copy style from here: https://github.com/highlightjs/highlight.js/tree/5697ae5187746c24732e62cd625f3f83004a44ce/src/styles -->
+    <link rel="stylesheet" id="hljs-dark" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+    <link rel="stylesheet" id="hljs-light" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" disabled>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-R1R7JKELB2', {
+        'page_title': 'CLI stash',
+        'page_path': '/blog/0_seed/00005_commands_list/',
+        'allow_google_signals': false,
+        'allow_ad_personalization_signals': false
+      });
+    </script>
+</head>
+<body data-theme="dark">
+    <!-- <header class="sticky"> -->
+    <header>
+        <div class="header-inner">
+            <a href="/"><h1>Aryan V S</h1></a>
+            <nav>
+                <a href="/">Home</a> | <a href="/blog/">Blog</a>
+            </nav>
+            <div class="theme-toggle">
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <main>
+          <div class="post-title-wrapper">
+              <div class="post-date">2025-11-02</div>
+              <h2><div class="post-title">CLI stash</div></h2>
+          </div>
+            <div class="post-meta">
+                <div class="post-tags"><span class="tag">linux</span> <span class="tag">slurm</span> <span class="tag">miscellaneous</span></div>
+                
+                
+            </div>
+            <ul>
+<li>Print simple cluster information</li>
+</ul>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-bash">sinfo -o "%N %c %m %G"
+
+NODELIST CPUS MEMORY GRES
+cluster2qh-nodeset1-[0-3] 224 2933888 gpu:8
+</code></pre></div>
+<ul>
+<li>Launch debugging single node job</li>
+</ul>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-bash">srun --gres=gpu:8 --cpus-per-task=32 --mem=2000G --pty bash -i
+</code></pre></div>
+<ul>
+<li>Upload checkpoints to aws at a specific interval (here, 500 steps)</li>
+</ul>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-bash">for d in ckpt_step*; do     step=$(echo "$d" | grep -o '[0-9]\+' | sed 's/^0*//');     if (( step % 500 == 0 )); then         aws s3 cp --recursive "$d"         s3://&lt;BUCKET&gt;/aryan/lora/teacher-forcing/1p3b---lr-1e-4---wd-1e-5---ema-0p99---rank-256/"$d";     fi; done
+</code></pre></div>
+<ul>
+<li>Read/write/random I/O test:</li>
+</ul>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-bash">sudo apt install -y fio
+fio --name=rwtest --rw=randrw --size=1G --bs=4k --numjobs=4 --runtime=60 --directory=/path/to/volume --group_reporting
+</code></pre></div>
+<ul>
+<li>Modify docker storage location (overlayfs cannot be done on NFS storage, so make sure ext4)</li>
+</ul>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-bash">sudo systemctl stop docker docker.socket containerd
+# Edit /etc/docker/daemon.json to have {"data-root": "/scratch/local/.docker"} (basically, point it to ext4 system)
+sudo systemctl start docker docker.socket containerd
+docker info -f '{{ .DockerRootDir}}'
+</code></pre></div>
+<ul>
+<li>Build docker container from Dockerfile</li>
+</ul>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-bash">sudo docker build --progress=tty -t cu128-pytorch28:latest .
+</code></pre></div>
+<ul>
+<li>Importing image to enroot</li>
+</ul>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-bash">export CUR_TMPDIR=$TMPDIR
+export TMPDIR=/scratch/shared/.tmp-enroot
+export ENROOT_DATA_PATH=/scratch/shared/.enroot
+export ENROOT_CACHE_PATH=/scratch/shared/.enroot/cache
+export ENROOT_RUNTIME_PATH=/scratch/shared/.enroot/runtime
+mkdir -p $TMPDIR $ENROOT_DATA_PATH $ENROOT_CACHE_PATH $ENROOT_RUNTIME_PATH
+enroot import docker://&lt;USERNAME&gt;@&lt;ORGANIZATION&gt;/cu128-pytorch28:latest
+export TMPDIR=$CUR_TMPDIR
+</code></pre></div>
+<ul>
+<li>Setting all read/write permissions on multiple nodes</li>
+</ul>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-bash">pssh -O StrictHostKeyChecking=no -O UserKnownHostsFile=/dev/null -t 0 -h hosts.txt -i 'bash -lc "sudo apt update &amp;&amp; sudo apt install -y acl"'
+pssh -O StrictHostKeyChecking=no -O UserKnownHostsFile=/dev/null -t 0 -h hosts.txt -i 'bash -lc "sudo setfacl -m d:u::rwx,d:g::rwx,d:o::rwx /scratch/local"'
+pssh -O StrictHostKeyChecking=no -O UserKnownHostsFile=/dev/null -t 0 -h hosts.txt -i 'bash -lc "sudo setfacl -m u::rwx,g::rwx,o::rwx /scratch/local"'
+pssh -O StrictHostKeyChecking=no -O UserKnownHostsFile=/dev/null -t 0 -h hosts.txt -i 'bash -lc "sudo chmod 1777 /scratch/local"'
+</code></pre></div>
+
+        </main>
+    </div>
+    <div class="lightbox-overlay" id="lightbox">
+      <div class="lightbox-close" onclick="closeLightbox()">×</div>
+      <div class="lightbox-content">
+          <img class="lightbox-media" id="lightbox-media" src="" alt="">
+      </div>
+      <div class="lightbox-controls">
+          <button class="lightbox-btn" onclick="zoomOut()" title="Zoom Out (-)">−</button>
+          <div class="zoom-level" id="zoom-level">100%</div>
+          <button class="lightbox-btn" onclick="zoomIn()" title="Zoom In (+)">+</button>
+          <button class="lightbox-btn" onclick="resetZoom()" title="Reset (0)">⟲</button>
+      </div>
+  </div>
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+            <a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="mailto:contact.aryanvs@gmail.com" aria-label="Email">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </footer>
+    <script src="/assets/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI World Models (Keyon Vafa)</title>
+    <script>
+      (function() {
+        const t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}, {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}], throwOnError: false});"></script>
+    <!-- Copy style from here: https://github.com/highlightjs/highlight.js/tree/5697ae5187746c24732e62cd625f3f83004a44ce/src/styles -->
+    <link rel="stylesheet" id="hljs-dark" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+    <link rel="stylesheet" id="hljs-light" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" disabled>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-R1R7JKELB2', {
+        'page_title': 'AI World Models (Keyon Vafa)',
+        'page_path': '/blog/0_seed/00003_sasha_rush_world_models/',
+        'allow_google_signals': false,
+        'allow_ad_personalization_signals': false
+      });
+    </script>
+</head>
+<body data-theme="dark">
+    <!-- <header class="sticky"> -->
+    <header>
+        <div class="header-inner">
+            <a href="/"><h1>Aryan V S</h1></a>
+            <nav>
+                <a href="/">Home</a> | <a href="/blog/">Blog</a>
+            </nav>
+            <div class="theme-toggle">
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <main>
+          <div class="post-title-wrapper">
+              <div class="post-date">2025-09-07</div>
+              <h2><div class="post-title">AI World Models (Keyon Vafa)</div></h2>
+          </div>
+            <div class="post-meta">
+                <div class="post-tags"><span class="tag">deep-learning</span> <span class="tag">transformer</span> <span class="tag">world-models</span></div>
+                <div class="post-authors">Sasha Rush • Keyon Vafa</div>
+                
+            </div>
+            <p>functionalities we may want from an AI system:</p>
+<ul>
+<li>synthesize concepts</li>
+<li>applying concepts to new domains (few-shot learning, in-context learning)</li>
+<li>reasoning (Gemini 2.5 IMO winning gold example)</li>
+<li>creativity (text, video models, etc.)</li>
+</ul>
+<p>all of these can be performed by a model that has learned the "correct" world model.</p>
+<p>What does it mean to have a world model?</p>
+<ul>
+<li>what about benchmarks?
+<ul>
+<li>benchmarks/exams are usually used to check the understanding of humans</li>
+<li>but, this requires strong assumptions that an LLM learns like human-like ways</li>
+<li>GPT 5 does great on AIME competition, but thinks <code>4.11 &gt; 4.9</code></li>
+<li>analogy: it's like evaluating a vision model with an eye exam</li>
+</ul>
+</li>
+</ul>
+<p>one of the early tests was "Othello" (similar to Go).</p>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code>- - - - - -  | - - - - - - | - - - - - -
+- - 1 0 - -  | - - 1 0 - - | - 0 0 0 - -
+- - 0 1 - -  | - 1 1 1 - - | - 1 1 1 - -
+- - - - - -  | - - - - - - | - - - - - -
+</code></pre></div>
+<ul>
+<li>transformer trained on sequence of games. transformer never sees the "true world" (othello board).</li>
+<li>it only sees sequences of moves</li>
+</ul>
+<p>question: world model recovery possible? can transformer uncover the implicit rules and understanding of the othello board?</p>
+<p>two kinds of world models:</p>
+<ul>
+<li>testing for a world model on a single task (todo read: Justin Chen, Jon Kleinberg, Ashesh Rambachan and Sendhil Mullainathan [NeurIPS 2024])</li>
+<li>testing for a  world model across many tasks (todo read: Peter Chang, Ashesh Rambachan and Sendhil Mullainathan [ICML 2025])</li>
+</ul>
+<p>testbed: manhattan road taxi dataset</p>
+<p>transformer trained on sequences of taxi rides (pick up, drop off, time, directions):</p>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code>7283 1932 SW SW SW NE SE N N ... end
+2919 4885 SW SW NE NE N S ... end
+</code></pre></div>
+<p>Training objective: predict the next token of each sequence (like language model training). evaluate model's ability to generate new rides:</p>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code>510 3982 &lt;generate&gt; end
+</code></pre></div>
+<p>The model looked good</p>
+<ul>
+<li><code>&gt; 99.9%</code> of proposed turns are legal</li>
+<li>model finds valid routes between new points 98% of the time</li>
+</ul>
+<p>has the model discovered the world model for manhattan?</p>
+<p>taxi traversals obey a deterministic finite automaton (DFA)</p>
+<ul>
+<li>states: each intersection in Manhattan</li>
+<li>transition rules: legal turns at each intersection and where they take you</li>
+</ul>
+<p>definition: a generative model recovers a DFA if every sequence in generates is valid in the DFA (and vice-versa)</p>
+<p>result: if a model always predicts legal next-tokens, it recovered the DFA</p>
+<p>suggests a test: measure how often a model's predicted tokens are valid.</p>
+<ul>
+<li>
+<p>but problem: cumulative connect 4 example. a very simple model can get 99% accuracy for large n=1000. many states have same possible next tokens.</p>
+</li>
+<li>
+<p>perfect next-token prediction implies world model recovery.</p>
+</li>
+<li>
+<p>near perfect next-token prediction doesn't mean you're close to the true world model.</p>
+</li>
+</ul>
+<p>single next-tokens aren't enough to differentiate states.</p>
+<ul>
+<li>(todo: read) Myhill-Nerode theorem (1975): for every pair of states, there is some <code>k</code> where k-next tokens differentiate states</li>
+</ul>
+<p>new metrics motivated by going beyond next-token prediction:</p>
+<ul>
+<li>compression: if two sequences lead to the same state, a model shouldn't distinguish their continuations of any length</li>
+<li>distinction: if two sequences lead to distinct states, a model should distinguish their length-k continuations</li>
+</ul>
+<p>three kinds of training data:</p>
+<ul>
+<li>shortest paths of actual rides (120M tokens)</li>
+<li>perturbed shortest paths (e.g. traffic) (1.7B tokens)</li>
+<li>random paths (4.7B tokens)</li>
+</ul>
+<p>this results in all models have next-token accuracy (<code>&gt;99.9%</code>). but their compression/distinction precision and recall is <code>~0</code>. A true model should have <code>~1</code>.</p>
+<p>why should we care about world models?</p>
+<ul>
+<li>the model can find shortest paths</li>
+<li>because: not having the right world model means it could do badly on different but related tasks (adding detours but fail to re-route)</li>
+</ul>
+<p>attempt to visualize the implicit world model (map of Manhattan):</p>
+<ul>
+<li>
+<p>equivalent to graph reconstruction</p>
+</li>
+<li>
+<p>generate sequences of taxi traversal from transformer</p>
+</li>
+<li>
+<p>assume model knows locations of intersections (very generously)</p>
+</li>
+<li>
+<p>what roads must exist for generated sequences to be valid?</p>
+</li>
+<li>
+<p>sanity check 1: generate data from true world model (reconstructed map is true map)</p>
+</li>
+<li>
+<p>sanity check 2: generate data from true model but add noise to match transformer error rate (reconstructed map is imperfect but largely sensible)</p>
+</li>
+<li>
+<p>now, reconstruct transformer's map (assumes many roads exist that don't e.g. flyovers; this despite having been generous to the model like mapping correct physical locations, minimizing wrong roads/flyovers)</p>
+</li>
+</ul>
+<p>while these definitions and tests are specific to today's generative models, we've been here before:</p>
+<ul>
+<li>Rashomon effect: two models can achieve similar performance in dramatically different ways (Breiman 2001; D'Amour et al., 2020; Black et al. 2022).</li>
+<li>here: a m odel can achieve near-perfect prediction without recovering structure</li>
+</ul>
+<p>but what if the model gets perfect predictions? is that always good enough?</p>
+<p><strong>Foundation model</strong> -&gt; adaptation -&gt; tasks</p>
+<p>something that provides a good enough base structure to solve new tasks</p>
+<p>tasks: question answering, sentiment analysis, information extraction, image captioning, object recognition, instruction following, etc.</p>
+<p>no free lunch theorem for learning algorithms: every foundation model has inductive bias toward some set of functions (todo read: Wolpert and Macready, 1997)</p>
+<p>world model: restriction over functions described by a state-space</p>
+<p>goal: test if a foundation model's inductive bias is towards a given world model</p>
+<p>inductive bias probe: test how a foundation model behaves when it is adapted to small amounts of data</p>
+<ul>
+<li>step 1: fit foundattion model to synthetic datasets and extract learned functions</li>
+<li>step 2: compare learned functions to the given world model</li>
+</ul>
+<p>example: lattice (1d state tracking). good inductive bias for small states but worsen quickly.</p>
+<p>example: foundation model of planetary orbits:</p>
+<ul>
+<li>like kepler, it makes good predictions</li>
+<li>but has it learned newtonian mechanics?</li>
+<li>inductive bias on new tasks isn't toward newtonian mechanics</li>
+<li>similar predictions for orbits with different states; different predictions for orbits with similar states</li>
+<li>the laws recovered via symbolic regression to estimate implied force law are incorrect and changes based on which galaxy it is applied to; this is not just with domain-specific transformer. LLMs, trained on a lot of newtonian mechanics, struggle too</li>
+</ul>
+<p>so, what are inductive biases toward?</p>
+<ul>
+<li>possibility: models conflate sequences that have similar legal next-tokens, even if those sequences represent different states
+<ul>
+<li>example: two distinct othello boards can have the same allowed set of legal next-tokens</li>
+<li>general pattern: foundation model only recovers "enough of" the board to calculate legal next moves</li>
+</ul>
+</li>
+</ul>
+<p>related ideas:</p>
+<ul>
+<li>mechanistic interpretability</li>
+<li>analyzing theoretical capabilities of architectures</li>
+<li>world models in reinforcement learning</li>
+</ul>
+<p>so far, we've taken a functional approach: evaluate models by their functional performance (todo read: Toshniwal et al., 2021; Patel and Pavlick, 2022; Treutlein et al., 2024; Yan et al., 2024)</p>
+<p>Mechanistic approach: evaluate a model's inner workings.</p>
+<p>Mechanistic Interpretability: Tools for understanding the internal mechanisms of neural networks</p>
+<ul>
+<li>goal: improving or aligning model performance (e.g. steering its behavior in some way; example: Anthropic's Golden Gate Bridge)</li>
+<li>many interesting results adapting MI techniques to study world models (todo read: Abdou, 2021; Li, 2021; Gurnee and Tegmark, 2023; Li, 2023; Nanda, 2023; Nikankin, 2024; Spies, 2024; Feng, 2024; Li, 2025)</li>
+</ul>
+<p>Comprehensive mechanistic understanding would make it easy to evaluate if models understand the world. How feasible is comprehensive understanding?</p>
+<p>todo read: "The Dark Matter of Neural Networks" by Chris Olah.</p>
+<p>"If you're aiming to explain 99.9% of a model's performance, there's probably going to be a long tail of random crap you need to care about" - Neel Nanda (Google DeepMind)</p>
+<p>todo read: "Emergent world representations: exploring a sequence model trained on a synthetic task" - Kenneth Li et al. (Harvard) - uncovers evidence of an emergent nonlinear internal representation of the board state</p>
+<p>todo read: "Actually, Othello-GPT has a linear emergent world representation" - Neel Nanda</p>
+<p>todo read: "OthelloGPT learned a bag of heuristics" - jylin04, JackS, Adam Karvonen, Can (AI Alignment Forum)</p>
+<p>related idea: use of world models in RL: predictive models of an environment's dynamics (todo read: Ha and Schmidhuber, 2018; Hafner, 2019; Guan, 2023; Genie 3 team, 2025; and many more)</p>
+<ul>
+<li>world models in RL are trained on state explicitly</li>
+<li>Goal isn't recovering structure; it's making better predictions or improving an agent's planning capabilities</li>
+</ul>
+<p>So, we've seen:</p>
+<ul>
+<li>generative models can do amazing things with incoherent world models</li>
+<li>but, it makes them fragile for other tasks</li>
+<li>where to go from here?
+<ul>
+<li>accept the fact that our world models are imperfect.</li>
+<li>one approach: zoom in and evaluate models based on how people use them (todo read: Lee, 2023; Collins, 2024; Chiang, 2024; Ibrahim, 2024; Vafa, 2024; Bean, 2025; Chang, 2025)</li>
+<li>also work on improving architectures (state-space models seem to have better inductive biases than transformers)
+<ul>
+<li>neuro-symbolic models can combine neural and formal reasoning (todo read: Lake, 2015; Ellis 2020; Wong 2023, Wong 2025)</li>
+</ul>
+</li>
+<li>new training procedures
+<ul>
+<li>next-token prediction creates unwanted heuristics (McCoy 2023; Bachmann and Nagarajan 2024)</li>
+</ul>
+</li>
+<li>alternative ideas:
+<ul>
+<li>moving beyond next-token prediction</li>
+<li>incorporating human feedback to improve world models</li>
+<li>causal representation learning (todo read: Arjovsky 2019; Scholkopf 2021; Ahuja 2022; von Kugelgen 2024)</li>
+</ul>
+</li>
+<li>many promising ways to improve world models; evaluation metrics will help get us there</li>
+</ul>
+</li>
+</ul>
+<p>Links to papers mentioned (by Keyon in youtube comment):</p>
+<ul>
+<li>Bubeck et al. (2023): Sparks of Artificial General Intelligence: Early experiments with GPT-4</li>
+<li>Hendrycks et al. (2020): Measuring Massive Multitask Language Understanding</li>
+<li>Bowman and Dahl (2021): What Will it Take to Fix Benchmarking in Natural Language Understanding?</li>
+<li>Mitchell (2021): Why AI is Harder Than We Think</li>
+<li>Raji et al. (2021): AI and the Everything in the Whole Wide World Benchmark</li>
+<li>Mancoridis et al. (2025): Potemkin Understanding in Large Language Models</li>
+<li>Toshniwal et al. (2021): Chess as a Testbed for Language Model State Tracking</li>
+<li>Li et al. (2021): Implicit Representations of Meaning in Neural Language Models</li>
+<li>Patel and Pavlick (2021): Mapping Language Models to Grounded Conceptual Spaces</li>
+<li>Kim and Schuster (2023): Entity Tracking in Language Models</li>
+<li>Li et al. (2023): Emergent World Representations: Exploring a Sequence Model Trained on a Synthetic Task</li>
+<li>Vafa et al. (2024): Evaluating the World Model Implicit in a Generative Model</li>
+<li>Vafa et al. (2025): What Has a Foundation Model Found? Using Inductive Bias to Probe for World Models</li>
+<li>Breiman (2001): Statistical Modeling: The Two Cultures</li>
+<li>D'Amour et al. (2022): Underspecification Presents Challenges for Credibility in Modern Machine Learning</li>
+<li>Black et al. (2022): Model Multiplicity: Opportunities, Concerns, and Solutions</li>
+<li>Bommasani et al. (2021): On the Opportunities and Risks of Foundation Models</li>
+<li>Treutlein et al. (2024): Connecting the Dots: LLMs can Infer and Verbalize Latent Structure from Disparate Training Data</li>
+<li>Yan et al. (2024): Inconsistency of LLMs in Molecular Representations</li>
+<li>Nanda et al. (2023): Progress measures for grokking via mechanistic interpretability</li>
+<li>Abdou et al. (2021): Can Language Models Encode Perceptual Structure Without Grounding? A Case Study in Color</li>
+<li>Gurnee and Tegmark (2023): Language Models Represent Space and Time</li>
+<li>Nanda et al. (2023): Emergent Linear Representations in World Models of Self-Supervised Sequence Models</li>
+<li>Nikankin et al. (2024): Arithmetic Without Algorithms: Language Models Solve Math With a Bag of Heuristics</li>
+<li>Spies et al. (2024): Transformers Use Causal World Models in Maze-Solving Tasks</li>
+<li>Feng et al. (2024): Monitoring Latent World States in Language Models with Propositional Probes</li>
+<li>Li et al. (2025): (How) Do Language Models Track State?</li>
+<li>Suzgun et al. (2018): On Evaluating the Generalization of LSTM Models in Formal Languages</li>
+<li>Bhattamishra et al. (2020): On the Ability and Limitations of Transformers to Recognize Formal Languages</li>
+<li>Liu et al. (2022): Transformers Learn Shortcuts to Automata</li>
+<li>Merrill and Sabharwal (2023): The Parallelism Tradeoff: Limitations of Log-Precision Transformers</li>
+<li>Merrill et al. (2024): The Illusion of State in State-Space Models</li>
+<li>Ha and Schmidhuber (2018): World Models</li>
+<li>Hafner et al. (2019): Dream to Control: Learning Behaviors by Latent Imagination</li>
+<li>Guan et al. (2023): Leveraging Pre-trained Large Language Models to Construct and Utilize World Models for Model-based Task Planning</li>
+<li>Genie 3 team (2025): Genie 3: A new frontier for world models</li>
+<li>Lee et al. (2023): Evaluating Human-Language Model Interaction</li>
+<li>Collins et al. (2024): Building Machines that Learn and Think with People</li>
+<li>Chiang et al. (2024): Chatbot Arena: An Open Platform for Evaluating LLMs by Human Preference</li>
+<li>Vafa et al. (2024): Do Large Language Models Perform the Way People Expect? Measuring the Human Generalization Function</li>
+<li>Bean et al. (2025): Clinical knowledge in LLMs does not translate to human interactions</li>
+<li>Chang et al. (2025): ChatBench: From Static Benchmarks to Human-AI Evaluation</li>
+<li>Lake et al. (2015): Human-level concept learning through probabilistic program induction</li>
+<li>Ellis et al. (2020): DreamCoder: Growing generalizable, interpretable knowledge with wake-sleep Bayesian program learning</li>
+<li>Wong et al. (2023): From Word Models to World Models: Translating from Natural Language to the Probabilistic Language of Thought</li>
+<li>Wong et al. (2025): Modeling Open-World Cognition as On-Demand Synthesis of Probabilistic Models</li>
+<li>Arjovsky et al. (2019): Invariant Risk Minimization</li>
+<li>Schölkopf et al. (2021): Towards Causal Representation Learning</li>
+<li>Ahuja et al. (2022): Interventional Causal Representation Learning</li>
+<li>von Kügelgen (2024): Identifiable Causal Representation Learning: Unsupervised, Multi-View, and Multi-Environment</li>
+</ul>
+
+        </main>
+    </div>
+    <div class="lightbox-overlay" id="lightbox">
+      <div class="lightbox-close" onclick="closeLightbox()">×</div>
+      <div class="lightbox-content">
+          <img class="lightbox-media" id="lightbox-media" src="" alt="">
+      </div>
+      <div class="lightbox-controls">
+          <button class="lightbox-btn" onclick="zoomOut()" title="Zoom Out (-)">−</button>
+          <div class="zoom-level" id="zoom-level">100%</div>
+          <button class="lightbox-btn" onclick="zoomIn()" title="Zoom In (+)">+</button>
+          <button class="lightbox-btn" onclick="resetZoom()" title="Reset (0)">⟲</button>
+      </div>
+  </div>
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+            <a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="mailto:contact.aryanvs@gmail.com" aria-label="Email">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </footer>
+    <script src="/assets/script.js"></script>
+</body>
+</html>

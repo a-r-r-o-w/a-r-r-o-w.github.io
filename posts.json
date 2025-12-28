@@ -1,0 +1,143 @@
+[
+  {
+    "title": "Optimizing diffusion inference for production-ready speeds - I",
+    "url": "/blog/3_blossom/00001_productionizing_diffusion-1/index.html",
+    "date": "2025-12-29",
+    "tags": [
+      "diffusion",
+      "optimization",
+      "mlsys"
+    ],
+    "excerpt": "Diffusion models have rapidly advanced generative modeling across a wide range of modalities - from images and video to music, 3D objects, and even te...",
+    "category": "Blossom"
+  },
+  {
+    "title": "Setting VS Code as the default editor on MacOS",
+    "url": "/blog/2_sapling/00000_apple_default_editor_vscode/index.html",
+    "date": "2025-11-11",
+    "tags": [
+      "resources",
+      "apple"
+    ],
+    "excerpt": "If you like to use VS Code like me, your probably want to open all your text/code files with it. On my machine, by default, most file extensions open ...",
+    "category": "Sapling"
+  },
+  {
+    "title": "Greedy Distill: Efficient Video Generative Modeling With Linear Time Complexity",
+    "url": "/blog/1_sprout/00003_greedy_distill/index.html",
+    "date": "2025-11-04",
+    "tags": [
+      "computer-vision",
+      "diffusion",
+      "autoregression",
+      "distillation",
+      "world-models"
+    ],
+    "excerpt": "Iterative sampling process, large denoising networks -> prohibitively high computational requirements for practical deployment...",
+    "category": "Sprout"
+  },
+  {
+    "title": "CLI stash",
+    "url": "/blog/0_seed/00005_commands_list/index.html",
+    "date": "2025-11-02",
+    "tags": [
+      "linux",
+      "slurm",
+      "miscellaneous"
+    ],
+    "excerpt": "- Print simple cluster information\n```bash\nsinfo -o \"%N %c %m %G\"...",
+    "category": "Seed"
+  },
+  {
+    "title": "Matrix-Game 2.0: An Open-Source, Real-Time, and Streaming Interactive World Model",
+    "url": "/blog/1_sprout/00002_matrix_game_2_0/index.html",
+    "date": "2025-10-03",
+    "tags": [
+      "computer-vision",
+      "diffusion",
+      "autoregression",
+      "world-models"
+    ],
+    "excerpt": "Challenges of existing methods for interactive video generation:\n- lack of large-scale interactive video datasets with rich annotations for training (...",
+    "category": "Sprout"
+  },
+  {
+    "title": "Read/Watch List",
+    "url": "/blog/0_seed/00004_reading_list/index.html",
+    "date": "2025-09-11",
+    "tags": [
+      "miscellaneous"
+    ],
+    "excerpt": "# Reading List...",
+    "category": "Seed"
+  },
+  {
+    "title": "AI World Models (Keyon Vafa)",
+    "url": "/blog/0_seed/00003_sasha_rush_world_models/index.html",
+    "date": "2025-09-07",
+    "tags": [
+      "deep-learning",
+      "transformer",
+      "world-models"
+    ],
+    "excerpt": "functionalities we may want from an AI system:\n- synthesize concepts\n- applying concepts to new domains (few-shot learning, in-context learning)\n- rea...",
+    "category": "Seed"
+  },
+  {
+    "title": "Self Forcing: Bridging the Train-Test Gap in Autoregressive Video Diffusion",
+    "url": "/blog/1_sprout/00001_self_forcing/index.html",
+    "date": "2025-09-02",
+    "tags": [
+      "computer-vision",
+      "diffusion",
+      "autoregression",
+      "world-models"
+    ],
+    "excerpt": "- introduces novel paradigm for autogressive diffusion models\n- addresses exposure bias (models trained on ground truth context must generate sequence...",
+    "category": "Sprout"
+  },
+  {
+    "title": "Video to Manimation",
+    "url": "/blog/0_seed/00002_video_to_manimation/index.html",
+    "date": "2025-08-20",
+    "tags": [
+      "miscellaneous",
+      "manim"
+    ],
+    "excerpt": "It is kinda hard to explain what I have in mind. Something like:\n- I have my camera on explaining something. Let's take matrix multiplication for exam...",
+    "category": "Seed"
+  },
+  {
+    "title": "Exhaustive Machine Learning Taxonomy - All Fields & Subfields",
+    "url": "/blog/0_seed/00001_tagging_system/index.html",
+    "date": "2025-08-05",
+    "tags": [
+      "taxonomy"
+    ],
+    "excerpt": "# Exhaustive Machine Learning Taxonomy - All Fields & Subfields...",
+    "category": "Seed"
+  },
+  {
+    "title": "Persistent Matmul",
+    "url": "/blog/0_seed/00000_persistent_matmul/index.html",
+    "date": "2025-08-05",
+    "tags": [
+      "deep-learning",
+      "matrix-multiplication"
+    ],
+    "excerpt": "You would've implemented the 3-loop matrix multiplication many times as a ML practitioner, but the naive implementation is terrible for GPU performanc...",
+    "category": "Seed"
+  },
+  {
+    "title": "PuLID: Pure and Lightning ID Customization via Contrastive Alignment",
+    "url": "/blog/1_sprout/00000_pulid/index.html",
+    "date": "2025-08-02",
+    "tags": [
+      "deep-learning",
+      "computer-vision",
+      "diffusion"
+    ],
+    "excerpt": "- proposes a novel tuning-free method for ID customization for T2I diffusion models\n- image elements (e.g. background, lighting, composition, and styl...",
+    "category": "Sprout"
+  }
+]
