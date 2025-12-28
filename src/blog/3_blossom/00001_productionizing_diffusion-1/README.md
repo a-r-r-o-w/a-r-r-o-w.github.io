@@ -69,7 +69,7 @@ The distinction between dual and single stream blocks in the Flux architecture c
 Install the requirements:
 
 ```bash
-git clone https://github.com/huggingface/productionizing-diffusion
+git clone https://github.com/a-r-r-o-w/productionizing-diffusion
 cd productionizing-diffusion/
 
 uv venv venv
