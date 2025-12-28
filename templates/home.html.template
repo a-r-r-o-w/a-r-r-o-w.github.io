@@ -33,8 +33,15 @@
     <header>
         <div class="header-inner">
             <a href="/"><h1>Aryan V S</h1></a>
+            <div class="burger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
             <nav>
-                <a href="/" aria-current="page">Home</a> | <a href="/blog/">Blog</a>
+                <a href="/" aria-current="page">Home</a>
+                <span class="nav-separator">|</span>
+                <a href="/blog/">Blog</a>
             </nav>
             <div class="theme-toggle">
                 <label class="switch">
@@ -91,7 +98,7 @@
                             <div class="experience-details">
                                 <p>Research Intern, Microsoft <span class="experience-date">Jan 2024 - Jul 2024</span></p>
                                 <p>Computer vision and human-computer interaction research.</p>
-                                <p>Real-time inference optimization for diffusion, GAN, NeRF, and Gaussian Splatting models in facial avatar and scene reconstruction settings.</p>
+                                <p>Real-time inference optimization for diffusion, GAN, NeRF, and Gaussian Splatting models in facial avatar and scene reconstruction settings. Privacy-focused user state understanding.</p>
                                 <p>Advisor: <a href="https://en.wikipedia.org/wiki/Venkata_Padmanabhan">Dr. Venkata Padmanabhan</a></p>
                             </div>
                         </div>
