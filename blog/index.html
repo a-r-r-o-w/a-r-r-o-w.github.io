@@ -30,8 +30,15 @@
     <header>
         <div class="header-inner">
             <a href="/"><h1>Aryan V S</h1></a>
+            <div class="burger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
             <nav>
-                <a href="/">Home</a> | <a href="/blog/" aria-current="page">Blog</a>
+                <a href="/">Home</a>
+                <span class="nav-separator">|</span>
+                <a href="/blog/" aria-current="page">Blog</a>
             </nav>
             <div class="theme-toggle">
                 <label class="switch">
@@ -93,6 +100,9 @@
             </a>
         </div>
     </footer>
+    <button class="filter-toggle" aria-label="Toggle Filters">
+        <i class="fas fa-filter"></i>
+    </button>
     <script src="/assets/script.js"></script>
 </body>
 </html>

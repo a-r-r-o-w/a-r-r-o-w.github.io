@@ -868,6 +868,244 @@ td {
 .alert-caution .alert-title {
     color: #ff6464;
 }
+
+
+/* Mobile Navigation */
+.burger-menu {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 200;
+}
+.burger-menu span {
+    width: 25px;
+    height: 3px;
+    background: var(--accent);
+    margin: 3px 0;
+    transition: 0.3s;
+}
+.burger-menu.active span:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
+.burger-menu.active span:nth-child(2) {
+    opacity: 0;
+}
+.burger-menu.active span:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -6px);
+}
+
+/* Mobile Styles */
+@media (max-width: 1024px) {
+    .header-inner {
+        grid-template-columns: 1fr auto auto;
+        padding: 0 20px;
+        gap: 15px;
+    }
+
+    header h1 {
+        font-size: 1.3em;
+    }
+
+    .burger-menu {
+        display: flex;
+        justify-self: center;
+    }
+
+    nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 70%;
+        max-width: 300px;
+        height: 100vh;
+        background: var(--bg);
+        border-left: 1px solid var(--border);
+        padding: 80px 20px 20px;
+        transition: right 0.3s ease;
+        z-index: 150;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        font-size: 1.2em;
+    }
+    nav.active {
+        right: 0;
+    }
+    nav a {
+        margin: 15px 0;
+        width: auto;
+    }
+
+    .theme-toggle {
+        justify-self: end;
+    }
+
+    .page-wrapper {
+        grid-template-columns: 1fr;
+        padding: 20px 15px;
+        gap: 0;
+    }
+
+    .left-padding {
+        display: none;
+    }
+
+    .right-sidebar {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 85%;
+        max-width: 350px;
+        height: 100vh;
+        z-index: 150;
+        transition: right 0.3s ease;
+    }
+    .right-sidebar.active {
+        right: 0;
+    }
+
+    .post-title-wrapper .post-date {
+        position: static;
+        width: auto;
+        text-align: left;
+        font-size: 1em;
+        margin-bottom: 10px;
+        display: block;
+    }
+    .post-title-wrapper h2 {
+        font-size: 1.5em;
+    }
+
+    .blog-page details > summary {
+        font-size: 1.2em !important;
+        padding: 10px 0 10px 30px;
+    }
+    .blog-page details > summary::before {
+        font-size: 0.8em;
+    }
+
+    .container {
+        padding: 0 15px;
+        margin: 20px auto;
+    }
+
+    .post-info a {
+        font-size: 1.1em;
+    }
+
+    .social-links {
+        gap: 20px;
+    }
+    .social-links a {
+        font-size: 20px;
+    }
+
+    .experience-item {
+        grid-template-columns: 60px 1fr;
+        gap: 15px;
+    }
+    .experience-logo,
+    .experience-logo-text {
+        width: 60px;
+        height: 60px;
+        font-size: 36px;
+    }
+
+    table {
+        font-size: 0.9em;
+    }
+    th, td {
+        padding: 10px 12px;
+    }
+
+    pre code {
+        font-size: 0.85em;
+    }
+
+    .lightbox-controls {
+        bottom: 20px;
+        padding: 10px 15px;
+        gap: 10px;
+    }
+
+    .lightbox-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+
+    .lightbox-close {
+        top: 15px;
+        right: 15px;
+        width: 35px;
+        height: 35px;
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.1em;
+    }
+
+    .post-title-wrapper h2 {
+        font-size: 1.3em;
+    }
+
+    .blog-page details > summary {
+        font-size: 1.1em !important;
+    }
+
+    .experience-details > p:first-child {
+        font-size: 1em;
+    }
+
+    .post-info a {
+        font-size: 1em;
+    }
+}
+
+.filter-toggle {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 140;
+    transition: transform 0.2s ease;
+}
+.filter-toggle:active {
+    transform: scale(0.95);
+}
+
+@media (max-width: 1024px) {
+    .filter-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+.nav-separator {
+    color: var(--text);
+    margin: 0 20px;
+}
+
+@media (max-width: 1024px) {
+    .nav-separator {
+        display: none;
+    }
+}
+
 [data-theme="light"] {
     --bg: #fafaea;
     --text: #1a1a1a;
