@@ -178,6 +178,13 @@ document.addEventListener('DOMContentLoaded', () => {
             startY = e.clientY - translateY;
             mediaEl.style.cursor = 'grabbing';
         });
+
+        mediaEl.addEventListener('touchstart', (e) => {
+            if (currentZoom <= 1 || e.touches.length !== 1) return;
+            isDragging = true;
+            startX = e.touches[0].clientX - translateX;
+            startY = e.touches[0].clientY - translateY;
+        }, { passive: true });
     }
 
     document.addEventListener('mousemove', (e) => {
@@ -187,6 +194,13 @@ document.addEventListener('DOMContentLoaded', () => {
         updateTransform();
     });
 
+    document.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        translateX = e.touches[0].clientX - startX;
+        translateY = e.touches[0].clientY - startY;
+        updateTransform();
+    }, { passive: true });
+
     document.addEventListener('mouseup', () => {
         if (isDragging) {
             isDragging = false;
@@ -195,6 +209,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 media.style.cursor = currentZoom > 1 ? 'grab' : 'default';
             }
         }
+    });
+
+    document.addEventListener('touchend', () => {
+        isDragging = false;
     });
 
     const images = document.querySelectorAll('main img, main video');
@@ -231,6 +249,32 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!filterToggle.contains(e.target) && !rightSidebar.contains(e.target) && rightSidebar.classList.contains('active')) {
                 rightSidebar.classList.remove('active');
             }
+        });
+    }
+
+    const infoBtn = document.querySelector('.post-info-btn');
+    const postStats = document.querySelector('.post-stats');
+    if (infoBtn && postStats) {
+        let tooltip = null;
+        infoBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (tooltip) {
+                tooltip.remove();
+                tooltip = null;
+                return;
+            }
+            tooltip = document.createElement('div');
+            tooltip.className = 'post-info-tooltip';
+            tooltip.textContent = postStats.textContent;
+            infoBtn.parentElement.appendChild(tooltip);
+            
+            document.addEventListener('click', function closeTooltip() {
+                if (tooltip) {
+                    tooltip.remove();
+                    tooltip = null;
+                }
+                document.removeEventListener('click', closeTooltip);
+            });
         });
     }
 });

@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Optimizing diffusion inference for production-ready speeds - I</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimizing diffusion for production-ready speeds - I</title>
     <script>
       (function() {
         const t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
@@ -27,7 +28,7 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-R1R7JKELB2', {
-        'page_title': 'Optimizing diffusion inference for production-ready speeds - I',
+        'page_title': 'Optimizing diffusion for production-ready speeds - I',
         'page_path': '/blog/3_blossom/00001_productionizing_diffusion-1/',
         'allow_google_signals': false,
         'allow_ad_personalization_signals': false
@@ -58,10 +59,14 @@
         </div>
     </header>
     <div class="container">
-        <main>
+        <main class="post-page">
           <div class="post-title-wrapper">
-              <div class="post-date">2025-12-29</div>
-              <h2><div class="post-title">Optimizing diffusion inference for production-ready speeds - I</div></h2>
+              <div class="post-date-stats">
+                  <div class="post-date">2025-12-29</div>
+                  <div class="post-stats">4,293 words • ~21 min</div>
+              </div>
+              <h2><div class="post-title">Optimizing diffusion for production-ready speeds - I</div></h2>
+              <button class="post-info-btn" aria-label="Post info"><i class="fas fa-info-circle"></i></button>
           </div>
             <div class="post-meta">
                 <div class="post-tags"><span class="tag">diffusion</span> <span class="tag">optimization</span> <span class="tag">mlsys</span></div>
@@ -91,19 +96,19 @@
 </thead>
 <tbody>
 <tr>
-<td align="left">Optimizing diffusion inference for production-ready speeds - I</td>
+<td align="left">Optimizing diffusion for production-ready speeds - I</td>
 <td align="left">1, 2</td>
 </tr>
 <tr>
-<td align="left">Optimizing diffusion inference for production-ready speeds - II</td>
+<td align="left">Optimizing diffusion for production-ready speeds - II</td>
 <td align="left">3, 4</td>
 </tr>
 <tr>
-<td align="left">Optimizing diffusion inference for production-ready speeds - III</td>
+<td align="left">Optimizing diffusion for production-ready speeds - III</td>
 <td align="left">5, 6</td>
 </tr>
 <tr>
-<td align="left">Optimizing diffusion inference for production-ready speeds - IV</td>
+<td align="left">Optimizing diffusion for production-ready speeds - IV</td>
 <td align="left">7, 8, 9, 10</td>
 </tr>
 </tbody>
@@ -126,6 +131,7 @@
 </ul>
 </li>
 <li><a href="#additional-reading">Additional reading</a></li>
+<li><a href="#citation">Citation</a></li>
 </ul>
 <p>Let's begin by understanding how diffusion models work and their computational challenges.</p>
 <h2 id="how-diffusion-models-work">How diffusion models work</h2>
@@ -366,9 +372,9 @@ torch.backends.cuda.matmul.allow_bf16_reduced_precision_reduction = True
 <p>For the VAE, which already runs extremely fast, the benefit of <code>channels_last</code> is marginal unless the model is serving a large volume of concurrent image requests. This optimization is not relevant for transformer-based models and does not impact generation latency there. Nonetheless, it's worth applying on the VAE when scaling up inference workloads.</p>
 <h3 id="fused-qkv">Fused QKV</h3>
 <p>Recall that the feedforward/linear projections in the model are simple matrix multiplication operations.</p>
-<p>If the <a href="https://en.wikipedia.org/wiki/Roofline_model" target="_blank" rel="noopener noreferrer">arithmetic intensity</a> of our models' matrix multiplications is low, we leave the GPU's compute units waiting for more work, and these operations will be "memory-bounded". That is, the speed of the operation is limited by how fast data can be read from or written to memory, rather than how fast the GPU can perform computations. This is undesirable. Also, every time a matmul is performed, a new kernel launch takes place on the GPU and this has some overheads involved.</p>
-<p>By fusing multiple small matmuls into a single large one, we increase the arithmetic intensity and try to move closer to "compute-bounded" performance, which modern GPUs excel at. Note that matmuls are already compute-bounded for common DL workload shapes (<code>M, N, K &gt; 1024</code>). The benefit with fusing these compute-bounded operations is that we incur fewer kernel launch overheads as well as keep the GPU continuously used for larger problem shapes.</p>
-<p>In practice, any set of linear layers, i.e. matmuls, that operate on the same input can be fused. The math behind this is trivial (left as an exercise to the reader 😛). In the attention layer of Flux, we can see two such prime candidates for this - image and text QKV projections. Fusing them together yields a significant speedup!</p>
+<p>If the <a href="https://en.wikipedia.org/wiki/Roofline_model" target="_blank" rel="noopener noreferrer">arithmetic intensity</a> of our models' matrix multiplications is low, we leave the GPU's compute units waiting for more work, and these operations will be "memory-bounded". That is, the speed of the operation is limited by how fast data can be read from or written to memory, rather than how fast the GPU can perform computations. This is undesirable. Also, every time a matmul is performed, a new kernel launch takes place on the GPU and this has some overheads involved. By fusing multiple small matmuls into a single large one, we increase the arithmetic intensity and try to move closer to "compute-bounded" performance, which modern GPUs excel at.</p>
+<p>Any set of linear layers, i.e. matmuls, that operate on the same input can be fused into a single matmul. The math behind this is trivial (left as an exercise to the reader 😛). In the attention layer of Flux, we can see two prime candidates for this - image and text QKV projections. Fusing them together yields a significant speedup!</p>
+<p>Why? If there are <code>N</code> individual matmuls in the unfused case, you are reading the input <code>N</code> times and the weights <code>N</code> times, while also performing <code>N</code> kernel launches. In the fused case, you're reading the input <code>1</code> time and a larger concatenated weight <code>1</code> time, while performing a single kernel launch. Therefore, with this weight fusion, we not only incur lower kernel launch overheads, but also read the input far fewer times from the global memory. Global memory accesses are prohibitively slow!</p>
 <h3 id="fusing-scheduler-step-into-transformer">Fusing scheduler step into transformer</h3>
 <p>In flow matching models, the diffusion transformer predicts a velocity field, which is then used to update the current target distribution estimates (which start as gaussian noise) towards the actual target distribution (the desired modality, e.g., images). This update can be done with any ODE/SDE solver - the most famously used is the Euler method. In diffusers, this <a href="https://github.com/huggingface/diffusers/blob/425a715e35479338c06b2a68eb3a95790c1db3c5/src/diffusers/schedulers/scheduling_flow_match_euler_discrete.py#L461" target="_blank" rel="noopener noreferrer">update step</a> is performed in the scheduler, which is outside the transformer forward pass. The operation is simply: <code>x_t_minus_1 = x_t + velocity * dt</code>, where <code>x_t</code> is the current estimate of the source distribution, <code>velocity</code> is the output of the transformer, and <code>dt</code> is the time delta. For more complex solvers, a lot more operations are performed to do this update.</p>
 <p>This poses a problem: because these operations are outside the model graph, <code>torch.compile</code> cannot optimize or fuse them (typically many adds/muls). By folding the scheduler update into the transformer forward pass, they become eligible for fusion.</p>
@@ -493,8 +499,19 @@ make_image_grid(images, rows=1, cols=len(images)).save("output.png")
 <li><a href="https://www.youtube.com/watch?v=DDq_pIfHqLs" target="_blank" rel="noopener noreferrer">How I understand Flow Matching?</a></li>
 </ul>
 <div class="alert alert-note"><div class="alert-title">💡 Note</div><p>
-This post was originally written in July 2025 to be published on the <a href="https://huggingface.co/blog" target="_blank" rel="noopener noreferrer">HF Blog</a>. However, shortly after this, and before the last blog was fully completed, I decided to leave my job at HF and start another chapter of my life elsewhere. This stalled progress on the blogs and I did not have the energy to finish up the series. Originally, walkthroughs of custom GEMM in CUDA, non-trivial fusions, showcasing end-to-end deployment on HF ZeroGPU stack, having accompanying video explanations, and so much more was planned. But due to other important priorities, and the ever-delaying schedule to release this series of posts, I've now decided to cut it short and post just the written posts at this time. My target audience is students–folks finding it difficult to transition from outdated university courses to relevant real-world ML engineering–but I hope all readers may find it useful and valuable!</p>
+This post was originally written in July 2025 to be published on the <a href="https://huggingface.co/blog" target="_blank" rel="noopener noreferrer">HF Blog</a>. However, shortly after this, and before the last blog was fully completed, I decided to leave my job at HF and start another chapter of my life elsewhere. This stalled progress on the blogs and I did not have the energy to finish up the series. Originally, walkthroughs of custom GEMM in CUDA, non-trivial fusions, showcasing end-to-end deployment on HF ZeroGPU stack, having accompanying video explanations, and so much more was planned. But due to other important priorities, and the ever-delaying schedule to release this series of posts, I've now decided to cut it short and post just the written posts at this time. My target audience is students–folks finding it difficult to transition from outdated university courses to relevant real-world ML engineering, but I hope all readers may find it useful and valuable!</p>
 <p>Many thanks to my team and colleagues at Hugging Face for allowing me the time to work on this. And, of course, for the unlimited H100 GPUs used in testing and debugging things! Lastly, very appreciative of <a href="https://x.com/linoy_tsaban" target="_blank" rel="noopener noreferrer">Linoy Tsaban</a> for taking the time to read everything I put down and providing valuable feedback &lt;3</p></div>
+<h2 id="citation">Citation</h2>
+<p>If you found this post useful in your work, please consider citing it as:</p>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code>@misc{avs2026optdiff,
+  author = {Aryan V S},
+  title = {Optimizing Diffusion for Production-Ready Speeds},
+  year = {2026},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/a-r-r-o-w/productionizing-diffusion}}
+}
+</code></pre></div>
 
         </main>
     </div>
