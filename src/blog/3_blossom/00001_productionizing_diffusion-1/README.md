@@ -1,6 +1,6 @@
 ---
 {
-  "title": "Optimizing diffusion inference for production-ready speeds - I",
+  "title": "Optimizing diffusion for production-ready speeds - I",
   "code": "https://github.com/a-r-r-o-w/productionizing-diffusion",
   "date": "2025-12-29",
   "tags": ["diffusion", "optimization", "mlsys"]
@@ -23,10 +23,10 @@ This post is first in a four-part series. We will cover the following topics:
 
 | Post | Topics covered |
 |------|----------------|
-| Optimizing diffusion inference for production-ready speeds - I   | 1, 2 |
-| Optimizing diffusion inference for production-ready speeds - II  | 3, 4 |
-| Optimizing diffusion inference for production-ready speeds - III | 5, 6 |
-| Optimizing diffusion inference for production-ready speeds - IV  | 7, 8, 9, 10 |
+| Optimizing diffusion for production-ready speeds - I   | 1, 2 |
+| Optimizing diffusion for production-ready speeds - II  | 3, 4 |
+| Optimizing diffusion for production-ready speeds - III | 5, 6 |
+| Optimizing diffusion for production-ready speeds - IV  | 7, 8, 9, 10 |
 
 The code for the entire series is available at [a-r-r-o-w/productionizing-diffusion](https://github.com/a-r-r-o-w/productionizing-diffusion). For this post, refer to the `post_1` directory. The guides are written to work on Nvidia's A100/H100 or newer GPUs, but the ideas can be adapted to other hardware as well.
 
@@ -41,6 +41,7 @@ The code for the entire series is available at [a-r-r-o-w/productionizing-diffus
 - [Benchmarks](#benchmarking)
   - [Cost Analysis](#cost-analysis)
 - [Additional reading](#additional-reading)
+- [Citation](#citation)
 
 Let's begin by understanding how diffusion models work and their computational challenges.
 
@@ -327,11 +328,11 @@ For the VAE, which already runs extremely fast, the benefit of `channels_last` i
 
 Recall that the feedforward/linear projections in the model are simple matrix multiplication operations.
 
-If the [arithmetic intensity](https://en.wikipedia.org/wiki/Roofline_model) of our models' matrix multiplications is low, we leave the GPU's compute units waiting for more work, and these operations will be "memory-bounded". That is, the speed of the operation is limited by how fast data can be read from or written to memory, rather than how fast the GPU can perform computations. This is undesirable. Also, every time a matmul is performed, a new kernel launch takes place on the GPU and this has some overheads involved.
+If the [arithmetic intensity](https://en.wikipedia.org/wiki/Roofline_model) of our models' matrix multiplications is low, we leave the GPU's compute units waiting for more work, and these operations will be "memory-bounded". That is, the speed of the operation is limited by how fast data can be read from or written to memory, rather than how fast the GPU can perform computations. This is undesirable. Also, every time a matmul is performed, a new kernel launch takes place on the GPU and this has some overheads involved. By fusing multiple small matmuls into a single large one, we increase the arithmetic intensity and try to move closer to "compute-bounded" performance, which modern GPUs excel at.
 
-By fusing multiple small matmuls into a single large one, we increase the arithmetic intensity and try to move closer to "compute-bounded" performance, which modern GPUs excel at. Note that matmuls are already compute-bounded for common DL workload shapes (`M, N, K > 1024`). The benefit with fusing these compute-bounded operations is that we incur fewer kernel launch overheads as well as keep the GPU continuously used for larger problem shapes.
+Any set of linear layers, i.e. matmuls, that operate on the same input can be fused into a single matmul. The math behind this is trivial (left as an exercise to the reader 😛). In the attention layer of Flux, we can see two prime candidates for this - image and text QKV projections. Fusing them together yields a significant speedup!
 
-In practice, any set of linear layers, i.e. matmuls, that operate on the same input can be fused. The math behind this is trivial (left as an exercise to the reader 😛). In the attention layer of Flux, we can see two such prime candidates for this - image and text QKV projections. Fusing them together yields a significant speedup!
+Why? If there are `N` individual matmuls in the unfused case, you are reading the input `N` times and the weights `N` times, while also performing `N` kernel launches. In the fused case, you're reading the input `1` time and a larger concatenated weight `1` time, while performing a single kernel launch. Therefore, with this weight fusion, we not only incur lower kernel launch overheads, but also read the input far fewer times from the global memory. Global memory accesses are prohibitively slow!
 
 ### Fusing scheduler step into transformer
 
@@ -479,6 +480,21 @@ It is worth noting that we are only minimally utilizing the GPU because of `batc
 - [How I understand Flow Matching?](https://www.youtube.com/watch?v=DDq_pIfHqLs)
 
 > [!NOTE]
-> This post was originally written in July 2025 to be published on the [HF Blog](https://huggingface.co/blog). However, shortly after this, and before the last blog was fully completed, I decided to leave my job at HF and start another chapter of my life elsewhere. This stalled progress on the blogs and I did not have the energy to finish up the series. Originally, walkthroughs of custom GEMM in CUDA, non-trivial fusions, showcasing end-to-end deployment on HF ZeroGPU stack, having accompanying video explanations, and so much more was planned. But due to other important priorities, and the ever-delaying schedule to release this series of posts, I've now decided to cut it short and post just the written posts at this time. My target audience is students–folks finding it difficult to transition from outdated university courses to relevant real-world ML engineering–but I hope all readers may find it useful and valuable!
+> This post was originally written in July 2025 to be published on the [HF Blog](https://huggingface.co/blog). However, shortly after this, and before the last blog was fully completed, I decided to leave my job at HF and start another chapter of my life elsewhere. This stalled progress on the blogs and I did not have the energy to finish up the series. Originally, walkthroughs of custom GEMM in CUDA, non-trivial fusions, showcasing end-to-end deployment on HF ZeroGPU stack, having accompanying video explanations, and so much more was planned. But due to other important priorities, and the ever-delaying schedule to release this series of posts, I've now decided to cut it short and post just the written posts at this time. My target audience is students–folks finding it difficult to transition from outdated university courses to relevant real-world ML engineering, but I hope all readers may find it useful and valuable!
 >
 > Many thanks to my team and colleagues at Hugging Face for allowing me the time to work on this. And, of course, for the unlimited H100 GPUs used in testing and debugging things! Lastly, very appreciative of [Linoy Tsaban](https://x.com/linoy_tsaban) for taking the time to read everything I put down and providing valuable feedback <3
+
+## Citation
+
+If you found this post useful in your work, please consider citing it as:
+
+```
+@misc{avs2025optdiff,
+  author = {Aryan V S},
+  title = {Optimizing Diffusion for Production-Ready Speeds},
+  year = {2026},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/a-r-r-o-w/productionizing-diffusion}}
+}
+```
