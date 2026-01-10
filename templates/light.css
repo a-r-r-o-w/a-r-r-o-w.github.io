@@ -4,14 +4,13 @@
     --accent: #0d9377;
     --link: #0d9377;
     --code-bg: #f1f8f5;
-    --border: #d0d7de;
+    --border: #b0b8c0;
     --tag-bg: #dadaca;
     --post-title: #0d9367;
     --seed: #0a7f00;
     --sprout: #1a8f00;
     --sapling: #2a9f00;
     --blossom: #3aaf00;
-    --table-th: #58a6ff;
 }
 
 [data-theme="light"] header h1 a {

@@ -489,7 +489,7 @@ It is worth noting that we are only minimally utilizing the GPU because of `batc
 If you found this post useful in your work, please consider citing it as:
 
 ```
-@misc{avs2025optdiff,
+@misc{avs2026optdiff,
   author = {Aryan V S},
   title = {Optimizing Diffusion for Production-Ready Speeds},
   year = {2026},

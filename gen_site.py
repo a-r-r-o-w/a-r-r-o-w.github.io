@@ -5,6 +5,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 
 import mistletoe
 from mistletoe.html_renderer import HtmlRenderer
@@ -182,6 +183,35 @@ def get_excerpt(body):
     return (paras[0][:150] + "...") if paras else ""
 
 
+def get_word_count(body):
+    text = re.sub(r'```[\s\S]*?```', '', body)  # remove code blocks
+    text = re.sub(r'`[^`]+`', '', text)  # remove inline code
+    text = re.sub(r'[#*_\[\]()>-]', ' ', text)  # remove markdown syntax
+    words = text.split()
+    return len(words)
+
+
+def get_read_time(word_count, wpm=200):
+    minutes = word_count / wpm
+    if minutes < 1:
+        return "< 1 min"
+    return f"~{round(minutes)} min"
+
+
+def get_last_modified(filepath):
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--format=%ci", filepath],
+            capture_output=True, text=True, cwd=os.path.dirname(filepath) or "."
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            date_str = result.stdout.strip().split()[0]
+            return date_str
+    except:
+        pass
+    return None
+
+
 def collect_posts(src_dir):
     posts = []
     for root, dirs, files in os.walk(src_dir):
@@ -199,6 +229,9 @@ def collect_posts(src_dir):
         date_str = fm.get("date")
         date = date_str.split(" - ")[0] if " - " in date_str else date_str
         date_obj = datetime.datetime.strptime(date, "%Y-%m-%d")
+        word_count = get_word_count(body)
+        read_time = get_read_time(word_count)
+        last_modified = get_last_modified(path)
         posts.append(
             {
                 "title": fm["title"],
@@ -212,6 +245,9 @@ def collect_posts(src_dir):
                 "rel_path": rel_path,
                 "category": category,
                 "date_obj": date_obj,
+                "word_count": word_count,
+                "read_time": read_time,
+                "last_modified": last_modified,
             }
         )
     posts.sort(key=lambda p: p["date_obj"], reverse=True)
@@ -284,6 +320,14 @@ def generate_post_html(template, post, authors: dict[str, str], css_path, js_pat
         '<div class="post-links">' + " ".join(links) + "</div>" if links else ""
     )
 
+    stats_items = [
+        f'{post["word_count"]:,} words',
+        post["read_time"],
+    ]
+    if post.get("last_modified"):
+        stats_items.append(f'Updated: {post["last_modified"]}')
+    post_stats = " • ".join(stats_items)
+
     return template.format(
         title=post["title"],
         css_path=css_path,
@@ -291,6 +335,7 @@ def generate_post_html(template, post, authors: dict[str, str], css_path, js_pat
         authors=authors_html,
         tags_html=tags_html,
         post_links=links_html,
+        post_stats=post_stats,
         body_html=body_html,
         js_path=js_path,
         rel_path=rel_path,
@@ -327,7 +372,7 @@ def generate_blog_html(template, posts, css_path, js_path):
         post_list = ""
         for p in posts_by_cat[cat]:
             tags_html = " ".join(f'<span class="tag">{t}</span>' for t in p["tags"])
-            post_list += f'<li class="post-item" data-tags="{" ".join(p["tags"])}"><div class="post-info"><div class="post-date">{p["date"]}</div><a href="{p["url"]}">{p["title"]}</a><div class="post-tags">{tags_html}</div></div></li>\n'
+            post_list += f'<li class="post-item" data-tags="{" ".join(p["tags"])}"><div class="post-info"><span class="post-date">{p["date"]}</span><div class="post-content"><a href="{p["url"]}">{p["title"]}</a><div class="post-tags">{tags_html}</div></div></div></li>\n'
         icon = cat_icons.get(cat, "")
         details_open = "open" if cat == "Blossom" else ""
         cat_html += f'<details {details_open}><summary><span class="cat-icon">{icon}</span> {cat}</summary><ul>{post_list}</ul></details>\n'

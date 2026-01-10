@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title}</title>
     <script>
       (function() {{
@@ -58,10 +59,14 @@
         </div>
     </header>
     <div class="container">
-        <main>
+        <main class="post-page">
           <div class="post-title-wrapper">
-              <div class="post-date">{date}</div>
+              <div class="post-date-stats">
+                  <div class="post-date">{date}</div>
+                  <div class="post-stats">{post_stats}</div>
+              </div>
               <h2><div class="post-title">{title}</div></h2>
+              <button class="post-info-btn" aria-label="Post info"><i class="fas fa-info-circle"></i></button>
           </div>
             <div class="post-meta">
                 <div class="post-tags">{tags_html}</div>
