@@ -1,5 +1,17 @@
 [
   {
+    "title": "Optimizing diffusion for production-ready speeds - IV",
+    "url": "/blog/3_blossom/00004_productionizing_diffusion-4/index.html",
+    "date": "2026-01-29",
+    "tags": [
+      "diffusion",
+      "optimization",
+      "mlsys"
+    ],
+    "excerpt": "Diffusion models have rapidly advanced generative modeling across a wide range of modalities - from images and video to music, 3D objects, and even te...",
+    "category": "Blossom"
+  },
+  {
     "title": "Optimizing diffusion for production-ready speeds - III",
     "url": "/blog/3_blossom/00003_productionizing_diffusion-3/index.html",
     "date": "2026-01-25",
