@@ -34,7 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const lightLink = document.getElementById('hljs-light');
             if (darkLink) darkLink.disabled = newTheme !== 'dark';
             if (lightLink) lightLink.disabled = newTheme !== 'light';
-            hljs.highlightAll();
+            if (typeof hljs !== 'undefined') {
+                hljs.highlightAll();
+            }
         });
     });
 
@@ -248,6 +250,32 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('click', (e) => {
             if (!filterToggle.contains(e.target) && !rightSidebar.contains(e.target) && rightSidebar.classList.contains('active')) {
                 rightSidebar.classList.remove('active');
+            }
+        });
+    }
+
+    var pwTrigger = document.getElementById('past-work-trigger');
+    var pwModal = document.getElementById('past-work-modal');
+    if (pwTrigger && pwModal) {
+        var pwBackdrop = pwModal.querySelector('.pw-modal-backdrop');
+        var pwClose = pwModal.querySelector('.pw-modal-close');
+        pwTrigger.addEventListener('click', function (e) {
+            e.preventDefault();
+            pwModal.classList.add('active');
+            document.body.classList.add('modal-open');
+            document.body.style.overflow = 'hidden';
+        });
+        var closePwModal = function () {
+            pwModal.classList.remove('active');
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+        };
+        pwBackdrop.addEventListener('click', closePwModal);
+        pwClose.addEventListener('click', closePwModal);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && pwModal.classList.contains('active')) {
+                e.stopImmediatePropagation();
+                closePwModal();
             }
         });
     }

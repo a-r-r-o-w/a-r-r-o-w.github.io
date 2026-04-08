@@ -28,6 +28,7 @@
     </script>
 </head>
 <body data-theme="dark">
+    <canvas id="particle-life"></canvas>
     <header>
         <div class="header-inner">
             <a href="/"><h1>Aryan V S</h1></a>
@@ -41,11 +42,14 @@
                 <span class="nav-separator">|</span>
                 <a href="/blog/" aria-current="page">Blog</a>
             </nav>
-            <div class="theme-toggle">
-                <label class="switch">
-                    <input type="checkbox">
-                    <span class="slider"></span>
-                </label>
+            <div class="header-controls">
+                <button class="immersive-toggle" id="immersive-toggle" aria-label="Toggle immersive mode"></button>
+                <div class="theme-toggle">
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
         </div>
     </header>
@@ -107,6 +111,7 @@
     <button class="filter-toggle" aria-label="Toggle Filters">
         <i class="fas fa-filter"></i>
     </button>
+    <script src="/assets/particle-life.js"></script>
     <script src="/assets/script.js"></script>
 </body>
 </html>
