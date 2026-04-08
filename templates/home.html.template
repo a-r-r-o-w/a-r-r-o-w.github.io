@@ -30,6 +30,7 @@
     </script>
 </head>
 <body data-theme="dark">
+    <canvas id="particle-life"></canvas>
     <header>
         <div class="header-inner">
             <a href="/"><h1>Aryan V S</h1></a>
@@ -43,11 +44,14 @@
                 <span class="nav-separator">|</span>
                 <a href="/blog/">Blog</a>
             </nav>
-            <div class="theme-toggle">
-                <label class="switch">
-                    <input type="checkbox">
-                    <span class="slider"></span>
-                </label>
+            <div class="header-controls">
+                <button class="immersive-toggle" id="immersive-toggle" aria-label="Toggle immersive mode"></button>
+                <div class="theme-toggle">
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
         </div>
     </header>
@@ -68,72 +72,75 @@
                         {news_html}
                     </div>
                 </section>
-                <section id="experience">
-                    <h2 class="section-title">Experience</h2>
-                    <div class="experience-grid">
-                        <div class="experience-item">
-                            <div class="experience-logo-text">M</div>
-                            <div class="experience-details">
-                                <p>Staff, Stealth Startup <span class="experience-date">Sep 2025 - Present</span></p>
-                                <p>Anything and everything to build the best Video World models.</p>
+                <p class="past-work-link"><a href="#" id="past-work-trigger">Past work &amp; talks</a></p>
+                <div id="past-work-modal" class="pw-modal">
+                    <div class="pw-modal-backdrop"></div>
+                    <div class="pw-modal-content">
+                        <button class="pw-modal-close">&times;</button>
+                        <h2 class="pw-modal-title">Experience</h2>
+                        <div class="experience-grid">
+                            <div class="experience-item">
+                                <div class="experience-logo-text">M</div>
+                                <div class="experience-details">
+                                    <p>Staff, Stealth Startup <span class="experience-date">Sep 2025 - Present</span></p>
+                                    <p>Anything and everything to build the best Video World models.</p>
+                                </div>
+                            </div>
+                            <div class="experience-item">
+                                <img class="experience-logo" src="/assets/logos/a16z.jpeg" alt="Andreessen Horowitz">
+                                <div class="experience-details">
+                                    <p>Scout, Andreessen Horowitz <span class="experience-date">Sep 2025 - Present</span></p>
+                                    <p>Investing in AI and Infra startups. Finding strong founders tackling hard problems.</p>
+                                    <p>Seeking pre-seed/seed angel checks? <a href="mailto:contact.aryanvs@gmail.com">Reach out</a>!</p>
+                                </div>
+                            </div>
+                            <div class="experience-item">
+                                <img class="experience-logo" src="/assets/logos/huggingface.jpeg" alt="Hugging Face">
+                                <div class="experience-details">
+                                    <p>Staff, Hugging Face <span class="experience-date">Jul 2024 - Sep 2025</span></p>
+                                    <p>Core maintainer of <a href="https://github.com/huggingface/diffusers">Diffusers</a> and <a href="https://github.com/huggingface/finetrainers">Finetrainers</a>.</p>
+                                </div>
+                            </div>
+                            <div class="experience-item">
+                                <img class="experience-logo" src="/assets/logos/microsoft.jpeg" alt="Microsoft">
+                                <div class="experience-details">
+                                    <p>Research Intern, Microsoft <span class="experience-date">Jan 2024 - Jul 2024</span></p>
+                                    <p>Computer vision and human-computer interaction research.</p>
+                                    <p>Real-time inference optimization for diffusion, GAN, NeRF, and Gaussian Splatting models in facial avatar and scene reconstruction settings. Privacy-focused user state understanding.</p>
+                                    <p>Advisor: <a href="https://en.wikipedia.org/wiki/Venkata_Padmanabhan">Dr. Venkata Padmanabhan</a></p>
+                                </div>
+                            </div>
+                            <div class="experience-item">
+                                <img class="experience-logo" src="/assets/logos/modelslab.jpeg" alt="Modelslab">
+                                <div class="experience-details">
+                                    <p>Engineer, Modelslab <span class="experience-date">Oct 2023 - Jan 2024</span></p>
+                                    <p>Inference optimization for generative models (image/video diffusion, voice cloning, LLMs).</p>
+                                    <p>Managed production GPU deployments, improved platform stability, and supported enterprise clients.</p>
+                                </div>
+                            </div>
+                            <div class="experience-item">
+                                <img class="experience-logo" src="/assets/logos/morgan_stanley.jpeg" alt="Morgan Stanley">
+                                <div class="experience-details">
+                                    <p>Application Development Intern, Morgan Stanley <span class="experience-date">May 2023 - Jul 2023</span></p>
+                                    <p>Migrated internal financial tooling to SpringBoot and Angular. Optimized SQL queries.</p>
+                                </div>
+                            </div>
+                            <div class="experience-item">
+                                <img class="experience-logo" src="/assets/logos/uptrain.jpeg" alt="Uptrain">
+                                <div class="experience-details">
+                                    <p>Machine Learning Intern, Uptrain <span class="experience-date">Mar 2023 - Apr 2023</span></p>
+                                    <p>Helped build Uptrain's (YC W23) open-source <a href="https://github.com/uptrain-ai/uptrain">toolkit</a>.</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="experience-item">
-                            <img class="experience-logo" src="/assets/logos/a16z.jpeg" alt="Andreessen Horowitz">
-                            <div class="experience-details">
-                                <p>Scout, Andreessen Horowitz <span class="experience-date">Sep 2025 - Present</span></p>
-                                <p>Investing in AI and Infra startups. Finding strong founders tackling hard problems.</p>
-                                <p>Seeking pre-seed/seed angel checks? <a href="mailto:contact.aryanvs@gmail.com">Reach out</a>!</p>
-                            </div>
-                        </div>
-                        <div class="experience-item">
-                            <img class="experience-logo" src="/assets/logos/huggingface.jpeg" alt="Hugging Face">
-                            <div class="experience-details">
-                                <p>Staff, Hugging Face <span class="experience-date">Jul 2024 - Sep 2025</span></p>
-                                <p>Core maintainer of <a href="https://github.com/huggingface/diffusers">Diffusers</a> and <a href="https://github.com/huggingface/finetrainers">Finetrainers</a>.</p>
-                            </div>
-                        </div>
-                        <div class="experience-item">
-                            <img class="experience-logo" src="/assets/logos/microsoft.jpeg" alt="Microsoft">
-                            <div class="experience-details">
-                                <p>Research Intern, Microsoft <span class="experience-date">Jan 2024 - Jul 2024</span></p>
-                                <p>Computer vision and human-computer interaction research.</p>
-                                <p>Real-time inference optimization for diffusion, GAN, NeRF, and Gaussian Splatting models in facial avatar and scene reconstruction settings. Privacy-focused user state understanding.</p>
-                                <p>Advisor: <a href="https://en.wikipedia.org/wiki/Venkata_Padmanabhan">Dr. Venkata Padmanabhan</a></p>
-                            </div>
-                        </div>
-                        <div class="experience-item">
-                            <img class="experience-logo" src="/assets/logos/modelslab.jpeg" alt="Modelslab">
-                            <div class="experience-details">
-                                <p>Engineer, Modelslab <span class="experience-date">Oct 2023 - Jan 2024</span></p>
-                                <p>Inference optimization for generative models (image/video diffusion, voice cloning, LLMs).</p>
-                                <p>Managed production GPU deployments, improved platform stability, and supported enterprise clients.</p>
-                            </div>
-                        </div>
-                        <div class="experience-item">
-                            <img class="experience-logo" src="/assets/logos/morgan_stanley.jpeg" alt="Morgan Stanley">
-                            <div class="experience-details">
-                                <p>Application Development Intern, Morgan Stanley <span class="experience-date">May 2023 - Jul 2023</span></p>
-                                <p>Migrated internal financial tooling to SpringBoot and Angular. Optimized SQL queries.</p>
-                            </div>
-                        </div>
-                        <div class="experience-item">
-                            <img class="experience-logo" src="/assets/logos/uptrain.jpeg" alt="Uptrain">
-                            <div class="experience-details">
-                                <p>Machine Learning Intern, Uptrain <span class="experience-date">Mar 2023 - Apr 2023</span></p>
-                                <p>Helped build Uptrain's (YC W23) open-source <a href="https://github.com/uptrain-ai/uptrain">toolkit</a>.</p>
-                            </div>
-                        </div>
+                        <h2 class="pw-modal-title pw-modal-section">Talks</h2>
+                        <ul class="talks-details">
+                            <li><strong>IIT Indore</strong> - Aug 2025, "Careers in ML". Career guidance for undergrads.</li>
+                            <li><strong>MLADS Conference</strong> - Jul 2024, "Hybrid Hallway". Presented and live-demoed <a href="https://www.microsoft.com/en-us/research/project/hyway/">Hybrid Hallway</a>, and early explorations into real-time avatars and privacy-focused user state understanding, to Microsoft research leadership, professors, and hundreds of attendees.</li>
+                            <li><strong>Microsoft Research India</strong> - Mar 2024, "Hybrid Hallway". Presented and live-demoed <a href="https://www.microsoft.com/en-us/research/project/hyway/">Hybrid Hallway</a>.</li>
+                        </ul>
                     </div>
-                </section>
-                <section id="talks">
-                    <h2 class="section-title">Talks</h2>
-                    <ul class="talks-details">
-                        <li><strong>IIT Indore</strong> - Aug 2025, "Careers in ML". Career guidance for undergrads.</li>
-                        <li><strong>MLADS Conference</strong> - Jul 2024, "Hybrid Hallway". Presented and live-demoed <a href="https://www.microsoft.com/en-us/research/project/hyway/">Hybrid Hallway</a>, and early explorations into real-time avatars and privacy-focused user state understanding, to Microsoft research leadership, professors, and hundreds of attendees.</li>
-                        <li><strong>Microsoft Research India</strong> - Mar 2024, "Hybrid Hallway". Presented and live-demoed <a href="https://www.microsoft.com/en-us/research/project/hyway/">Hybrid Hallway</a>.</li>
-                    </ul>
-                </section>
+                </div>
             </main>
         </div>
     </div>
@@ -153,6 +160,7 @@
             </a>
         </div>
     </footer>
+    <script src="/assets/particle-life.js"></script>
     <script src="{js_path}"></script>
 </body>
 </html>

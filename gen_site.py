@@ -433,6 +433,12 @@ def main():
     with open(os.path.join(assets_out_dir, "script.js"), "w", encoding="utf-8") as f:
         f.write(load_template(template_dir, "script.js"))
 
+    with open(os.path.join(assets_out_dir, "particle-life.js"), "w", encoding="utf-8") as f:
+        f.write(load_template(template_dir, "particle-life.js"))
+
+    with open(os.path.join(assets_out_dir, "particle-worker.js"), "w", encoding="utf-8") as f:
+        f.write(load_template(template_dir, "particle-worker.js"))
+
     home_html = generate_home_html(home_template, news, posts, css_path, js_path)
     with open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8") as f:
         f.write(home_html)
