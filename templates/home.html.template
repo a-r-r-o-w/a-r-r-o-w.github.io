@@ -80,10 +80,19 @@
                         <h2 class="pw-modal-title">Experience</h2>
                         <div class="experience-grid">
                             <div class="experience-item">
-                                <div class="experience-logo-text">M</div>
+                                <img class="experience-logo" src="/assets/logos/roblox.jpeg" alt="Roblox">
                                 <div class="experience-details">
-                                    <p>Staff, Stealth Startup <span class="experience-date">Sep 2025 - Present</span></p>
-                                    <p>Anything and everything to build the best Video World models.</p>
+                                    <p>Senior AI Scientist, Roblox <span class="experience-date">Jun 2026 - Present</span></p>
+                                    <p>Foundation AI. Video world models.</p>
+                                </div>
+                            </div>
+                            <div class="experience-item">
+                                <img class="experience-logo" src="/assets/logos/morpheus_ai.jpeg" alt="Morpheus AI">
+                                <div class="experience-details">
+                                    <p>Member of Technical Staff, Morpheus AI <span class="experience-date">Sep 2025 - May 2026</span></p>
+                                    <p>Founding member. Video world models.</>
+                                    <p>10-20B models, 30 FPS 720p on single H100, 1-2 step diffusion</p>
+                                    <p>Acquired by Roblox.</p>
                                 </div>
                             </div>
                             <div class="experience-item">
@@ -97,7 +106,7 @@
                             <div class="experience-item">
                                 <img class="experience-logo" src="/assets/logos/huggingface.jpeg" alt="Hugging Face">
                                 <div class="experience-details">
-                                    <p>Staff, Hugging Face <span class="experience-date">Jul 2024 - Sep 2025</span></p>
+                                    <p>Memeber of Technical Staff, Hugging Face <span class="experience-date">Jul 2024 - Sep 2025</span></p>
                                     <p>Core maintainer of <a href="https://github.com/huggingface/diffusers">Diffusers</a> and <a href="https://github.com/huggingface/finetrainers">Finetrainers</a>.</p>
                                 </div>
                             </div>
