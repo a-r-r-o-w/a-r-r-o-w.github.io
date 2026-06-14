@@ -144,16 +144,6 @@
     "category": "Seed"
   },
   {
-    "title": "Exhaustive Machine Learning Taxonomy - All Fields & Subfields",
-    "url": "/blog/0_seed/00001_tagging_system/index.html",
-    "date": "2025-08-05",
-    "tags": [
-      "taxonomy"
-    ],
-    "excerpt": "# Exhaustive Machine Learning Taxonomy - All Fields & Subfields...",
-    "category": "Seed"
-  },
-  {
     "title": "Persistent Matmul",
     "url": "/blog/0_seed/00000_persistent_matmul/index.html",
     "date": "2025-08-05",
@@ -162,6 +152,16 @@
       "matrix-multiplication"
     ],
     "excerpt": "You would've implemented the 3-loop matrix multiplication many times as a ML practitioner, but the naive implementation is terrible for GPU performanc...",
+    "category": "Seed"
+  },
+  {
+    "title": "Exhaustive Machine Learning Taxonomy - All Fields & Subfields",
+    "url": "/blog/0_seed/00001_tagging_system/index.html",
+    "date": "2025-08-05",
+    "tags": [
+      "taxonomy"
+    ],
+    "excerpt": "# Exhaustive Machine Learning Taxonomy - All Fields & Subfields...",
     "category": "Seed"
   },
   {
