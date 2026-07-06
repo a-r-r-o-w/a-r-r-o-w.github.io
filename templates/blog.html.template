@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blog by Aryan V S on CUDA, GPU programming, diffusion models, and systems engineering.">
+    <meta property="og:title" content="Blog - Aryan V S">
+    <meta property="og:description" content="Blog posts on CUDA, GPU programming, diffusion models, and systems engineering.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://a-r-r-o-w.github.io/blog/">
+    <link rel="canonical" href="https://a-r-r-o-w.github.io/blog/">
     <title>Blog</title>
     <script>
       (function() {{

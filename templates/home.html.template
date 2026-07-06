@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Personal website of Aryan V S, AI engineer specializing in diffusion models and generative AI.">
-    <meta name="keywords" content="Aryan V S, diffusion models, generative AI, Hugging Face, a16z">
+    <meta name="description" content="Personal website of Aryan V S. GPU programming, diffusion models, and systems engineering.">
+    <meta name="keywords" content="Aryan V S, CUDA, GPU programming, diffusion models, generative AI, systems engineering">
+    <meta property="og:title" content="Aryan V S">
+    <meta property="og:description" content="GPU programming, diffusion models, and systems engineering.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://a-r-r-o-w.github.io/">
+    <link rel="canonical" href="https://a-r-r-o-w.github.io/">
     <title>Aryan V S</title>
     <script>
       (function() {{
@@ -90,7 +95,7 @@
                                 <img class="experience-logo" src="/assets/logos/morpheus_ai.jpeg" alt="Morpheus AI">
                                 <div class="experience-details">
                                     <p>Member of Technical Staff, Morpheus AI <span class="experience-date">Sep 2025 - May 2026</span></p>
-                                    <p>Founding member. Video world models.</>
+                                    <p>Founding member. Video world models.</p>
                                     <p>10-20B models, 30 FPS 720p on single H100, 1-2 step diffusion</p>
                                     <p>Acquired by Roblox.</p>
                                 </div>

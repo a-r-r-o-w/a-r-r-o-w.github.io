@@ -166,6 +166,25 @@ def simple_md_to_html(md):
     return "\n".join(html)
 
 
+def minify_css(css):
+    css = re.sub(r'/\*[\s\S]*?\*/', '', css)
+    css = re.sub(r'\s+', ' ', css)
+    css = re.sub(r'\s*([{}:;,>~+])\s*', r'\1', css)
+    css = re.sub(r';\s*}', '}', css)
+    return css.strip()
+
+
+def minify_js(js):
+    lines = js.split('\n')
+    out = []
+    for line in lines:
+        stripped = line.rstrip()
+        if stripped.lstrip().startswith('//'):
+            continue
+        out.append(stripped)
+    return '\n'.join(out)
+
+
 def parse_front_matter(content):
     if not content.startswith("---\n"):
         return {}, content
@@ -328,6 +347,8 @@ def generate_post_html(template, post, authors: dict[str, str], css_path, js_pat
         stats_items.append(f'Updated: {post["last_modified"]}')
     post_stats = " • ".join(stats_items)
 
+    excerpt_plain = re.sub(r'<[^>]+>', '', post["excerpt"]).replace('"', '&quot;')
+
     return template.format(
         title=post["title"],
         css_path=css_path,
@@ -339,6 +360,7 @@ def generate_post_html(template, post, authors: dict[str, str], css_path, js_pat
         body_html=body_html,
         js_path=js_path,
         rel_path=rel_path,
+        meta_description=excerpt_plain,
     )
 
 
@@ -423,21 +445,18 @@ def main():
     with open(src_authors_file, "r") as f:
         authors = json.load(f)
 
+    css_combined = load_template(template_dir, "dark.css") + "\n" + load_template(template_dir, "light.css")
     with open(os.path.join(assets_out_dir, "style.css"), "w", encoding="utf-8") as f:
-        f.write(
-            load_template(template_dir, "dark.css")
-            + "\n"
-            + load_template(template_dir, "light.css")
-        )
+        f.write(minify_css(css_combined))
 
     with open(os.path.join(assets_out_dir, "script.js"), "w", encoding="utf-8") as f:
-        f.write(load_template(template_dir, "script.js"))
+        f.write(minify_js(load_template(template_dir, "script.js")))
 
     with open(os.path.join(assets_out_dir, "particle-life.js"), "w", encoding="utf-8") as f:
-        f.write(load_template(template_dir, "particle-life.js"))
+        f.write(minify_js(load_template(template_dir, "particle-life.js")))
 
     with open(os.path.join(assets_out_dir, "particle-worker.js"), "w", encoding="utf-8") as f:
-        f.write(load_template(template_dir, "particle-worker.js"))
+        f.write(minify_js(load_template(template_dir, "particle-worker.js")))
 
     home_html = generate_home_html(home_template, news, posts, css_path, js_path)
     with open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8") as f:
