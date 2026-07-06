@@ -22,7 +22,8 @@
     var seed = (Date.now() ^ (Math.random() * 0xFFFFFFFF)) >>> 0;
     var rngState = seed;
     var worker = null, frameData = null, frameN = 0, pendingBuf = null;
-    var sessionStart, prevTime, running = true, animId = null;
+    var sessionStart, prevTime, running = false, animId = null;
+    var started = false;
     var controlsPanel = null, speciesPanel = null, immersiveGlow = 0.75;
     var editorMode = 'simple';
     var currentAttractions = null, currentMinDist = null;
@@ -343,10 +344,6 @@
 
     resize();
     window.addEventListener('resize', resize);
-    setTimeout(function () {
-        measureContent();
-        initWorker();
-    }, 100);
     sessionStart = performance.now();
     prevTime = sessionStart;
 
@@ -459,16 +456,16 @@
         gl.drawArrays(gl.POINTS, 0, n);
     }
 
-    animId = requestAnimationFrame(render);
-
     document.addEventListener('visibilitychange', function () {
+        if (!started) return;
         if (document.hidden) {
             running = false;
             if (animId) {
                 cancelAnimationFrame(animId);
+                animId = null;
             }
         }
-        else {
+        else if (immersive) {
             running = true;
             prevTime = performance.now();
             animId = requestAnimationFrame(render);
@@ -844,8 +841,18 @@
         }
     }
 
+    function startSimulation() {
+        if (started) return;
+        started = true;
+        running = true;
+        measureContent();
+        initWorker();
+        animId = requestAnimationFrame(render);
+    }
+
     function enterImmersive() {
         immersive = true;
+        startSimulation();
         document.body.classList.add('immersive-mode');
         canvas.style.pointerEvents = 'auto';
         buildControls();
@@ -863,17 +870,24 @@
 
     function exitImmersive() {
         immersive = false;
+        running = false;
+        if (animId) {
+            cancelAnimationFrame(animId);
+            animId = null;
+        }
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
         document.body.classList.remove('immersive-mode');
         canvas.style.pointerEvents = 'none';
         removeControls();
         removeSpeciesPanel();
-        measureContent();
         if (worker) {
-            worker.postMessage({
-                type: 'update',
-                zones: getZones()
-            });
+            worker.terminate();
+            worker = null;
         }
+        started = false;
+        frameData = null;
+        frameN = 0;
     }
 
     var btn = document.getElementById('immersive-toggle');

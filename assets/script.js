@@ -63,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
     tagFilters.forEach(cb => cb.addEventListener('change', filter));
 });
 
-// lightbox for image/video viewing
 
 let currentZoom = 1;
 let isDragging = false;
@@ -72,13 +71,13 @@ let startX, startY, translateX = 0, translateY = 0;
 function openLightbox(element) {
     const lightbox = document.getElementById('lightbox');
     if (!lightbox) return;
-    
+
     const media = document.getElementById('lightbox-media');
-    
+
     currentZoom = 1;
     translateX = 0;
     translateY = 0;
-    
+
     if (element.tagName === 'VIDEO') {
         const video = document.createElement('video');
         video.src = element.src;
@@ -95,7 +94,7 @@ function openLightbox(element) {
         }
         document.getElementById('lightbox-media').src = element.src;
     }
-    
+
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
     updateTransform();
@@ -104,10 +103,10 @@ function openLightbox(element) {
 function closeLightbox() {
     const lightbox = document.getElementById('lightbox');
     if (!lightbox) return;
-    
+
     lightbox.classList.remove('active');
     document.body.style.overflow = '';
-    
+
     const media = document.getElementById('lightbox-media');
     if (media.tagName === 'VIDEO') {
         media.pause();
@@ -134,7 +133,7 @@ function resetZoom() {
 function updateTransform() {
     const media = document.getElementById('lightbox-media');
     if (!media) return;
-    
+
     media.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
     const zoomLevel = document.getElementById('zoom-level');
     if (zoomLevel) {
@@ -155,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('keydown', (e) => {
         if (!lightbox || !lightbox.classList.contains('active')) return;
-        
+
         if (e.key === 'Escape') closeLightbox();
         else if (e.key === '+' || e.key === '=') zoomIn();
         else if (e.key === '-') zoomOut();
@@ -226,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const burger = document.querySelector('.burger-menu');
     const nav = document.querySelector('nav');
-    
+
     if (burger) {
         burger.addEventListener('click', () => {
             burger.classList.toggle('active');
@@ -242,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const filterToggle = document.querySelector('.filter-toggle');
     const rightSidebar = document.querySelector('.right-sidebar');
-    
+
     if (filterToggle && rightSidebar) {
         filterToggle.addEventListener('click', () => {
             rightSidebar.classList.toggle('active');
@@ -295,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tooltip.className = 'post-info-tooltip';
             tooltip.textContent = postStats.textContent;
             infoBtn.parentElement.appendChild(tooltip);
-            
+
             document.addEventListener('click', function closeTooltip() {
                 if (tooltip) {
                     tooltip.remove();

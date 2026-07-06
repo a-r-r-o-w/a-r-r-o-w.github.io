@@ -1,5 +1,18 @@
 [
   {
+    "title": "Looking inside your kernels",
+    "url": "/blog/3_blossom/00005_looking_inside_your_kernels/index.html",
+    "date": "2026-07-05",
+    "tags": [
+      "cuda",
+      "profiling",
+      "gpu",
+      "mlsys"
+    ],
+    "excerpt": "Interest in writing specialized high performance programs for GPUs and other accelerators has been on the rise in the past few years. There are many r...",
+    "category": "Blossom"
+  },
+  {
     "title": "Optimizing diffusion for production-ready speeds - IV",
     "url": "/blog/3_blossom/00004_productionizing_diffusion-4/index.html",
     "date": "2026-01-29",
