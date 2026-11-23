@@ -1,35 +1,29 @@
 (function () {
     var canvas = document.getElementById('particle-life');
-    if (!canvas) {
-        return;
-    }
+    if (!canvas) return;
 
     var gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: false });
-    if (!gl) {
-        gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: false });
-    }
-    if (!gl) {
-        return;
-    }
+    if (!gl) gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: false });
+    if (!gl) return;
     var isWebGL2 = !!gl.createTransformFeedback;
 
-    var NUM_SPECIES = 6, NUM_PARTICLES = 12000;
-    var SESSION_DURATION = 60000, FADE_DURATION = 3500;
-    var RMAX = 80.0, FRICTION = 0.05, DT = 0.004, FORCE_SCALE = 12.0;
-    var REPULSION_SCALE = 1.0, VEL_DAMPING = 1.0, WALL_MODE = 1;
-    var immersive = false, immersiveT = 0.0;
-    var W, H, dpr, contentL = 0, contentR = 0, rectTimer = 0;
+    var NUM_SPECIES = 6, NUM_PARTICLES = 5000;
+    var RMAX = 85.0, FRICTION = 0.28, DT = 0.01, FORCE_SCALE = 7.0;
+    var REPULSION_SCALE = 1.6, BOUNCE = 0.3, WALL_MODE = 1;
+    var immersive = false;
+    var W, H, dpr;
     var seed = (Date.now() ^ (Math.random() * 0xFFFFFFFF)) >>> 0;
     var rngState = seed;
-    var worker = null, frameData = null, frameN = 0, pendingBuf = null;
-    var sessionStart, prevTime, running = false, animId = null;
-    var started = false;
-    var controlsPanel = null, speciesPanel = null, immersiveGlow = 0.75;
+    var worker = null, running = false, animId = null;
+    var displayBuf = null, displayView = null, displayN = 0, recycleBuf = null;
+    var frameDirty = false, stepInFlight = false;
+    var controlsPanel = null, speciesPanel = null;
     var editorMode = 'simple';
+    var activePreset = null;
     var currentAttractions = null, currentMinDist = null;
 
-    var FLOATS_PER_PARTICLE = 7;
-    var STRIDE_BYTES = 8 * 4;
+    var FLOATS_PER_PARTICLE = 4;
+    var STRIDE_BYTES = FLOATS_PER_PARTICLE * 4;
 
     var lifecycle = {
         enabled: false, reproRate: 0.5, mutationRate: 0.2,
@@ -37,19 +31,224 @@
     };
 
     var darkPalette = [
-        [1.00, 0.30, 0.35], [0.20, 0.80, 1.00], [0.40, 1.00, 0.40],
-        [1.00, 0.85, 0.15], [0.85, 0.35, 1.00], [1.00, 0.55, 0.10],
-        [0.10, 1.00, 0.80], [1.00, 0.40, 0.75], [0.50, 0.70, 1.00],
-        [0.80, 1.00, 0.20], [1.00, 0.65, 0.50], [0.60, 0.40, 1.00],
+        [1.00, 0.22, 0.30], [0.10, 0.85, 1.00], [0.25, 1.00, 0.35],
+        [1.00, 0.88, 0.10], [0.88, 0.28, 1.00], [1.00, 0.52, 0.05],
+        [0.05, 1.00, 0.80], [1.00, 0.30, 0.78], [0.40, 0.68, 1.00],
+        [0.80, 1.00, 0.15], [1.00, 0.62, 0.45], [0.58, 0.38, 1.00],
     ];
     var lightPalette = [
-        [0.85, 0.10, 0.15], [0.05, 0.50, 0.80], [0.10, 0.65, 0.10],
-        [0.75, 0.60, 0.00], [0.60, 0.10, 0.75], [0.80, 0.35, 0.00],
-        [0.00, 0.65, 0.55], [0.80, 0.15, 0.50], [0.20, 0.40, 0.80],
-        [0.50, 0.65, 0.00], [0.80, 0.40, 0.25], [0.35, 0.15, 0.75],
+        [0.92, 0.12, 0.20], [0.00, 0.52, 0.90], [0.06, 0.68, 0.18],
+        [0.86, 0.58, 0.00], [0.68, 0.12, 0.88], [0.94, 0.38, 0.00],
+        [0.00, 0.66, 0.56], [0.88, 0.12, 0.55], [0.18, 0.40, 0.90],
+        [0.48, 0.68, 0.00], [0.88, 0.36, 0.20], [0.40, 0.16, 0.88],
     ];
+    var darkPaletteFlat = new Float32Array(12 * 3);
+    var lightPaletteFlat = new Float32Array(12 * 3);
+    for (var pi = 0; pi < 12; pi++) {
+        darkPaletteFlat[pi * 3] = darkPalette[pi][0];
+        darkPaletteFlat[pi * 3 + 1] = darkPalette[pi][1];
+        darkPaletteFlat[pi * 3 + 2] = darkPalette[pi][2];
+        lightPaletteFlat[pi * 3] = lightPalette[pi][0];
+        lightPaletteFlat[pi * 3 + 1] = lightPalette[pi][1];
+        lightPaletteFlat[pi * 3 + 2] = lightPalette[pi][2];
+    }
+
     var speciesNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
-    var speciesShapes = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5];
+
+    function fillMat(n, fn) {
+        var out = new Array(n * n);
+        for (var i = 0; i < n; i++) {
+            for (var j = 0; j < n; j++) out[i * n + j] = fn(i, j, n);
+        }
+        return out;
+    }
+
+    var PRESETS = [
+        {
+            name: 'Snakes',
+            numSpecies: 6, numParticles: 5000, rmax: 75, friction: 0.30, dt: 0.01,
+            forceScale: 7, repulsionScale: 1.7, bounce: 0.3, wallMode: 1,
+            attractions: fillMat(6, function (i, j, n) {
+                var d = (j - i + n) % n;
+                if (d === 0) return 0.85;
+                if (d === 1) return 0.38;
+                if (d === n - 1) return 0.14;
+                return -0.75;
+            }),
+            minDist: fillMat(6, function (i, j) { return i === j ? 0.24 : 0.34; }),
+            lifecycle: { enabled: false }
+        },
+        {
+            name: 'Living Cells',
+            numSpecies: 4, numParticles: 5000, rmax: 90, friction: 0.32, dt: 0.01,
+            forceScale: 6, repulsionScale: 1.7, bounce: 0.3, wallMode: 1,
+            attractions: [
+                0.90, 0.30, -0.80, 0.05,
+                0.70, 0.45, -0.45, 0.20,
+                -0.65, -0.35, -0.10, 0.05,
+                0.05, 0.35, -0.15, 0.10
+            ],
+            minDist: [
+                0.24, 0.34, 0.44, 0.28,
+                0.34, 0.26, 0.38, 0.24,
+                0.44, 0.38, 0.32, 0.26,
+                0.28, 0.24, 0.26, 0.24
+            ],
+            lifecycle: { enabled: false }
+        },
+        {
+            name: 'Gliders',
+            numSpecies: 3, numParticles: 4500, rmax: 58, friction: 0.28, dt: 0.01,
+            forceScale: 6, repulsionScale: 1.6, bounce: 0.3, wallMode: 1,
+            attractions: [
+                0.75, 0.85, -0.60,
+                -0.60, 0.75, 0.85,
+                0.85, -0.60, 0.75
+            ],
+            minDist: fillMat(3, function () { return 0.30; }),
+            lifecycle: { enabled: false }
+        },
+        {
+            name: 'Crystals',
+            numSpecies: 4, numParticles: 4000, rmax: 80, friction: 0.42, dt: 0.008,
+            forceScale: 6, repulsionScale: 2.5, bounce: 0.3, wallMode: 0,
+            attractions: fillMat(4, function (i, j) {
+                if (i === j) return 0.35;
+                return ((i + j) % 2 === 0) ? 0.25 : -0.15;
+            }),
+            minDist: fillMat(4, function () { return 0.56; }),
+            lifecycle: { enabled: false }
+        },
+        {
+            name: 'Solar Systems',
+            numSpecies: 5, numParticles: 5000, rmax: 95, friction: 0.30, dt: 0.01,
+            forceScale: 5, repulsionScale: 1.8, bounce: 0.3, wallMode: 1,
+            attractions: [
+                0.70, -0.05, -0.05, -0.05, -0.05,
+                0.65, 0.15, 0.30, -0.15, -0.25,
+                0.50, -0.25, 0.15, 0.30, -0.15,
+                0.35, -0.15, -0.25, 0.15, 0.30,
+                0.25, 0.30, -0.15, -0.25, 0.15
+            ],
+            minDist: fillMat(5, function (i, j) {
+                if (i === 0 && j === 0) return 0.24;
+                if (i === 0 || j === 0) return 0.22 + Math.max(i, j) * 0.11;
+                return 0.28;
+            }),
+            lifecycle: { enabled: false }
+        },
+        {
+            name: 'Predator & Prey',
+            numSpecies: 4, numParticles: 5000, rmax: 75, friction: 0.28, dt: 0.01,
+            forceScale: 6, repulsionScale: 1.6, bounce: 0.3, wallMode: 1,
+            attractions: [
+                0.25, 0.90, -0.20, -0.20,
+                -0.80, 0.45, 0.85, -0.10,
+                -0.10, -0.45, 0.65, 0.20,
+                0.50, -0.25, 0.40, 0.35
+            ],
+            minDist: fillMat(4, function () { return 0.28; }),
+            lifecycle: {
+                enabled: true, reproRate: 0.55, mutationRate: 0.08,
+                lifespan: 3600, energyGain: 0.45, energyCost: 0.25, predationStr: 0.70
+            }
+        },
+        {
+            name: 'Symbiosis',
+            numSpecies: 6, numParticles: 5000, rmax: 80, friction: 0.30, dt: 0.01,
+            forceScale: 7, repulsionScale: 1.7, bounce: 0.3, wallMode: 1,
+            attractions: fillMat(6, function (i, j) {
+                if (i === j) return 0.30;
+                if ((i >> 1) === (j >> 1)) return 0.95;
+                return -0.45;
+            }),
+            minDist: fillMat(6, function (i, j) {
+                return (i >> 1) === (j >> 1) ? 0.24 : 0.38;
+            }),
+            lifecycle: { enabled: false }
+        },
+        {
+            name: 'Vortex',
+            numSpecies: 6, numParticles: 5000, rmax: 95, friction: 0.26, dt: 0.01,
+            forceScale: 5, repulsionScale: 1.6, bounce: 0.3, wallMode: 1,
+            attractions: fillMat(6, function (i, j, n) {
+                var d = (j - i + n) % n;
+                if (d === 0) return 0.40;
+                if (d === 1) return 0.75;
+                if (d === 2) return 0.30;
+                if (d === n - 1) return -0.50;
+                if (d === n - 2) return -0.20;
+                return 0.0;
+            }),
+            minDist: fillMat(6, function () { return 0.26; }),
+            lifecycle: { enabled: false }
+        },
+        {
+            name: 'Mitosis',
+            numSpecies: 4, numParticles: 4500, rmax: 85, friction: 0.34, dt: 0.01,
+            forceScale: 6, repulsionScale: 1.9, bounce: 0.3, wallMode: 1,
+            attractions: [
+                0.80, 0.50, -0.60, -0.35,
+                0.40, 0.75, 0.35, -0.60,
+                -0.55, 0.25, 0.80, 0.45,
+                -0.30, -0.55, 0.30, 0.75
+            ],
+            minDist: fillMat(4, function (i, j) { return i === j ? 0.34 : 0.28; }),
+            lifecycle: {
+                enabled: true, reproRate: 0.60, mutationRate: 0.10,
+                lifespan: 3000, energyGain: 0.55, energyCost: 0.26, predationStr: 0.35
+            }
+        },
+        {
+            name: 'Membranes',
+            numSpecies: 3, numParticles: 5000, rmax: 90, friction: 0.34, dt: 0.01,
+            forceScale: 6, repulsionScale: 1.8, bounce: 0.3, wallMode: 1,
+            attractions: [
+                0.65, -0.80, 0.45,
+                -0.80, -0.10, -0.65,
+                0.45, -0.65, 0.55
+            ],
+            minDist: [
+                0.26, 0.44, 0.30,
+                0.44, 0.36, 0.42,
+                0.30, 0.42, 0.26
+            ],
+            lifecycle: { enabled: false }
+        },
+        {
+            name: 'Swarm',
+            numSpecies: 4, numParticles: 5000, rmax: 75, friction: 0.28, dt: 0.01,
+            forceScale: 6, repulsionScale: 1.6, bounce: 0.3, wallMode: 1,
+            attractions: fillMat(4, function (i, j, n) {
+                var d = (j - i + n) % n;
+                if (d === 0) return 0.55;
+                if (d === 1) return 0.65;
+                if (d === n - 1) return -0.35;
+                return -0.10;
+            }),
+            minDist: fillMat(4, function () { return 0.28; }),
+            lifecycle: { enabled: false }
+        },
+        {
+            name: 'Primordial Soup',
+            numSpecies: 8, numParticles: 5500, rmax: 80, friction: 0.28, dt: 0.01,
+            forceScale: 6, repulsionScale: 1.6, bounce: 0.3, wallMode: 1,
+            attractions: fillMat(8, function (i, j, n) {
+                var d = (j - i + n) % n;
+                if (d === 0) return 0.65;
+                if (d === 1) return 0.75;
+                if (d === 2) return 0.20;
+                if (d === n - 1) return -0.55;
+                if (d === n - 2) return -0.20;
+                return ((i + j) % 2 === 0 ? 0.15 : -0.25);
+            }),
+            minDist: fillMat(8, function () { return 0.26; }),
+            lifecycle: {
+                enabled: true, reproRate: 0.50, mutationRate: 0.35,
+                lifespan: 3200, energyGain: 0.48, energyCost: 0.26, predationStr: 0.55
+            }
+        }
+    ];
 
     var plIconSvg = '<svg class="pl-icon" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">' +
         '<circle cx="4" cy="4" r="1.8" opacity="0.9"/>' +
@@ -67,19 +266,6 @@
         return (rngState >>> 0) / 0xFFFFFFFF;
     }
 
-    function measureContent() {
-        var el = document.querySelector('.container') || document.querySelector('.page-wrapper');
-        if (el) {
-            var r = el.getBoundingClientRect();
-            contentL = r.left;
-            contentR = r.right;
-        }
-        else {
-            contentL = W * 0.25;
-            contentR = W * 0.75;
-        }
-    }
-
     function resize() {
         dpr = Math.min(window.devicePixelRatio || 1, 2);
         W = window.innerWidth;
@@ -89,55 +275,47 @@
         canvas.style.width = W + 'px';
         canvas.style.height = H + 'px';
         gl.viewport(0, 0, canvas.width, canvas.height);
-        measureContent();
+        if (worker) {
+            worker.postMessage({ type: 'update', resize: { worldW: W, worldH: H } });
+        }
     }
 
     function generateRules() {
         var n = NUM_SPECIES;
         var a = new Float32Array(n * n);
         var m = new Float32Array(n * n);
-        var i, j, idx;
-        for (i = 0; i < n; i++) {
-            for (j = 0; j < n; j++) {
-                idx = i * n + j;
-                a[idx] = (xorshift32() * 2.0 - 1.0) * 0.8;
-                m[idx] = 0.15 + xorshift32() * 0.25;
-            }
+        for (var i = 0; i < n * n; i++) {
+            a[i] = (xorshift32() * 2.0 - 1.0) * 0.8;
+            m[i] = 0.15 + xorshift32() * 0.25;
         }
         return { attractions: a, minDist: m };
     }
 
-    function getZones() {
-        var gap = 40;
-        if (immersive) {
-            return { left: W * 0.5, right: W * 0.5 };
+    function startWorker(keepRules) {
+        if (worker) worker.terminate();
+        if (!keepRules || !currentAttractions || !currentMinDist) {
+            var rules = generateRules();
+            currentAttractions = rules.attractions;
+            currentMinDist = rules.minDist;
         }
-        return {
-            left: Math.max(0, contentL - gap),
-            right: Math.min(W, contentR + gap)
-        };
-    }
 
-    function initWorker() {
-        if (worker) {
-            worker.terminate();
-        }
-        var rules = generateRules();
-        currentAttractions = rules.attractions;
-        currentMinDist = rules.minDist;
-        var z = getZones();
+        displayBuf = null;
+        displayView = null;
+        displayN = 0;
+        recycleBuf = new ArrayBuffer(Math.max(NUM_PARTICLES, 40000) * STRIDE_BYTES);
+        frameDirty = false;
+        stepInFlight = true;
 
         worker = new Worker('/assets/particle-worker.js');
         worker.onmessage = function (e) {
             var d = e.data;
             if (d.type === 'frame') {
-                var src = new Float32Array(d.buf);
-                if (!frameData || frameData.length < src.length) {
-                    frameData = new Float32Array(src.length);
-                }
-                frameData.set(src);
-                frameN = d.n;
-                pendingBuf = d.buf;
+                if (displayBuf) recycleBuf = displayBuf;
+                displayBuf = d.buf;
+                displayView = new Float32Array(displayBuf, 0, d.n * FLOATS_PER_PARTICLE);
+                displayN = d.n;
+                frameDirty = true;
+                stepInFlight = false;
             }
         };
         worker.postMessage({
@@ -148,9 +326,8 @@
                 worldW: W, worldH: H,
                 rmax: RMAX, friction: FRICTION, dt: DT, forceScale: FORCE_SCALE,
                 attractions: currentAttractions, minDist: currentMinDist,
-                leftZoneEnd: z.left, rightZoneStart: z.right,
                 seed: seed, repulsionScale: REPULSION_SCALE,
-                velDamping: VEL_DAMPING, wallMode: WALL_MODE,
+                bounce: BOUNCE, wallMode: WALL_MODE,
                 lifecycle: lifecycle,
             }
         });
@@ -160,13 +337,10 @@
         }
     }
 
-    function resetSession() {
+    function resetSession(keepRules) {
         seed = (Date.now() ^ (Math.random() * 0xFFFFFFFF)) >>> 0;
         rngState = seed;
-        sessionStart = performance.now();
-        prevTime = sessionStart;
-        measureContent();
-        initWorker();
+        startWorker(keepRules);
     }
 
     function sendUpdate(key, val) {
@@ -192,10 +366,10 @@
             md.push(Math.round(currentMinDist[i] * 1000) / 1000);
         }
         var cfg = {
-            version: 2, numSpecies: n, numParticles: NUM_PARTICLES,
+            version: 3, numSpecies: n, numParticles: NUM_PARTICLES,
             rmax: RMAX, friction: FRICTION, dt: DT, forceScale: FORCE_SCALE,
-            repulsionScale: REPULSION_SCALE, velDamping: VEL_DAMPING,
-            wallMode: WALL_MODE, glow: immersiveGlow,
+            repulsionScale: REPULSION_SCALE, bounce: BOUNCE,
+            wallMode: WALL_MODE,
             attractions: att, minDist: md, lifecycle: lifecycle,
         };
         var blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
@@ -206,83 +380,60 @@
         URL.revokeObjectURL(a.href);
     }
 
+    function applyConfig(cfg, presetName) {
+        if (!cfg.attractions || !cfg.minDist) return;
+        activePreset = presetName || null;
+        NUM_SPECIES = cfg.numSpecies || 6;
+        NUM_PARTICLES = cfg.numParticles || 5000;
+        RMAX = cfg.rmax || 85;
+        FRICTION = cfg.friction || 0.28;
+        DT = cfg.dt || 0.01;
+        FORCE_SCALE = cfg.forceScale || 7;
+        REPULSION_SCALE = cfg.repulsionScale || 1.6;
+        BOUNCE = cfg.bounce !== undefined ? cfg.bounce : 0.3;
+        WALL_MODE = cfg.wallMode !== undefined ? cfg.wallMode : 1;
+        lifecycle = Object.assign({
+            enabled: false, reproRate: 0.5, mutationRate: 0.2,
+            lifespan: 3000, energyGain: 0.5, energyCost: 0.3, predationStr: 0.5
+        }, cfg.lifecycle || { enabled: false });
+        currentAttractions = new Float32Array(cfg.attractions);
+        currentMinDist = new Float32Array(cfg.minDist);
+        reallocVbo();
+        resetSession(true);
+        var pos = controlsPanel ? {
+            left: controlsPanel.style.left, top: controlsPanel.style.top,
+            right: controlsPanel.style.right, bottom: controlsPanel.style.bottom,
+            transform: controlsPanel.style.transform
+        } : null;
+        removeControls();
+        removeSpeciesPanel();
+        buildControls();
+        if (pos && pos.left) {
+            controlsPanel.style.left = pos.left;
+            controlsPanel.style.top = pos.top;
+            controlsPanel.style.right = pos.right;
+            controlsPanel.style.bottom = pos.bottom;
+            controlsPanel.style.transform = pos.transform;
+        }
+        if (editorMode === 'advanced') buildSpeciesPanel();
+    }
+
     function importConfig(file) {
         var reader = new FileReader();
         reader.onload = function (e) {
-            try {
-                var cfg = JSON.parse(e.target.result);
-                if (!cfg.attractions || !cfg.minDist) {
-                    return;
-                }
-                NUM_SPECIES = cfg.numSpecies || 6;
-                NUM_PARTICLES = cfg.numParticles || 12000;
-                RMAX = cfg.rmax || 80;
-                FRICTION = cfg.friction || 0.05;
-                DT = cfg.dt || 0.004;
-                FORCE_SCALE = cfg.forceScale || 12;
-                REPULSION_SCALE = cfg.repulsionScale || 1;
-                VEL_DAMPING = cfg.velDamping || 1;
-                WALL_MODE = cfg.wallMode !== undefined ? cfg.wallMode : 1;
-                immersiveGlow = cfg.glow || 0.75;
-                if (cfg.lifecycle) {
-                    lifecycle = cfg.lifecycle;
-                }
-                currentAttractions = new Float32Array(cfg.attractions);
-                currentMinDist = new Float32Array(cfg.minDist);
-                reallocVertexData();
-                seed = (Date.now() ^ (Math.random() * 0xFFFFFFFF)) >>> 0;
-                rngState = seed;
-                sessionStart = performance.now();
-                measureContent();
-                if (worker) {
-                    worker.terminate();
-                }
-                var z = getZones();
-                worker = new Worker('/assets/particle-worker.js');
-                worker.onmessage = function (ev) {
-                    var d = ev.data;
-                    if (d.type === 'frame') {
-                        var src = new Float32Array(d.buf);
-                        if (!frameData || frameData.length < src.length) {
-                            frameData = new Float32Array(src.length);
-                        }
-                        frameData.set(src);
-                        frameN = d.n;
-                        pendingBuf = d.buf;
-                    }
-                };
-                worker.postMessage({
-                    type: 'init',
-                    config: {
-                        numParticles: NUM_PARTICLES, numSpecies: NUM_SPECIES,
-                        worldW: W, worldH: H,
-                        rmax: RMAX, friction: FRICTION, dt: DT, forceScale: FORCE_SCALE,
-                        attractions: currentAttractions, minDist: currentMinDist,
-                        leftZoneEnd: z.left, rightZoneStart: z.right,
-                        seed: seed, repulsionScale: REPULSION_SCALE,
-                        velDamping: VEL_DAMPING, wallMode: WALL_MODE,
-                        lifecycle: lifecycle,
-                    }
-                });
-                removeControls();
-                removeSpeciesPanel();
-                buildControls();
-                if (editorMode === 'advanced') {
-                    buildSpeciesPanel();
-                }
-            }
+            try { applyConfig(JSON.parse(e.target.result), null); }
             catch (err) { }
         };
         reader.readAsText(file);
     }
 
     var vsSrc = isWebGL2
-        ? '#version 300 es\nin vec2 aPos;\nin vec4 aColor;\nin float aSize;\nin float aShape;\nuniform vec2 uRes;\nout vec4 vColor;\nout float vShape;\nvoid main() {\n    vec2 c = (aPos / uRes) * 2.0 - 1.0;\n    c.y = -c.y;\n    gl_Position = vec4(c, 0.0, 1.0);\n    gl_PointSize = aSize;\n    vColor = aColor;\n    vShape = aShape;\n}\n'
-        : 'attribute vec2 aPos;\nattribute vec4 aColor;\nattribute float aSize;\nattribute float aShape;\nuniform vec2 uRes;\nvarying vec4 vColor;\nvarying float vShape;\nvoid main() {\n    vec2 c = (aPos / uRes) * 2.0 - 1.0;\n    c.y = -c.y;\n    gl_Position = vec4(c, 0.0, 1.0);\n    gl_PointSize = aSize;\n    vColor = aColor;\n    vShape = aShape;\n}\n';
+        ? '#version 300 es\nin vec2 aPos;\nin vec2 aMeta;\nuniform vec2 uRes;\nuniform vec3 uPalette[12];\nuniform float uPointSize;\nuniform float uBaseAlpha;\nuniform float uColorBoost;\nout vec4 vColor;\nout float vShape;\nvoid main() {\n    vec2 c = (aPos / uRes) * 2.0 - 1.0;\n    c.y = -c.y;\n    gl_Position = vec4(c, 0.0, 1.0);\n    int sp = int(aMeta.x + 0.5);\n    float dim = aMeta.y;\n    gl_PointSize = uPointSize * (0.65 + 0.35 * dim);\n    vColor = vec4(min(uPalette[sp] * uColorBoost * dim, 1.0), min(uBaseAlpha * dim, 1.0));\n    vShape = mod(aMeta.x, 6.0);\n}\n'
+        : 'attribute vec2 aPos;\nattribute vec2 aMeta;\nuniform vec2 uRes;\nuniform vec3 uPalette[12];\nuniform float uPointSize;\nuniform float uBaseAlpha;\nuniform float uColorBoost;\nvarying vec4 vColor;\nvarying float vShape;\nvoid main() {\n    vec2 c = (aPos / uRes) * 2.0 - 1.0;\n    c.y = -c.y;\n    gl_Position = vec4(c, 0.0, 1.0);\n    int sp = int(aMeta.x + 0.5);\n    float dim = aMeta.y;\n    gl_PointSize = uPointSize * (0.65 + 0.35 * dim);\n    vColor = vec4(min(uPalette[sp] * uColorBoost * dim, 1.0), min(uBaseAlpha * dim, 1.0));\n    vShape = mod(aMeta.x, 6.0);\n}\n';
 
     var fsSrc = isWebGL2
-        ? '#version 300 es\nprecision mediump float;\nin vec4 vColor;\nin float vShape;\nout vec4 fc;\nvoid main() {\n    vec2 d = gl_PointCoord - 0.5;\n    float r2 = dot(d, d);\n    int s = int(vShape + 0.5);\n    float mask = 0.0;\n    if (s == 0) {\n        mask = smoothstep(0.25, 0.15, r2);\n    } else if (s == 1) {\n        float ax = abs(d.x), ay = abs(d.y);\n        mask = step(ax + ay, 0.42) * smoothstep(0.42, 0.35, ax + ay);\n    } else if (s == 2) {\n        float ax = abs(d.x), ay = abs(d.y);\n        mask = step(max(ax, ay), 0.38) * smoothstep(0.38, 0.30, max(ax, ay));\n    } else if (s == 3) {\n        float tx = d.x * 1.8, ty = d.y + 0.15;\n        float tri = max(abs(tx) - 0.5 + ty, -ty - 0.30);\n        mask = smoothstep(0.02, -0.02, tri);\n    } else if (s == 4) {\n        float r = sqrt(r2);\n        float a = atan(d.y, d.x);\n        float star = r - 0.25 - 0.12 * cos(a * 5.0);\n        mask = smoothstep(0.02, -0.02, star);\n    } else {\n        float r = sqrt(r2);\n        float a = atan(d.y, d.x);\n        float hex = r - 0.35 + 0.06 * cos(a * 6.0);\n        mask = smoothstep(0.02, -0.02, hex);\n    }\n    if (mask < 0.01) discard;\n    fc = vec4(vColor.rgb, vColor.a * mask);\n}\n'
-        : 'precision mediump float;\nvarying vec4 vColor;\nvarying float vShape;\nvoid main() {\n    vec2 d = gl_PointCoord - 0.5;\n    float r2 = dot(d, d);\n    int s = int(vShape + 0.5);\n    float mask = 0.0;\n    if (s == 0) {\n        mask = smoothstep(0.25, 0.15, r2);\n    } else if (s == 1) {\n        float ax = abs(d.x), ay = abs(d.y);\n        mask = step(ax + ay, 0.42) * smoothstep(0.42, 0.35, ax + ay);\n    } else if (s == 2) {\n        float ax = abs(d.x), ay = abs(d.y);\n        mask = step(max(ax, ay), 0.38) * smoothstep(0.38, 0.30, max(ax, ay));\n    } else if (s == 3) {\n        float tx = d.x * 1.8, ty = d.y + 0.15;\n        float tri = max(abs(tx) - 0.5 + ty, -ty - 0.30);\n        mask = smoothstep(0.02, -0.02, tri);\n    } else if (s == 4) {\n        float r = sqrt(r2);\n        float a = atan(d.y, d.x);\n        float star = r - 0.25 - 0.12 * cos(a * 5.0);\n        mask = smoothstep(0.02, -0.02, star);\n    } else {\n        float r = sqrt(r2);\n        float a = atan(d.y, d.x);\n        float hex = r - 0.35 + 0.06 * cos(a * 6.0);\n        mask = smoothstep(0.02, -0.02, hex);\n    }\n    if (mask < 0.01) discard;\n    gl_FragColor = vec4(vColor.rgb, vColor.a * mask);\n}\n';
+        ? '#version 300 es\nprecision mediump float;\nin vec4 vColor;\nin float vShape;\nout vec4 fc;\nvoid main() {\n    vec2 d = gl_PointCoord - 0.5;\n    float r2 = dot(d, d);\n    int s = int(vShape + 0.5);\n    float mask = 0.0;\n    if (s == 0) {\n        mask = smoothstep(0.25, 0.10, r2);\n    } else if (s == 1) {\n        float manh = abs(d.x) + abs(d.y);\n        mask = smoothstep(0.42, 0.34, manh);\n    } else if (s == 2) {\n        float box = max(abs(d.x), abs(d.y));\n        mask = smoothstep(0.38, 0.30, box);\n    } else if (s == 3) {\n        float tx = d.x * 1.8, ty = d.y + 0.15;\n        float tri = max(abs(tx) - 0.5 + ty, -ty - 0.30);\n        mask = smoothstep(0.02, -0.02, tri);\n    } else if (s == 4) {\n        float r = sqrt(r2);\n        float a = atan(d.y, d.x);\n        float star = r - 0.25 - 0.12 * cos(a * 5.0);\n        mask = smoothstep(0.02, -0.02, star);\n    } else {\n        float r = sqrt(r2);\n        float a = atan(d.y, d.x);\n        float hex = r - 0.35 + 0.06 * cos(a * 6.0);\n        mask = smoothstep(0.02, -0.02, hex);\n    }\n    if (mask < 0.01) discard;\n    fc = vec4(vColor.rgb, vColor.a * mask);\n}\n'
+        : 'precision mediump float;\nvarying vec4 vColor;\nvarying float vShape;\nvoid main() {\n    vec2 d = gl_PointCoord - 0.5;\n    float r2 = dot(d, d);\n    int s = int(vShape + 0.5);\n    float mask = 0.0;\n    if (s == 0) {\n        mask = smoothstep(0.25, 0.10, r2);\n    } else if (s == 1) {\n        float manh = abs(d.x) + abs(d.y);\n        mask = smoothstep(0.42, 0.34, manh);\n    } else if (s == 2) {\n        float box = max(abs(d.x), abs(d.y));\n        mask = smoothstep(0.38, 0.30, box);\n    } else if (s == 3) {\n        float tx = d.x * 1.8, ty = d.y + 0.15;\n        float tri = max(abs(tx) - 0.5 + ty, -ty - 0.30);\n        mask = smoothstep(0.02, -0.02, tri);\n    } else if (s == 4) {\n        float r = sqrt(r2);\n        float a = atan(d.y, d.x);\n        float star = r - 0.25 - 0.12 * cos(a * 5.0);\n        mask = smoothstep(0.02, -0.02, star);\n    } else {\n        float r = sqrt(r2);\n        float a = atan(d.y, d.x);\n        float hex = r - 0.35 + 0.06 * cos(a * 6.0);\n        mask = smoothstep(0.02, -0.02, hex);\n    }\n    if (mask < 0.01) discard;\n    gl_FragColor = vec4(vColor.rgb, vColor.a * mask);\n}\n';
 
     function compileShader(type, source) {
         var s = gl.createShader(type);
@@ -297,177 +448,126 @@
 
     var vs = compileShader(gl.VERTEX_SHADER, vsSrc);
     var fs = compileShader(gl.FRAGMENT_SHADER, fsSrc);
-    if (!vs || !fs) {
-        return;
-    }
+    if (!vs || !fs) return;
     var prog = gl.createProgram();
     gl.attachShader(prog, vs);
     gl.attachShader(prog, fs);
     gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-        return;
-    }
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
     gl.useProgram(prog);
 
     var aPosLoc = gl.getAttribLocation(prog, 'aPos');
-    var aColorLoc = gl.getAttribLocation(prog, 'aColor');
-    var aSizeLoc = gl.getAttribLocation(prog, 'aSize');
-    var aShapeLoc = gl.getAttribLocation(prog, 'aShape');
+    var aMetaLoc = gl.getAttribLocation(prog, 'aMeta');
     var uResLoc = gl.getUniformLocation(prog, 'uRes');
+    var uPaletteLoc = gl.getUniformLocation(prog, 'uPalette');
+    var uPointSizeLoc = gl.getUniformLocation(prog, 'uPointSize');
+    var uBaseAlphaLoc = gl.getUniformLocation(prog, 'uBaseAlpha');
+    var uColorBoostLoc = gl.getUniformLocation(prog, 'uColorBoost');
 
     var maxVerts = 40000;
-    var vertexData = new Float32Array(maxVerts * 8);
     var vbo = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-    gl.bufferData(gl.ARRAY_BUFFER, vertexData.byteLength, gl.DYNAMIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, maxVerts * STRIDE_BYTES, gl.DYNAMIC_DRAW);
     gl.enableVertexAttribArray(aPosLoc);
     gl.vertexAttribPointer(aPosLoc, 2, gl.FLOAT, false, STRIDE_BYTES, 0);
-    gl.enableVertexAttribArray(aColorLoc);
-    gl.vertexAttribPointer(aColorLoc, 4, gl.FLOAT, false, STRIDE_BYTES, 8);
-    gl.enableVertexAttribArray(aSizeLoc);
-    gl.vertexAttribPointer(aSizeLoc, 1, gl.FLOAT, false, STRIDE_BYTES, 24);
-    if (aShapeLoc >= 0) {
-        gl.enableVertexAttribArray(aShapeLoc);
-        gl.vertexAttribPointer(aShapeLoc, 1, gl.FLOAT, false, STRIDE_BYTES, 28);
-    }
+    gl.enableVertexAttribArray(aMetaLoc);
+    gl.vertexAttribPointer(aMetaLoc, 2, gl.FLOAT, false, STRIDE_BYTES, 8);
     gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 
-    function reallocVertexData() {
-        var needed = Math.max(NUM_PARTICLES, 40000) * 8;
-        if (vertexData.length < needed) {
-            vertexData = new Float32Array(needed);
+    function reallocVbo() {
+        var needed = Math.max(NUM_PARTICLES, maxVerts);
+        if (needed > maxVerts) {
+            maxVerts = needed;
             gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-            gl.bufferData(gl.ARRAY_BUFFER, vertexData.byteLength, gl.DYNAMIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, maxVerts * STRIDE_BYTES, gl.DYNAMIC_DRAW);
         }
     }
 
     resize();
     window.addEventListener('resize', resize);
-    sessionStart = performance.now();
-    prevTime = sessionStart;
 
-    function getPalette() {
-        if (document.documentElement.dataset.theme === 'light') {
-            return lightPalette;
-        }
-        return darkPalette;
+    function isLight() {
+        return document.documentElement.dataset.theme === 'light';
     }
 
-    function render(now) {
-        if (!running) {
-            return;
-        }
+    function getPalette() {
+        return isLight() ? lightPalette : darkPalette;
+    }
+
+    function render() {
+        if (!running) return;
         animId = requestAnimationFrame(render);
 
-        if (pendingBuf) {
-            var b = pendingBuf;
-            pendingBuf = null;
+        if (!stepInFlight && recycleBuf && worker) {
+            var b = recycleBuf;
+            recycleBuf = null;
+            stepInFlight = true;
             worker.postMessage({ type: 'step', buf: b }, [b]);
         }
 
-        var elapsed = now - sessionStart;
-        var globalAlpha = 1.0;
+        if (!frameDirty || !displayView || displayN === 0) return;
+        frameDirty = false;
 
-        if (!immersive) {
-            if (elapsed > SESSION_DURATION + FADE_DURATION) {
-                resetSession();
-                elapsed = 0;
-            }
-            if (elapsed < FADE_DURATION) {
-                var t = elapsed / FADE_DURATION;
-                globalAlpha = t * t;
-            }
-            else if (elapsed > SESSION_DURATION) {
-                var t = 1.0 - (elapsed - SESSION_DURATION) / FADE_DURATION;
-                globalAlpha = t * t;
-            }
-        }
-
-        var targetImm = immersive ? 1.0 : 0.0;
-        immersiveT += (targetImm - immersiveT) * 0.05;
-
-        rectTimer++;
-        if (rectTimer > 60) {
-            rectTimer = 0;
-            measureContent();
-        }
-
-        if (!frameData || frameN === 0) {
-            gl.clearColor(0, 0, 0, 0);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-            return;
-        }
-
-        var palette = getPalette();
-        var n = Math.min(frameN, maxVerts);
-        var i, base, off, px, py, vm, sp, fmag, nrg, ageFrac, c;
-        var alpha, ptSize;
-
-        var normalAlpha = 0.08;
-        var immAlpha = 0.35 + immersiveGlow * 0.55;
-        var baseAlpha = normalAlpha + immersiveT * (immAlpha - normalAlpha);
-
-        var normalPt = Math.max(1.5, Math.min(2.5, W / 600));
-        var immPt = Math.max(3.0, Math.min(5.0, W / 350));
-        var basePt = normalPt + immersiveT * (immPt - normalPt);
-
-        for (i = 0; i < n; i++) {
-            base = i * FLOATS_PER_PARTICLE;
-            px = frameData[base];
-            py = frameData[base + 1];
-            vm = frameData[base + 2];
-            sp = frameData[base + 3] | 0;
-            fmag = frameData[base + 4];
-            nrg = frameData[base + 5];
-            ageFrac = frameData[base + 6];
-
-            off = i * 8;
-            vertexData[off] = px * dpr;
-            vertexData[off + 1] = py * dpr;
-
-            c = palette[sp % palette.length];
-            var colorBoost = 1.0 + immersiveT * 0.5 + Math.min(fmag * 0.003, 0.15);
-            var energyDim = lifecycle.enabled ? Math.max(nrg, 0.2) : 1.0;
-            vertexData[off + 2] = Math.min(c[0] * colorBoost * energyDim, 1.0);
-            vertexData[off + 3] = Math.min(c[1] * colorBoost * energyDim, 1.0);
-            vertexData[off + 4] = Math.min(c[2] * colorBoost * energyDim, 1.0);
-
-            var activity = Math.min(vm * 0.015, 0.08);
-            alpha = (baseAlpha + activity * immersiveT) * globalAlpha;
-            if (lifecycle.enabled) {
-                alpha *= Math.min(nrg + 0.3, 1.0);
-            }
-            vertexData[off + 5] = alpha;
-
-            ptSize = basePt + Math.min(vm * 0.03, 0.8) * immersiveT;
-            if (lifecycle.enabled && ageFrac > 0.8) {
-                ptSize *= 1.0 - (ageFrac - 0.8) * 2.0;
-            }
-            vertexData[off + 6] = ptSize * dpr * Math.max(globalAlpha, 0.05);
-            vertexData[off + 7] = speciesShapes[sp % speciesShapes.length];
-        }
+        var light = isLight();
+        gl.blendFunc(gl.SRC_ALPHA, light ? gl.ONE_MINUS_SRC_ALPHA : gl.ONE);
+        gl.uniform2f(uResLoc, W, H);
+        gl.uniform3fv(uPaletteLoc, light ? lightPaletteFlat : darkPaletteFlat);
+        gl.uniform1f(uPointSizeLoc, Math.max(3.8, Math.min(6.0, W / 290)) * dpr);
+        gl.uniform1f(uBaseAlphaLoc, 0.92);
+        gl.uniform1f(uColorBoostLoc, light ? 1.05 : 1.65);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexData.subarray(0, n * 8));
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, displayView);
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.uniform2f(uResLoc, canvas.width, canvas.height);
-        gl.drawArrays(gl.POINTS, 0, n);
+        gl.drawArrays(gl.POINTS, 0, displayN);
     }
 
+    var pointerMode = 0;
+    function sendMouse(x, y, mode) {
+        if (worker) worker.postMessage({ type: 'mouse', x: x, y: y, mode: mode });
+    }
+    canvas.addEventListener('contextmenu', function (e) {
+        if (immersive) e.preventDefault();
+    });
+    canvas.addEventListener('mousedown', function (e) {
+        if (!immersive) return;
+        pointerMode = e.button === 2 ? -1 : 1;
+        sendMouse(e.clientX, e.clientY, pointerMode);
+    });
+    canvas.addEventListener('mousemove', function (e) {
+        if (!immersive || pointerMode === 0) return;
+        sendMouse(e.clientX, e.clientY, pointerMode);
+    });
+    window.addEventListener('mouseup', function () {
+        if (pointerMode !== 0) {
+            pointerMode = 0;
+            sendMouse(0, 0, 0);
+        }
+    });
+    canvas.addEventListener('touchstart', function (e) {
+        if (!immersive || e.touches.length !== 1) return;
+        pointerMode = 1;
+        sendMouse(e.touches[0].clientX, e.touches[0].clientY, 1);
+    }, { passive: true });
+    canvas.addEventListener('touchmove', function (e) {
+        if (!immersive || pointerMode === 0 || e.touches.length !== 1) return;
+        sendMouse(e.touches[0].clientX, e.touches[0].clientY, 1);
+    }, { passive: true });
+    window.addEventListener('touchend', function () {
+        if (pointerMode !== 0) {
+            pointerMode = 0;
+            sendMouse(0, 0, 0);
+        }
+    });
+
     document.addEventListener('visibilitychange', function () {
-        if (!started) return;
+        if (!immersive) return;
         if (document.hidden) {
             running = false;
-            if (animId) {
-                cancelAnimationFrame(animId);
-                animId = null;
-            }
-        }
-        else if (immersive) {
+            if (animId) { cancelAnimationFrame(animId); animId = null; }
+        } else {
             running = true;
-            prevTime = performance.now();
             animId = requestAnimationFrame(render);
         }
     });
@@ -491,22 +591,16 @@
             e.preventDefault();
         }
         function onMove(e) {
-            if (!dragging) {
-                return;
-            }
+            if (!dragging) return;
             var ev = e.touches ? e.touches[0] : e;
-            var dx = ev.clientX - startX;
-            var dy = ev.clientY - startY;
             el.style.position = 'fixed';
-            el.style.left = (origX + dx) + 'px';
-            el.style.top = (origY + dy) + 'px';
+            el.style.left = (origX + ev.clientX - startX) + 'px';
+            el.style.top = (origY + ev.clientY - startY) + 'px';
             el.style.right = 'auto';
             el.style.bottom = 'auto';
             el.style.transform = 'none';
         }
-        function onUp() {
-            dragging = false;
-        }
+        function onUp() { dragging = false; }
 
         handle.addEventListener('mousedown', onDown);
         handle.addEventListener('touchstart', onDown, { passive: false });
@@ -514,32 +608,45 @@
         document.addEventListener('touchmove', onMove, { passive: false });
         document.addEventListener('mouseup', onUp);
         document.addEventListener('touchend', onUp);
+
+        el._plCleanup = function () {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('mouseup', onUp);
+            document.removeEventListener('touchend', onUp);
+        };
+    }
+
+    function cleanupPanel(el) {
+        if (!el) return;
+        if (el._plCleanup) el._plCleanup();
+        el.remove();
     }
 
     function buildControls() {
-        if (controlsPanel) {
-            return;
-        }
+        if (controlsPanel) return;
         controlsPanel = document.createElement('div');
         controlsPanel.className = 'pl-controls';
 
         var sliders = [
             { label: 'Species', id: 'pl-species', min: 2, max: 12, val: NUM_SPECIES, step: 1 },
-            { label: 'Count', id: 'pl-count', min: 2000, max: 30000, val: NUM_PARTICLES, step: 1000 },
-            { label: 'Friction', id: 'pl-friction', min: 1, max: 30, val: Math.round(FRICTION * 100), step: 1 },
-            { label: 'Force', id: 'pl-force', min: 1, max: 50, val: Math.round(FORCE_SCALE), step: 1 },
+            { label: 'Count', id: 'pl-count', min: 1000, max: 20000, val: NUM_PARTICLES, step: 1000 },
+            { label: 'Friction', id: 'pl-friction', min: 1, max: 60, val: Math.round(FRICTION * 100), step: 1 },
+            { label: 'Force', id: 'pl-force', min: 1, max: 30, val: Math.round(FORCE_SCALE), step: 1 },
             { label: 'Range', id: 'pl-range', min: 20, max: 200, val: Math.round(RMAX), step: 5 },
-            { label: 'Speed', id: 'pl-speed', min: 1, max: 20, val: Math.round(DT * 1000), step: 1 },
+            { label: 'Speed', id: 'pl-speed', min: 1, max: 25, val: Math.round(DT * 1000), step: 1 },
             { label: 'Repulsion', id: 'pl-repulsion', min: 10, max: 300, val: Math.round(REPULSION_SCALE * 100), step: 10 },
-            { label: 'Damping', id: 'pl-damping', min: 50, max: 100, val: Math.round(VEL_DAMPING * 100), step: 1 },
-            { label: 'Bounce', id: 'pl-bounce', min: 0, max: 100, val: 30, step: 5 },
-            { label: 'Glow', id: 'pl-glow', min: 10, max: 100, val: Math.round(immersiveGlow * 100), step: 5 },
+            { label: 'Bounce', id: 'pl-bounce', min: 0, max: 100, val: Math.round(BOUNCE * 100), step: 5 },
         ];
 
         var html = '<div class="pl-mode-toggle">' +
             '<button id="pl-mode-simple" class="pl-mode-btn' + (editorMode === 'simple' ? ' active' : '') + '">Simple</button>' +
             '<button id="pl-mode-advanced" class="pl-mode-btn' + (editorMode === 'advanced' ? ' active' : '') + '">Advanced</button>' +
+            '<button id="pl-mode-presets" class="pl-mode-btn' + (editorMode === 'presets' ? ' active' : '') + '">Presets</button>' +
             '</div>';
+
+        var showKnobs = editorMode !== 'presets';
+        html += '<div id="pl-knobs-view" style="display:' + (showKnobs ? 'block' : 'none') + '">';
         html += '<div class="pl-controls-inner">';
         for (var i = 0; i < sliders.length; i++) {
             var s = sliders[i];
@@ -549,17 +656,20 @@
                 '<span class="pl-ctrl-val" id="' + s.id + '-val">' + s.val + '</span>' +
                 '</div>';
         }
-        html += '<div class="pl-ctrl-group">' +
+        html += '</div>';
+
+        html += '<div class="pl-actions-row">' +
+            '<div class="pl-ctrl-group">' +
             '<span class="pl-ctrl-label">Walls</span>' +
             '<select id="pl-walls" class="pl-select">' +
             '<option value="0"' + (WALL_MODE === 0 ? ' selected' : '') + '>Bounce</option>' +
             '<option value="1"' + (WALL_MODE === 1 ? ' selected' : '') + '>Wrap</option>' +
-            '</select></div>';
-        html += '<button id="pl-reseed">Reseed</button>';
-        html += '<button id="pl-chaos">Chaos</button>';
-        html += '<button id="pl-export" title="Download config">Export</button>';
-        html += '<label class="pl-import-label" title="Load config"><input type="file" id="pl-import" accept=".json" hidden>Import</label>';
-        html += '</div>';
+            '</select></div>' +
+            '<button id="pl-reseed">Reseed</button>' +
+            '<button id="pl-chaos">Chaos</button>' +
+            '<button id="pl-export" title="Download config">Export</button>' +
+            '<label class="pl-import-label" title="Load config"><input type="file" id="pl-import" accept=".json" hidden>Import</label>' +
+            '</div>';
 
         html += '<div class="pl-lifecycle-section">';
         html += '<div class="pl-lifecycle-header">' +
@@ -573,16 +683,25 @@
             { label: 'Predation', id: 'pl-lc-predation', min: 0, max: 100, val: Math.round(lifecycle.predationStr * 100), step: 5 },
         ];
         html += '<div class="pl-lc-controls" id="pl-lc-controls">';
-        for (var i = 0; i < lcSliders.length; i++) {
-            var s = lcSliders[i];
+        for (var j = 0; j < lcSliders.length; j++) {
+            var ls = lcSliders[j];
             html += '<div class="pl-ctrl-group">' +
-                '<span class="pl-ctrl-label">' + s.label + '</span>' +
-                '<input type="range" min="' + s.min + '" max="' + s.max + '" value="' + s.val + '" step="' + s.step + '" id="' + s.id + '">' +
-                '<span class="pl-ctrl-val" id="' + s.id + '-val">' + s.val + '</span>' +
+                '<span class="pl-ctrl-label">' + ls.label + '</span>' +
+                '<input type="range" min="' + ls.min + '" max="' + ls.max + '" value="' + ls.val + '" step="' + ls.step + '" id="' + ls.id + '">' +
+                '<span class="pl-ctrl-val" id="' + ls.id + '-val">' + ls.val + '</span>' +
                 '</div>';
         }
-        html += '</div></div>';
-        html += '<div class="pl-hint">Esc: exit &middot; Drag ⠿ to move panels</div>';
+        html += '</div></div></div>';
+
+        html += '<div id="pl-presets-view" class="pl-presets-grid" style="display:' + (showKnobs ? 'none' : 'grid') + '">';
+        for (var p = 0; p < PRESETS.length; p++) {
+            var pr = PRESETS[p];
+            var isAct = activePreset === pr.name ? ' active' : '';
+            html += '<button class="pl-preset-btn' + isAct + '" data-preset="' + p + '">' + pr.name + '</button>';
+        }
+        html += '</div>';
+
+        html += '<div class="pl-hint">Left-drag: attract &middot; Right-drag: repel &middot; Esc: exit &middot; Drag ⠿ to move</div>';
 
         controlsPanel.innerHTML = html;
         document.body.appendChild(controlsPanel);
@@ -596,60 +715,28 @@
             });
         }
 
-        bind('pl-species', function (v) {
-            NUM_SPECIES = v | 0;
-            resetSession();
-        });
-        bind('pl-count', function (v) {
-            NUM_PARTICLES = v | 0;
-            reallocVertexData();
-            resetSession();
-        });
-        bind('pl-friction', function (v) {
-            FRICTION = v / 100;
-            sendUpdate('friction', FRICTION);
-        });
-        bind('pl-force', function (v) {
-            FORCE_SCALE = v;
-            sendUpdate('forceScale', FORCE_SCALE);
-        });
-        bind('pl-range', function (v) {
-            RMAX = v;
-            sendUpdate('rmax', RMAX);
-        });
-        bind('pl-speed', function (v) {
-            DT = v / 1000;
-            sendUpdate('dt', DT);
-        });
-        bind('pl-repulsion', function (v) {
-            REPULSION_SCALE = v / 100;
-            sendUpdate('repulsionScale', REPULSION_SCALE);
-        });
-        bind('pl-damping', function (v) {
-            VEL_DAMPING = v / 100;
-            sendUpdate('velDamping', VEL_DAMPING);
-        });
-        bind('pl-bounce', function (v) {
-            sendUpdate('bounce', v / 100);
-        });
-        bind('pl-glow', function (v) {
-            immersiveGlow = v / 100;
-        });
+        bind('pl-species', function (v) { activePreset = null; NUM_SPECIES = v | 0; resetSession(false); });
+        bind('pl-count', function (v) { NUM_PARTICLES = v | 0; reallocVbo(); resetSession(true); });
+        bind('pl-friction', function (v) { FRICTION = v / 100; sendUpdate('friction', FRICTION); });
+        bind('pl-force', function (v) { FORCE_SCALE = v; sendUpdate('forceScale', FORCE_SCALE); });
+        bind('pl-range', function (v) { RMAX = v; sendUpdate('rmax', RMAX); });
+        bind('pl-speed', function (v) { DT = v / 1000; sendUpdate('dt', DT); });
+        bind('pl-repulsion', function (v) { REPULSION_SCALE = v / 100; sendUpdate('repulsionScale', REPULSION_SCALE); });
+        bind('pl-bounce', function (v) { BOUNCE = v / 100; sendUpdate('bounce', BOUNCE); });
 
         document.getElementById('pl-walls').addEventListener('change', function (e) {
-            WALL_MODE = parseInt(e.target.value);
+            WALL_MODE = parseInt(e.target.value, 10);
             sendUpdate('wallMode', WALL_MODE);
         });
 
-        document.getElementById('pl-reseed').addEventListener('click', function () {
-            resetSession();
-        });
+        document.getElementById('pl-reseed').addEventListener('click', function () { activePreset = null; resetSession(false); });
         document.getElementById('pl-chaos').addEventListener('click', function () {
-            FORCE_SCALE = 10 + Math.random() * 35;
-            FRICTION = 0.01 + Math.random() * 0.1;
-            RMAX = 40 + Math.random() * 120;
-            REPULSION_SCALE = 0.5 + Math.random() * 2.5;
-            resetSession();
+            activePreset = null;
+            FORCE_SCALE = 4 + Math.random() * 10;
+            FRICTION = 0.18 + Math.random() * 0.22;
+            RMAX = 55 + Math.random() * 65;
+            REPULSION_SCALE = 1.2 + Math.random() * 1.2;
+            resetSession(false);
             syncSlider('pl-force', Math.round(FORCE_SCALE));
             syncSlider('pl-friction', Math.round(FRICTION * 100));
             syncSlider('pl-range', Math.round(RMAX));
@@ -664,50 +751,32 @@
             }
         });
 
-        document.getElementById('pl-mode-simple').addEventListener('click', function () {
-            setEditorMode('simple');
-        });
-        document.getElementById('pl-mode-advanced').addEventListener('click', function () {
-            setEditorMode('advanced');
+        document.getElementById('pl-mode-simple').addEventListener('click', function () { setEditorMode('simple'); });
+        document.getElementById('pl-mode-advanced').addEventListener('click', function () { setEditorMode('advanced'); });
+        document.getElementById('pl-mode-presets').addEventListener('click', function () { setEditorMode('presets'); });
+
+        document.getElementById('pl-presets-view').addEventListener('click', function (e) {
+            var btn = e.target.closest('.pl-preset-btn');
+            if (!btn) return;
+            var preset = PRESETS[parseInt(btn.dataset.preset, 10)];
+            if (preset) applyConfig(preset, preset.name);
         });
 
         document.getElementById('pl-lc-enabled').addEventListener('change', function (e) {
             lifecycle.enabled = e.target.checked;
             sendUpdate('lifecycle', lifecycle);
             var lcCtrl = document.getElementById('pl-lc-controls');
-            if (lcCtrl) {
-                lcCtrl.style.display = lifecycle.enabled ? 'flex' : 'none';
-            }
+            if (lcCtrl) lcCtrl.style.display = lifecycle.enabled ? 'flex' : 'none';
         });
         var lcCtrl = document.getElementById('pl-lc-controls');
-        if (lcCtrl) {
-            lcCtrl.style.display = lifecycle.enabled ? 'flex' : 'none';
-        }
+        if (lcCtrl) lcCtrl.style.display = lifecycle.enabled ? 'flex' : 'none';
 
-        bind('pl-lc-repro', function (v) {
-            lifecycle.reproRate = v / 100;
-            sendUpdate('lifecycle', lifecycle);
-        });
-        bind('pl-lc-mutation', function (v) {
-            lifecycle.mutationRate = v / 100;
-            sendUpdate('lifecycle', lifecycle);
-        });
-        bind('pl-lc-lifespan', function (v) {
-            lifecycle.lifespan = v;
-            sendUpdate('lifecycle', lifecycle);
-        });
-        bind('pl-lc-egain', function (v) {
-            lifecycle.energyGain = v / 100;
-            sendUpdate('lifecycle', lifecycle);
-        });
-        bind('pl-lc-ecost', function (v) {
-            lifecycle.energyCost = v / 100;
-            sendUpdate('lifecycle', lifecycle);
-        });
-        bind('pl-lc-predation', function (v) {
-            lifecycle.predationStr = v / 100;
-            sendUpdate('lifecycle', lifecycle);
-        });
+        bind('pl-lc-repro', function (v) { lifecycle.reproRate = v / 100; sendUpdate('lifecycle', lifecycle); });
+        bind('pl-lc-mutation', function (v) { lifecycle.mutationRate = v / 100; sendUpdate('lifecycle', lifecycle); });
+        bind('pl-lc-lifespan', function (v) { lifecycle.lifespan = v; sendUpdate('lifecycle', lifecycle); });
+        bind('pl-lc-egain', function (v) { lifecycle.energyGain = v / 100; sendUpdate('lifecycle', lifecycle); });
+        bind('pl-lc-ecost', function (v) { lifecycle.energyCost = v / 100; sendUpdate('lifecycle', lifecycle); });
+        bind('pl-lc-predation', function (v) { lifecycle.predationStr = v / 100; sendUpdate('lifecycle', lifecycle); });
     }
 
     function syncSlider(id, val) {
@@ -722,41 +791,51 @@
         editorMode = mode;
         var sBtn = document.getElementById('pl-mode-simple');
         var aBtn = document.getElementById('pl-mode-advanced');
-        if (sBtn && aBtn) {
-            sBtn.classList.toggle('active', mode === 'simple');
-            aBtn.classList.toggle('active', mode === 'advanced');
-        }
-        if (mode === 'advanced') {
-            buildSpeciesPanel();
-        }
-        else {
-            removeSpeciesPanel();
-        }
+        var pBtn = document.getElementById('pl-mode-presets');
+        if (sBtn) sBtn.classList.toggle('active', mode === 'simple');
+        if (aBtn) aBtn.classList.toggle('active', mode === 'advanced');
+        if (pBtn) pBtn.classList.toggle('active', mode === 'presets');
+
+        var knobs = document.getElementById('pl-knobs-view');
+        var presets = document.getElementById('pl-presets-view');
+        if (knobs) knobs.style.display = mode === 'presets' ? 'none' : 'block';
+        if (presets) presets.style.display = mode === 'presets' ? 'grid' : 'none';
+
+        if (mode === 'advanced') buildSpeciesPanel();
+        else removeSpeciesPanel();
     }
 
     function buildSpeciesPanel() {
-        if (speciesPanel) {
-            speciesPanel.remove();
-        }
+        removeSpeciesPanel();
         speciesPanel = document.createElement('div');
         speciesPanel.className = 'pl-species-panel';
+        speciesPanel.addEventListener('input', function (e) {
+            if (!e.target.classList.contains('pl-sp-slider')) return;
+            var si = parseInt(e.target.dataset.i, 10);
+            var sj = parseInt(e.target.dataset.j, 10);
+            var field = e.target.dataset.field;
+            var v = parseFloat(e.target.value);
+            var idx = si * NUM_SPECIES + sj;
+            if (field === 'attraction') {
+                currentAttractions[idx] = v / 100;
+                sendUpdate('attractions', currentAttractions);
+            } else if (field === 'minDist') {
+                currentMinDist[idx] = v / 100;
+                sendUpdate('minDist', currentMinDist);
+            }
+        });
         rebuildSpeciesPanel();
         document.body.appendChild(speciesPanel);
         makeDraggable(speciesPanel);
     }
 
     function rebuildSpeciesPanel() {
-        if (!speciesPanel || !currentAttractions) {
-            return;
-        }
+        if (!speciesPanel || !currentAttractions) return;
         var n = NUM_SPECIES;
         var palette = getPalette();
-
         var existingHandle = speciesPanel.querySelector('.pl-drag-handle');
 
-        var html = '<div class="pl-sp-header">Species Editor</div>';
-        html += '<div class="pl-sp-scroll">';
-
+        var html = '<div class="pl-sp-header">Species Editor</div><div class="pl-sp-scroll">';
         html += '<div class="pl-sp-section">Attraction Matrix</div>';
         html += '<div class="pl-sp-note">Row \u2192 Column. Positive = attract, Negative = repel.</div>';
         html += '<table class="pl-sp-matrix"><thead><tr><th></th>';
@@ -766,9 +845,9 @@
         html += '</tr></thead><tbody>';
         for (var i = 0; i < n; i++) {
             html += '<tr><td><span class="pl-sp-dot" style="background:' + paletteToHex(palette[i]) + '"></span>' + speciesNames[i] + '</td>';
-            for (var j = 0; j < n; j++) {
-                var val = Math.round(currentAttractions[i * n + j] * 100);
-                html += '<td><input type="range" min="-100" max="100" value="' + val + '" class="pl-sp-slider" data-i="' + i + '" data-j="' + j + '" data-field="attraction"></td>';
+            for (var j2 = 0; j2 < n; j2++) {
+                var val = Math.round(currentAttractions[i * n + j2] * 100);
+                html += '<td><input type="range" min="-100" max="100" value="' + val + '" class="pl-sp-slider" data-i="' + i + '" data-j="' + j2 + '" data-field="attraction"></td>';
             }
             html += '</tr>';
         }
@@ -776,145 +855,84 @@
 
         html += '<div class="pl-sp-section">Min Distance Matrix</div>';
         html += '<table class="pl-sp-matrix"><thead><tr><th></th>';
-        for (var j = 0; j < n; j++) {
-            html += '<th>' + speciesNames[j] + '</th>';
-        }
+        for (var j3 = 0; j3 < n; j3++) html += '<th>' + speciesNames[j3] + '</th>';
         html += '</tr></thead><tbody>';
-        for (var i = 0; i < n; i++) {
-            html += '<tr><td>' + speciesNames[i] + '</td>';
-            for (var j = 0; j < n; j++) {
-                var val = Math.round(currentMinDist[i * n + j] * 100);
-                html += '<td><input type="range" min="5" max="60" value="' + val + '" class="pl-sp-slider" data-i="' + i + '" data-j="' + j + '" data-field="minDist"></td>';
+        for (var i2 = 0; i2 < n; i2++) {
+            html += '<tr><td>' + speciesNames[i2] + '</td>';
+            for (var j4 = 0; j4 < n; j4++) {
+                var mval = Math.round(currentMinDist[i2 * n + j4] * 100);
+                html += '<td><input type="range" min="5" max="60" value="' + mval + '" class="pl-sp-slider" data-i="' + i2 + '" data-j="' + j4 + '" data-field="minDist"></td>';
             }
             html += '</tr>';
         }
-        html += '</tbody></table>';
-
-        html += '</div>';
+        html += '</tbody></table></div>';
 
         if (existingHandle) {
             var wrapper = document.createElement('div');
             wrapper.innerHTML = html;
-            while (speciesPanel.childNodes.length > 1) {
-                speciesPanel.removeChild(speciesPanel.lastChild);
-            }
-            while (wrapper.firstChild) {
-                speciesPanel.appendChild(wrapper.firstChild);
-            }
-        }
-        else {
+            while (speciesPanel.childNodes.length > 1) speciesPanel.removeChild(speciesPanel.lastChild);
+            while (wrapper.firstChild) speciesPanel.appendChild(wrapper.firstChild);
+        } else {
             speciesPanel.innerHTML = html;
         }
-
-        speciesPanel.addEventListener('input', function (e) {
-            if (!e.target.classList.contains('pl-sp-slider')) {
-                return;
-            }
-            var si = parseInt(e.target.dataset.i);
-            var sj = parseInt(e.target.dataset.j);
-            var field = e.target.dataset.field;
-            var v = parseFloat(e.target.value);
-            var idx = si * NUM_SPECIES + sj;
-
-            if (field === 'attraction') {
-                currentAttractions[idx] = v / 100;
-                sendUpdate('attractions', currentAttractions);
-            }
-            else if (field === 'minDist') {
-                currentMinDist[idx] = v / 100;
-                sendUpdate('minDist', currentMinDist);
-            }
-        });
     }
 
     function removeSpeciesPanel() {
-        if (speciesPanel) {
-            speciesPanel.remove();
-            speciesPanel = null;
-        }
+        cleanupPanel(speciesPanel);
+        speciesPanel = null;
     }
 
     function removeControls() {
-        if (controlsPanel) {
-            controlsPanel.remove();
-            controlsPanel = null;
-        }
-    }
-
-    function startSimulation() {
-        if (started) return;
-        started = true;
-        running = true;
-        measureContent();
-        initWorker();
-        animId = requestAnimationFrame(render);
+        cleanupPanel(controlsPanel);
+        controlsPanel = null;
     }
 
     function enterImmersive() {
         immersive = true;
-        startSimulation();
+        running = true;
         document.body.classList.add('immersive-mode');
         canvas.style.pointerEvents = 'auto';
+        resetSession(false);
         buildControls();
-        if (editorMode === 'advanced') {
-            buildSpeciesPanel();
-        }
-        measureContent();
-        if (worker) {
-            worker.postMessage({
-                type: 'update',
-                zones: { left: W * 0.5, right: W * 0.5 }
-            });
-        }
+        if (editorMode === 'advanced') buildSpeciesPanel();
+        animId = requestAnimationFrame(render);
     }
 
     function exitImmersive() {
         immersive = false;
         running = false;
-        if (animId) {
-            cancelAnimationFrame(animId);
-            animId = null;
-        }
+        pointerMode = 0;
+        if (animId) { cancelAnimationFrame(animId); animId = null; }
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
         document.body.classList.remove('immersive-mode');
         canvas.style.pointerEvents = 'none';
         removeControls();
         removeSpeciesPanel();
-        if (worker) {
-            worker.terminate();
-            worker = null;
-        }
-        started = false;
-        frameData = null;
-        frameN = 0;
+        if (worker) { worker.terminate(); worker = null; }
+        displayBuf = null;
+        displayView = null;
+        displayN = 0;
+        recycleBuf = null;
     }
 
     var btn = document.getElementById('immersive-toggle');
     if (btn) {
         btn.innerHTML = plIconSvg;
         btn.addEventListener('click', function () {
-            if (immersive) {
-                exitImmersive();
-            }
-            else {
-                enterImmersive();
-            }
+            if (immersive) exitImmersive();
+            else enterImmersive();
         });
 
         setInterval(function () {
             if (!immersive && btn) {
                 btn.classList.add('pl-btn-glow');
-                setTimeout(function () {
-                    btn.classList.remove('pl-btn-glow');
-                }, 2000);
+                setTimeout(function () { btn.classList.remove('pl-btn-glow'); }, 2000);
             }
         }, 30000);
     }
 
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && immersive) {
-            exitImmersive();
-        }
+        if (e.key === 'Escape' && immersive) exitImmersive();
     });
 })();
