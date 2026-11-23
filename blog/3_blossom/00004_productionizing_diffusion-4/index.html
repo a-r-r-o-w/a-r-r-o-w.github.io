@@ -8,7 +8,14 @@
     <meta property="og:description" content="Diffusion models have rapidly advanced generative modeling across a wide range of modalities - from images and video to music, 3D objects, and even te...">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://a-r-r-o-w.github.io/blog/3_blossom/00004_productionizing_diffusion-4/">
+    <meta property="og:image" content="https://a-r-r-o-w.github.io/assets/og/3_blossom_00004_productionizing_diffusion-4.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Optimizing diffusion for production-ready speeds - IV">
+    <meta name="twitter:description" content="Diffusion models have rapidly advanced generative modeling across a wide range of modalities - from images and video to music, 3D objects, and even te...">
+    <meta name="twitter:image" content="https://a-r-r-o-w.github.io/assets/og/3_blossom_00004_productionizing_diffusion-4.png">
     <link rel="canonical" href="https://a-r-r-o-w.github.io/blog/3_blossom/00004_productionizing_diffusion-4/">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate" type="application/rss+xml" title="Aryan V S" href="/feed.xml">
     <title>Optimizing diffusion for production-ready speeds - IV - Aryan V S</title>
     <script>
       (function() {
@@ -16,18 +23,8 @@
         document.documentElement.dataset.theme = t;
       })();
     </script>
-    <link rel="stylesheet" href="/assets/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
-      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
-      crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}, {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}], throwOnError: false});"></script>
-    <!-- Copy style from here: https://github.com/highlightjs/highlight.js/tree/5697ae5187746c24732e62cd625f3f83004a44ce/src/styles -->
-    <link rel="stylesheet" id="hljs-dark" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
-    <link rel="stylesheet" id="hljs-light" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" disabled>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+    <link rel="stylesheet" href="/assets/style.css?v=337e3457">
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -42,6 +39,7 @@
     </script>
 </head>
 <body>
+    <div class="reading-progress" id="reading-progress"></div>
     <canvas id="particle-life"></canvas>
     <header>
         <div class="header-inner">
@@ -67,22 +65,24 @@
             </div>
         </div>
     </header>
-    <div class="container">
-        <main class="post-page">
-          <div class="post-title-wrapper">
-              <div class="post-date-stats">
-                  <div class="post-date">2026-01-29</div>
-                  <div class="post-stats">3,991 words • ~20 min</div>
+    <div class="post-layout">
+        <div class="container">
+            <main class="post-page">
+              <div class="post-title-wrapper">
+                  <div class="post-date-stats">
+                      <div class="post-date">2026-01-29</div>
+                      <div class="post-stats">3,991 words • ~20 min</div>
+                  </div>
+                  <h2 class="post-title">Optimizing diffusion for production-ready speeds - IV</h2>
+                  <button class="post-info-btn" aria-label="Post info"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 4.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM10.75 11h2.5v6.5h-2.5V11z"/></svg></button>
               </div>
-              <h2 class="post-title">Optimizing diffusion for production-ready speeds - IV</h2>
-              <button class="post-info-btn" aria-label="Post info"><i class="fas fa-info-circle"></i></button>
-          </div>
-            <div class="post-meta">
-                <div class="post-tags"><span class="tag">diffusion</span> <span class="tag">optimization</span> <span class="tag">mlsys</span></div>
-                
-                <div class="post-links"><a href="https://github.com/a-r-r-o-w/productionizing-diffusion" class="post-link code"><i class="fab fa-github"></i> Code</a></div>
-            </div>
-            <p>Diffusion models have rapidly advanced generative modeling across a wide range of modalities - from images and video to music, 3D objects, and even text generation and world simulations recently. They are now central to state-of-the-art image and video generation, offering high-quality, controllable, and diverse outputs. However, their computational cost remains a bottleneck for real-world deployment. In this series, we explore techniques to optimize diffusion inference for text-to-image and text-to-video generation.</p>
+                <div class="post-meta">
+                    <div class="post-tags"><span class="tag">diffusion</span> <span class="tag">optimization</span> <span class="tag">mlsys</span></div>
+                    
+                    <div class="post-links"><a href="https://github.com/a-r-r-o-w/productionizing-diffusion" class="post-link code"><svg class="icon icon-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.76 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.66.79.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg> Code</a></div>
+                </div>
+                <details class="post-toc-mobile"><summary>Table of contents</summary><ul class="toc-list"><li class="toc-item toc-h2"><a class="toc-link" href="#lora">LoRA</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#training">Training</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#wan-text-to-video">Wan text-to-video</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#sparse-attention">Sparse Attention</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#uncommon-deployment-environments">Uncommon Deployment Environments</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#lower-level-languages">Lower level languages</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#triton-kernels">Triton kernels</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#pointwise-add-and-silu">Pointwise Add and SiLU</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#fused-adaptive-layernorm-zero-dual">Fused Adaptive LayerNorm Zero Dual</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#fused-adaptive-layernorm-zero-single">Fused Adaptive LayerNorm Zero Single</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#rope">RoPE</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#others-ideas">Others Ideas</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#additional-reading">Additional reading</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#citation">Citation</a></li></ul></details>
+                <p>Diffusion models have rapidly advanced generative modeling across a wide range of modalities - from images and video to music, 3D objects, and even text generation and world simulations recently. They are now central to state-of-the-art image and video generation, offering high-quality, controllable, and diverse outputs. However, their computational cost remains a bottleneck for real-world deployment. In this series, we explore techniques to optimize diffusion inference for text-to-image and text-to-video generation.</p>
 <p>This post is first in a four-part series. We will cover the following topics:</p>
 <ol>
 <li>How text-to-image diffusion models work and their computational challenges?</li>
@@ -140,36 +140,35 @@
 <li><a href="#others-ideas">Others Ideas</a></li>
 <li><a href="#additional-reading">Additional reading</a></li>
 </ul>
-<h2 id="lora">LoRA</h2>
+<h2 id="lora">LoRA<a class="heading-anchor" href="#lora" aria-label="Copy link to LoRA">#</a></h2>
 <p><a href="https://arxiv.org/abs/2106.09685" target="_blank" rel="noopener noreferrer">LoRA</a>, short for Low-Rank Adaptation, offers a parameter-efficient approach to finetuning models by targeting only a small subset of new parameters. At its core, it decomposes weight updates into low-rank matrices injected into the bigger linear layers, enabling the model to adapt to new tasks while preserving the pretrained knowledge. During training, this method optimizes just the low-rank adapters, typically comprising mere millions of parameters against billions in the base model, which dramatically reduces memory footprint and accelerates the tuning process (even on constrained hardware).</p>
 <p>In a standard linear layer, the forward pass is <code>y = W.x + b</code>, where <code>W</code> is the weight matrix (say, <code>d x d</code>) and <code>b</code> is the bias. LoRA approximates the update <code>ΔW</code> as <code>B.A</code>, with <code>A</code> shaped <code>d x r</code> (tall and skinny) and <code>B</code> as <code>r x d</code> (short and wide), where <code>r &lt;&lt; d</code> is the pre-selected low rank like <code>32</code>. This keeps the update tiny: just <code>2 * d * r</code> parameters instead of <code>d * d</code>. The LoRA output <code>y_lora = B.(A.x)</code> is added to the base output <code>y</code>. Typically, <code>y_lora</code> is scaled by a factor <code>α / r</code> to stabilize training, where <code>α</code> is a hyperparameter often set equal to <code>r</code>. For more references on the inner workings of LoRA, please refer to the "Additional Reading" section.</p>
 <p>In the context of diffusion model lora training, loras are typically applied to the attention and MLP layers. This enables personalization of the model to specific styles, subjects, or concepts, with minimal data, and without needing to retrain the entire model. The power of this technique has resulted in widespread adoption in the community, with thousands of LoRA models available on Hugging Face and other model hubs. The logical question, in the context of production inference, is how to efficiently serve these LoRA models.</p>
 <p>Here's a dummy implementation of a linear layer with LoRA:</p>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-python">class LinearLoRATorch(torch.nn.Module):
-    def __init__(
-        self, in_features, out_features, r: int = 32, alpha: float = 32.0, scaling_factor: float | None = None
-    ):
-        super().__init__()
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight language-python"><span class="k">class</span><span class="w"> </span><span class="nc">LinearLoRATorch</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">32.0</span><span class="p">,</span> <span class="n">scaling_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-        self.in_features = in_features
-        self.out_features = out_features
-        self.r = r
-        self.alpha = alpha
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span> <span class="o">=</span> <span class="n">in_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_features</span> <span class="o">=</span> <span class="n">out_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
 
-        self.linear = torch.nn.Linear(in_features, out_features, bias=True)
-        self.lora_A = torch.nn.Linear(in_features, r, bias=False)
-        self.lora_B = torch.nn.Linear(r, out_features, bias=False)
-        self.register_buffer("scaling_factor", torch.tensor(alpha / r if scaling_factor is None else scaling_factor))
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lora_A</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lora_B</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"scaling_factor"</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="n">r</span> <span class="k">if</span> <span class="n">scaling_factor</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">scaling_factor</span><span class="p">))</span>
 
-    def forward(self, x: torch.Tensor) -&gt; torch.Tensor:
-        linear_out = self.linear(x)
-        lora_out = self.lora_B(self.lora_A(x)) * self.scaling_factor
-        return linear_out + lora_out
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">linear_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">lora_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lora_B</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lora_A</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span>
+        <span class="k">return</span> <span class="n">linear_out</span> <span class="o">+</span> <span class="n">lora_out</span>
 
-# Checkout HF guides to gain more insights about implementation, training and usage.
-# PEFT: https://huggingface.co/docs/peft/developer_guides/lora
-# Diffusers LoRA: https://huggingface.co/docs/diffusers/training/lora
-</code></pre></div>
+<span class="c1"># Checkout HF guides to gain more insights about implementation, training and usage.</span>
+<span class="c1"># PEFT: https://huggingface.co/docs/peft/developer_guides/lora</span>
+<span class="c1"># Diffusers LoRA: https://huggingface.co/docs/diffusers/training/lora</span></code></pre></div>
 <p>For production-ready implementations, this typically ends up becoming much more complex - to support multiple LoRAs or faster kernels - but for now, let's simplify and assume that production systems need to cater to these use cases:</p>
 <ol>
 <li>Serving a base model without any LoRA</li>
@@ -179,30 +178,29 @@
 <p>Cases 1 and 2 are straightforward - you can apply all the optimizations from this series for good speedups. Case 3 is trickier and deserves its own deep dive later. Running the linear + LoRA math fast is key, but so are fast training pipelines and dynamic hot-swapping to load/unload adapters on the fly. For now, we will focus on fast inference.</p>
 <p>Note: My colleagues at HF have written a nice blog on LoRA optimization <a href="https://huggingface.co/blog/lora-fast" target="_blank" rel="noopener noreferrer">here</a> - readers should definitely check it out! That covers a lot, but there's more to explore with LoRA-specific kernel tweaks. I originally planned to dive into inference/training optimizations and hot-swapping here, but the topic's breadth (and the kernel authoring prerequisites) convinced me to spin it off into a standalone article.</p>
 <p>To give a taste of improved kernel-level gains, consider this optimized variant inspired by community favorites like <a href="https://github.com/unslothai/unsloth" target="_blank" rel="noopener noreferrer">Unsloth</a>. It calls directly into cuBLAS and performs in-place operations (for buffer reuse), which can even outperform <code>torch.compile</code> generated Triton - so you see, <code>torch.compile</code> isn't always the end-all-be-all solution for speedups! Benchmark everything yourself!</p>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-python">class LinearLoRAUnsloth(torch.nn.Module):
-    def __init__(
-        self, in_features, out_features, r: int = 32, alpha: float = 32.0, scaling_factor: float | None = None
-    ):
-        super().__init__()
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight language-python"><span class="k">class</span><span class="w"> </span><span class="nc">LinearLoRAUnsloth</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">32.0</span><span class="p">,</span> <span class="n">scaling_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-        self.in_features = in_features
-        self.out_features = out_features
-        self.r = r
-        self.alpha = alpha
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span> <span class="o">=</span> <span class="n">in_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_features</span> <span class="o">=</span> <span class="n">out_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
 
-        self.linear = torch.nn.Linear(in_features, out_features, bias=True)
-        self.lora_A = torch.nn.Linear(in_features, r, bias=False)
-        self.lora_B = torch.nn.Linear(r, out_features, bias=False)
-        self.register_buffer("scaling_factor", torch.tensor(alpha / r if scaling_factor is None else scaling_factor))
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lora_A</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lora_B</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">"scaling_factor"</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="n">r</span> <span class="k">if</span> <span class="n">scaling_factor</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">scaling_factor</span><span class="p">))</span>
 
-    def forward(self, x: torch.Tensor) -&gt; torch.Tensor:
-        x_shape = x.shape
-        x = x.view(-1, self.in_features)
-        out = torch.addmm(self.linear.bias, x, self.linear.weight.t())
-        xa = torch.mm(x, self.lora_A.weight.t())
-        out.addmm_(xa, self.lora_B.weight.t(), beta=1.0, alpha=self.scaling_factor)
-        return out.view(*x_shape[:-1], self.out_features)
-</code></pre></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">x_shape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">addmm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">t</span><span class="p">())</span>
+        <span class="n">xa</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lora_A</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">t</span><span class="p">())</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">addmm_</span><span class="p">(</span><span class="n">xa</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lora_B</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">t</span><span class="p">(),</span> <span class="n">beta</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scaling_factor</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">*</span><span class="n">x_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_features</span><span class="p">)</span></code></pre></div>
 <p>With some very simple changes, the speedups here are quite significant. This is just the tip of the iceberg though. With more complex kernels, or even basic ideas like utilizing a CUDA stream for computation of the lora output branch, much more speedups are possible. The following benchmark compares a few implementations and showcases that. All the code is available in <code>post_4/lora.py</code>.</p>
 <details>
 <summary> Expand for benchmarking results </summary>
@@ -217,7 +215,7 @@
 </tr>
 </table>
 </details>
-<h2 id="training">Training</h2>
+<h2 id="training">Training<a class="heading-anchor" href="#training" aria-label="Copy link to Training">#</a></h2>
 <p>Although we're mainly interested in inference optimizations with this series, it is worth noting that training optimizations can also be applied to inference.</p>
 <p>Training a diffusion model isn’t all that different from inference at its core - you’re still running forward passes, just with added backward passes to update weights. But when it comes to optimizing training for speed, there are a few tricks that can make a big difference.</p>
 <ul>
@@ -233,12 +231,11 @@
 <li>Precomputing embeddings that do not change often, or don't take too many unique values (e.g. time embeddings, pooled text embeddings, attention masks, etc.)</li>
 </ul>
 <p>Some of these ideas are lossless while others are lossy. Be sure to validate your training to ensure quality is not compromised. An example for training <a href="https://huggingface.co/black-forest-labs/FLUX.1-dev" target="_blank" rel="noopener noreferrer">Flux-dev</a> is available in <code>post_4/flux_train.py</code>. Some simple benchmarks:</p>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-python"># A100
-baseline: 2.49 it/s
-compiled autograd: 2.88 it/s
-compiled forward + compiled autograd: 3.20 it/s
-</code></pre></div>
-<h2 id="wan-text-to-video">Wan text-to-video</h2>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight language-python"><span class="c1"># A100</span>
+<span class="n">baseline</span><span class="p">:</span> <span class="mf">2.49</span> <span class="n">it</span><span class="o">/</span><span class="n">s</span>
+<span class="n">compiled</span> <span class="n">autograd</span><span class="p">:</span> <span class="mf">2.88</span> <span class="n">it</span><span class="o">/</span><span class="n">s</span>
+<span class="n">compiled</span> <span class="n">forward</span> <span class="o">+</span> <span class="n">compiled</span> <span class="n">autograd</span><span class="p">:</span> <span class="mf">3.20</span> <span class="n">it</span><span class="o">/</span><span class="n">s</span></code></pre></div>
+<h2 id="wan-text-to-video">Wan text-to-video<a class="heading-anchor" href="#wan-text-to-video" aria-label="Copy link to Wan text-to-video">#</a></h2>
 <p>Over the course of the last few articles, we learnt about some of the optimizations to make Flux run extremely fast on single GPU and multi-GPU setups. We can now apply the same series of optimizations on Wan, a text-to-video and image-to-video diffusion model, or more generally, on most models that use a transformer-based architecture. To recap, the optimizations we will apply are:</p>
 <ul>
 <li><code>torch.compile</code></li>
@@ -252,7 +249,7 @@ compiled forward + compiled autograd: 3.20 it/s
 <p>Additionally, we will explore a different caching technique in this article compared to previous article - First Block Cache. This technique is simple to implement and very effective in practice. We could combine in other ideas like FP8 or lower precision dtypes with caching, but since both are lossy optimizations, combining them can lead to severe quality degradation, so for this article, we will limit our testing to caching.</p>
 <p>Wan is capable of generating 5 second videos with resolutions upto 720P at 16 FPS (frames per second)<sup>*</sup> of very high quality and realistic motion. The model is transformer-based architecture, as is Flux, but instead of pixel-unshuffling an image to obtain a sequence of image tokens, a learned 3D convolution is used for patchification followed by flattening the spatiotemporal volume of tokens into a sequence of video tokens. This result is passed through a stack of transformer blocks followed by output norm, projection and unpatchification to produce the final latent video. The inner dimension of transformer blocks of 14B T2V model is <code>5120</code> and MLP hidden dimension of <code>13824</code>, which is considerable larger than Flux's <code>3072</code> and <code>12288</code>, but it has fewer overall layers (<code>40</code> vs <code>19 + 38 = 57</code>). As the model is larger, it is expected to be slightly slower. But, the model weights and parameters are not the only contributors to inference speed of a model!</p>
 <p>Video models require more compute than image models due to an order of magnitude more tokens being processed. In our case, we will be evaluating inference speed for a 5-second 480OP video at 16 FPS. The following calculation shows the number of tokens that will be processed by the model:</p>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code>((duration * fps) / vae_temporal_downsample_factor * patch_size_temporal) * ((height * width) / (vae_spatial_downsample_factor * patch_size_spatial)**2) + text_tokens
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight">((duration * fps) / vae_temporal_downsample_factor * patch_size_temporal) * ((height * width) / (vae_spatial_downsample_factor * patch_size_spatial)**2) + text_tokens
   =&gt; ((5 * 16) / (4 * 1)) * ((480 * 832) / (8 * 2)**2) + 512
   =&gt; 20 * 1560 + 512
   =&gt; 31200 video tokens + 512 text tokens
@@ -271,7 +268,7 @@ compiled forward + compiled autograd: 3.20 it/s
 </table>
 <p><sub><sup></sup>16 FPS should not be confused with the FPS at which a video is saved. Here, it means a total of 81 frames being generated and stored at 16 FPS, resulting in a 5 second video.</sub></p>
 <p>Congratulations, Wan runs super fast now! This is the speed at which most inference providers serve their models, but can we do better? Ofcourse!</p>
-<h3 id="sparse-attention">Sparse Attention</h3>
+<h3 id="sparse-attention">Sparse Attention<a class="heading-anchor" href="#sparse-attention" aria-label="Copy link to Sparse Attention">#</a></h3>
 <p>Sparse attention is a rapidly evolving area of research that aims to reduce the computational cost of the attention mechanism in transformer models. Instead of computing attention scores for all pairs of tokens, sparse attention focuses on a subset of tokens. Imagine a scenario where you have a very large number of N tokens, and you could simply drop half of them, or even more, while still maintaining the quality of the output -- that's sparse attention for you!</p>
 <p>Studying activation patterns of attention layers in the models allows us to find these subsets of tokens that are most relevant to the generation process at each layer. In video models, utilizing this sparsity has shown significant promise for reducing computational overhead while maintaining generation quality, particularly due to excessive temporal and spatial redundancies (pixels between consecutive frames do not differ much and generally have high spatial similarity as well). See papers <a href="https://arxiv.org/abs/2506.19852" target="_blank" rel="noopener noreferrer">1</a>, <a href="https://arxiv.org/abs/2505.13389" target="_blank" rel="noopener noreferrer">2</a> and <a href="https://arxiv.org/abs/2502.18137" target="_blank" rel="noopener noreferrer">3</a> for more details.</p>
 <p>Let's try to think of ways we could discover some sparse attention patterns ourselves. Because we know consecutive frames do not differ much and that spatially adjacent pixels are similar, we could try to drop every alternate spatial token (say, in a checkerboard pattern):</p>
@@ -284,7 +281,7 @@ compiled forward + compiled autograd: 3.20 it/s
 <p>What else could be done? This is exactly what <a href="https://arxiv.org/abs/2505.13389" target="_blank" rel="noopener noreferrer">Video Sparse Attention</a> examines in their ablation studies. For the sake of simplicity, we do not explore all the possible approaches here. For preserving quality with fewer tokens, typically we might have to post-train the model with sparse attention patterns. This is a topic for another day, so for now, we will skip that discussion.</p>
 <p>Instead, we will quickly look into <a href="https://arxiv.org/abs/2506.19852" target="_blank" rel="noopener noreferrer">Radial Attention</a>, and examine the inference speedups we can achieve with it. This approach cleverly taps into how attention "energy" in video models fades exponentially with spatial and temporal distance - think of it as focusing compute on nearby frames and pixels where it matters most, while skimping on the far away tokens that barely, or don't, contribute useful information in the generation process. By crafting a sparse pattern with decaying density bands (halving attention scores as distances double temporally, and shrinking spatial diagonals accordingly), it reduces attention computational complexity from <code>O(N^2)</code> to <code>O(N log N)</code> using a static mask - this is a massive speedup. It's a neat fit for models like Wan, enabling trimming down on token count without noticeable quality hits.</p>
 <p>That said, we will continue talking about these methods in-depth, along with implementation, in a future standalone post because the current density of this post is already high, and my intention here was to just put the general ideas for speeding up inference out there. Feel free to experiment on your own, and stay tuned for more info on this!</p>
-<h2 id="uncommon-deployment-environments">Uncommon Deployment Environments</h2>
+<h2 id="uncommon-deployment-environments">Uncommon Deployment Environments<a class="heading-anchor" href="#uncommon-deployment-environments" aria-label="Copy link to Uncommon Deployment Environments">#</a></h2>
 <p>So far, we've looked at how we can optimize models to run fast. For deploying these models, you'd typically take an optimized model implementation and deploy it over multi-GPU nodes, behind a load balancer and web server, and expose an API endpoint to your users. For the purposes of this blog, we're only concerned about deploying a model over a single/multi-GPU replica. Before a replica is available to serve users, the following things need to be taken care of:</p>
 <ul>
 <li>Loading the model weights onto the GPUs.</li>
@@ -298,60 +295,57 @@ compiled forward + compiled autograd: 3.20 it/s
 <p>That's where Ahead-of-Time (AoT) compilation comes in. Instead of compiling on the fly, you export and compile your model once upfront, producing a reusable shared library that loads instantly. PyTorch supports this through tools like <code>AOTInductor</code>, which processes models, optimizes them, and generates artifacts you can reload without the compilation hit. Read the PyTorch <a href="https://pytorch.org/docs/stable/generated/torch.compile.html" target="_blank" rel="noopener noreferrer">docs</a> for more details.</p>
 <p>Note: I planned to dive deep into AoT here with Wan, but my colleagues already nailed it in their blog post: <a href="https://huggingface.co/blog/zerogpu-aoti" target="_blank" rel="noopener noreferrer">Make your ZeroGPU Spaces go brrr with ahead-of-time compilation</a>. If you're optimizing for ZeroGPU, that should be your go-to guide.</p>
 <p>But AoT isn't the end of the road for uncommon environments. When you're pushing the limits in shared or constrained setups, you might need to drop down a level and write custom kernels. Take as example the speedups obtained from Flash Attention 3.</p>
-<h2 id="lower-level-languages">Lower level languages</h2>
+<h2 id="lower-level-languages">Lower level languages<a class="heading-anchor" href="#lower-level-languages" aria-label="Copy link to Lower level languages">#</a></h2>
 <p>When you feel PyTorch or <code>torch.compile</code> have hit their limits, you can drop down to lower-level languages like <a href="https://docs.nvidia.com/cuda/" target="_blank" rel="noopener noreferrer">CUDA</a> for more control over GPUs. CUDA is powerful but tricky to write and has a large learning curve. That's where domain-specific languages (DSLs) come in. <a href="https://openai.com/index/triton/" target="_blank" rel="noopener noreferrer">Triton</a>, from OpenAI, feels like Python but compiles to fast GPU programs, often beating handtuned CUDA with less headache. <a href="https://docs.nvidia.com/cutlass/media/docs/pythonDSL/cute_dsl_general/dsl_introduction.html" target="_blank" rel="noopener noreferrer">CuTE DSL</a>, from NVIDIA <a href="https://docs.nvidia.com/cutlass/index.html" target="_blank" rel="noopener noreferrer">CUTLASS</a>, is great for writing complex logic at a level between CUDA and Triton and gives you finer control. Other languages like <a href="https://github.com/tile-ai/tilelang" target="_blank" rel="noopener noreferrer">TileLang</a> or <a href="https://www.modular.com/mojo" target="_blank" rel="noopener noreferrer">Mojo</a> lower the barrier for entry, but are still maturing in terms of ecosystem and adoption.</p>
-<h2 id="triton-kernels">Triton kernels</h2>
+<h2 id="triton-kernels">Triton kernels<a class="heading-anchor" href="#triton-kernels" aria-label="Copy link to Triton kernels">#</a></h2>
 <p>Triton makes it easy to write fused kernels that can stay on par with, or sometimes outperform, optimized cuBLAS/cuDNN implementations (those called by PyTorch under the hood). It is worth noting that triton kernels are fully compatible with pytorch subsystems like <code>torch.compile</code>, so you can use them in conjunction and benefit from all the goodness of compilation. Following is a quick look at some operations for which we can write custom Triton kernels to speed up eager mode execution.</p>
-<h3 id="pointwise-add-and-silu">Pointwise Add and SiLU</h3>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-python">def pointwise_add3_silu(time_embeds: torch.Tensor, guidance_embeds: torch.Tensor, pooled_text_embeds: torch.Tensor) -&gt; torch.Tensor:
-    return torch.nn.functional.silu(time_embeds + guidance_embeds + pooled_text_embeds)
-</code></pre></div>
+<h3 id="pointwise-add-and-silu">Pointwise Add and SiLU<a class="heading-anchor" href="#pointwise-add-and-silu" aria-label="Copy link to Pointwise Add and SiLU">#</a></h3>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight language-python"><span class="k">def</span><span class="w"> </span><span class="nf">pointwise_add3_silu</span><span class="p">(</span><span class="n">time_embeds</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">guidance_embeds</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">pooled_text_embeds</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">silu</span><span class="p">(</span><span class="n">time_embeds</span> <span class="o">+</span> <span class="n">guidance_embeds</span> <span class="o">+</span> <span class="n">pooled_text_embeds</span><span class="p">)</span></code></pre></div>
 <p>This operation is used as the input the adaptive layernorm layers in the transformer blocks. It is simply pointwise addition of three tensors followed by a SiLU activation. The following kernel implements this operation:</p>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-python"># Mark this function as triton program
-@triton.jit
-def pointwise_add3_silu_kernel(x_ptr, y_ptr, z_ptr, out_ptr, N, BLOCK_SIZE: tl.constexpr):
-    # Each triton kernel is compiled and launched with a grid of programs.
-    # Each program handles a small chunk of the full data.
-    pid = tl.program_id(0)
-    # Compute the starting index of the block this program should handle; prepare offsets; prepare mask
-    # to handle out-of-bounds accesses.
-    block_start = pid * BLOCK_SIZE
-    offsets = block_start + tl.arange(0, BLOCK_SIZE)
-    mask = offsets &lt; N
-    # Load inputs from memory
-    x = tl.load(x_ptr + offsets, mask=mask, other=0.0)
-    y = tl.load(y_ptr + offsets, mask=mask, other=0.0)
-    z = tl.load(z_ptr + offsets, mask=mask, other=0.0)
-    # Perform computation
-    res = x + y + z
-    res = res / (1 + tl.exp(-res))  # SiLU activation
-    # Store result back to memory
-    tl.store(out_ptr + offsets, res, mask=mask)
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight language-python"><span class="c1"># Mark this function as triton program</span>
+<span class="nd">@triton</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pointwise_add3_silu_kernel</span><span class="p">(</span><span class="n">x_ptr</span><span class="p">,</span> <span class="n">y_ptr</span><span class="p">,</span> <span class="n">z_ptr</span><span class="p">,</span> <span class="n">out_ptr</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">BLOCK_SIZE</span><span class="p">:</span> <span class="n">tl</span><span class="o">.</span><span class="n">constexpr</span><span class="p">):</span>
+    <span class="c1"># Each triton kernel is compiled and launched with a grid of programs.</span>
+    <span class="c1"># Each program handles a small chunk of the full data.</span>
+    <span class="n">pid</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">program_id</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># Compute the starting index of the block this program should handle; prepare offsets; prepare mask</span>
+    <span class="c1"># to handle out-of-bounds accesses.</span>
+    <span class="n">block_start</span> <span class="o">=</span> <span class="n">pid</span> <span class="o">*</span> <span class="n">BLOCK_SIZE</span>
+    <span class="n">offsets</span> <span class="o">=</span> <span class="n">block_start</span> <span class="o">+</span> <span class="n">tl</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">BLOCK_SIZE</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">offsets</span> <span class="o">&lt;</span> <span class="n">N</span>
+    <span class="c1"># Load inputs from memory</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">x_ptr</span> <span class="o">+</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">y_ptr</span> <span class="o">+</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">z_ptr</span> <span class="o">+</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="c1"># Perform computation</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">+</span> <span class="n">z</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tl</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">res</span><span class="p">))</span>  <span class="c1"># SiLU activation</span>
+    <span class="c1"># Store result back to memory</span>
+    <span class="n">tl</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">out_ptr</span> <span class="o">+</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
 
-# Python wrapper to call the kernel
-def pointwise_add3_silu_triton(x: torch.Tensor, y: torch.Tensor, z: torch.Tensor) -&gt; torch.Tensor:
-    assert x.shape == y.shape == z.shape
-    N = x.numel()
-    out = torch.empty_like(x)
-    BLOCK_SIZE = 1024
-    grid = (triton.cdiv(N, BLOCK_SIZE),)
-    pointwise_add3_silu_kernel[grid](x, y, z, out, N, BLOCK_SIZE=BLOCK_SIZE, num_warps=4, num_stages=1)
-    return out
-</code></pre></div>
+<span class="c1"># Python wrapper to call the kernel</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pointwise_add3_silu_triton</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">BLOCK_SIZE</span> <span class="o">=</span> <span class="mi">1024</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">triton</span><span class="o">.</span><span class="n">cdiv</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">BLOCK_SIZE</span><span class="p">),)</span>
+    <span class="n">pointwise_add3_silu_kernel</span><span class="p">[</span><span class="n">grid</span><span class="p">](</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">BLOCK_SIZE</span><span class="o">=</span><span class="n">BLOCK_SIZE</span><span class="p">,</span> <span class="n">num_warps</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">num_stages</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span></code></pre></div>
 <p><code>torch.compile</code> also generates a similar kernel, but writing explicit kernels allows you to benefit from speedups in eager mode as well, without waiting for a long compilation step.</p>
-<h3 id="fused-adaptive-layernorm-zero-dual">Fused Adaptive LayerNorm Zero Dual</h3>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-python">class AdaLayerNormZeroEager(torch.nn.Module):
-    def __init__(self, embedding_dim: int, bias=True):
-        super().__init__()
-        self.linear = torch.nn.Linear(embedding_dim, 6 * embedding_dim, bias=bias)
-        self.norm = torch.nn.LayerNorm(embedding_dim, elementwise_affine=False, eps=1e-6)
+<h3 id="fused-adaptive-layernorm-zero-dual">Fused Adaptive LayerNorm Zero Dual<a class="heading-anchor" href="#fused-adaptive-layernorm-zero-dual" aria-label="Copy link to Fused Adaptive LayerNorm Zero Dual">#</a></h3>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight language-python"><span class="k">class</span><span class="w"> </span><span class="nc">AdaLayerNormZeroEager</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">embedding_dim</span><span class="p">,</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">embedding_dim</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">embedding_dim</span><span class="p">,</span> <span class="n">elementwise_affine</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
 
-    def forward(self, x: torch.Tensor, emb: torch.Tensor):
-        shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = emb.chunk(6, dim=-1)
-        x = self.norm(x)
-        x = torch.addcmul(shift_msa, x, 1 + scale_msa)
-        return x, gate_msa, shift_mlp, scale_mlp, gate_mlp
-</code></pre></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">emb</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">shift_msa</span><span class="p">,</span> <span class="n">scale_msa</span><span class="p">,</span> <span class="n">gate_msa</span><span class="p">,</span> <span class="n">shift_mlp</span><span class="p">,</span> <span class="n">scale_mlp</span><span class="p">,</span> <span class="n">gate_mlp</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">addcmul</span><span class="p">(</span><span class="n">shift_msa</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">scale_msa</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">gate_msa</span><span class="p">,</span> <span class="n">shift_mlp</span><span class="p">,</span> <span class="n">scale_mlp</span><span class="p">,</span> <span class="n">gate_mlp</span></code></pre></div>
 <p>This operation is used to calculate the modulation conditioning to facilitate interactions between image/text tokens and time/guidance/pooled text embeddings. The kernel implementations, along with benchmarking code, is available in <code>post_4/fused_adaln_zero_triton.py</code>.</p>
 <details>
 <summary> Expand for benchmarking results </summary>
@@ -367,19 +361,18 @@ def pointwise_add3_silu_triton(x: torch.Tensor, y: torch.Tensor, z: torch.Tensor
 </table>
 <p><sub>Note: Please make sure to read the note at the top of the file to understand how to fairly benchmark against <code>torch.compile</code> and why our numbers here show it to be slower than it actually is.</sub></p>
 </details>
-<h3 id="fused-adaptive-layernorm-zero-single">Fused Adaptive LayerNorm Zero Single</h3>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-python">class AdaLayerNormZeroSingleEager(torch.nn.Module):
-    def __init__(self, embedding_dim: int, bias=True):
-        super().__init__()
-        self.linear = torch.nn.Linear(embedding_dim, 3 * embedding_dim, bias=bias)
-        self.norm = torch.nn.LayerNorm(embedding_dim, elementwise_affine=False, eps=1e-6)
+<h3 id="fused-adaptive-layernorm-zero-single">Fused Adaptive LayerNorm Zero Single<a class="heading-anchor" href="#fused-adaptive-layernorm-zero-single" aria-label="Copy link to Fused Adaptive LayerNorm Zero Single">#</a></h3>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight language-python"><span class="k">class</span><span class="w"> </span><span class="nc">AdaLayerNormZeroSingleEager</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">embedding_dim</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">embedding_dim</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">embedding_dim</span><span class="p">,</span> <span class="n">elementwise_affine</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
 
-    def forward(self, x: torch.Tensor, emb: torch.Tensor):
-        shift_msa, scale_msa, gate_msa = emb.chunk(3, dim=-1)
-        x = self.norm(x)
-        x = torch.addcmul(shift_msa, x, 1 + scale_msa)
-        return x, gate_msa
-</code></pre></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">emb</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">shift_msa</span><span class="p">,</span> <span class="n">scale_msa</span><span class="p">,</span> <span class="n">gate_msa</span> <span class="o">=</span> <span class="n">emb</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">addcmul</span><span class="p">(</span><span class="n">shift_msa</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">scale_msa</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">gate_msa</span></code></pre></div>
 <p>This operation is used to calculate the modulation conditioning to facilitate interactions between image/text tokens and time/guidance/pooled text embeddings. The kernel implementations, along with benchmarking code, is available in <code>post_4/fused_adaln_zero_single_triton.py</code>. The only difference between this and the dual version is that this version only computes modulation for attention layers, while the dual version computes modulation for both attention and MLP layers.</p>
 <details>
 <summary> Expand for benchmarking results </summary>
@@ -395,17 +388,16 @@ def pointwise_add3_silu_triton(x: torch.Tensor, y: torch.Tensor, z: torch.Tensor
 </table>
 <p><sub>Note: Please make sure to read the note at the top of the file to understand how to fairly benchmark against <code>torch.compile</code> and why our numbers here show it to be slightly slower than it actually is.</sub></p>
 </details>
-<h3 id="rope">RoPE</h3>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-python">def apply_rotary_pos_emb_torch(q: torch.Tensor, k: torch.Tensor, cos: torch.Tensor, sin: torch.Tensor) -&gt; torch.Tensor:
-    dtype = q.dtype
-    q_real, q_imag = q.unflatten(-1, (-1, 2)).unbind(-1)
-    k_real, k_imag = k.unflatten(-1, (-1, 2)).unbind(-1)
-    q_rotated = torch.stack([-q_imag, q_real], dim=-1).flatten(3)
-    k_rotated = torch.stack([-k_imag, k_real], dim=-1).flatten(3)
-    q_out = q * cos + q_rotated * sin
-    k_out = k * cos + k_rotated * sin
-    return q_out.to(dtype), k_out.to(dtype)
-</code></pre></div>
+<h3 id="rope">RoPE<a class="heading-anchor" href="#rope" aria-label="Copy link to RoPE">#</a></h3>
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight language-python"><span class="k">def</span><span class="w"> </span><span class="nf">apply_rotary_pos_emb_torch</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">cos</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">sin</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="n">q_real</span><span class="p">,</span> <span class="n">q_imag</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">unflatten</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">unbind</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">k_real</span><span class="p">,</span> <span class="n">k_imag</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">unflatten</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">unbind</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">q_rotated</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="o">-</span><span class="n">q_imag</span><span class="p">,</span> <span class="n">q_real</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">k_rotated</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="o">-</span><span class="n">k_imag</span><span class="p">,</span> <span class="n">k_real</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">q_out</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">cos</span> <span class="o">+</span> <span class="n">q_rotated</span> <span class="o">*</span> <span class="n">sin</span>
+    <span class="n">k_out</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="n">cos</span> <span class="o">+</span> <span class="n">k_rotated</span> <span class="o">*</span> <span class="n">sin</span>
+    <span class="k">return</span> <span class="n">q_out</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">),</span> <span class="n">k_out</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span></code></pre></div>
 <p><a href="https://arxiv.org/abs/2104.09864" target="_blank" rel="noopener noreferrer">RoPE</a> is an essential component of the modern transformer architecture. It is used to inject positional information into the query and key projections of attention layers. The operation involves elementwise multiplications and additions, while also treating pairs of elements as complex numbers to perform rotations.</p>
 <p>RoPE is generally implemented in two ways:</p>
 <ul>
@@ -436,7 +428,7 @@ def pointwise_add3_silu_triton(x: torch.Tensor, y: torch.Tensor, z: torch.Tensor
 </tr>
 </table>
 </details>
-<h2 id="others-ideas">Others Ideas</h2>
+<h2 id="others-ideas">Others Ideas<a class="heading-anchor" href="#others-ideas" aria-label="Copy link to Others Ideas">#</a></h2>
 <p>There's a lot of other cool fusions or techniques that can be applied for further speedups:</p>
 <ul>
 <li>KV caching for cross attention layers: notice how the outputs of key and value projections remain the same across inference steps -- this means we could compute them once to shave off a few milliseconds.</li>
@@ -446,7 +438,7 @@ def pointwise_add3_silu_triton(x: torch.Tensor, y: torch.Tensor, z: torch.Tensor
 <li>Preallocating and reusing output buffers across layers</li>
 </ul>
 <p>This is only scratching the surface of what can be done. Another cool idea is to use <a href="https://hazyresearch.stanford.edu/blog/2025-05-27-no-bubbles" target="_blank" rel="noopener noreferrer">megakernels</a>. This is something I plan to write more about in a future post.</p>
-<h2 id="additional-reading">Additional reading</h2>
+<h2 id="additional-reading">Additional reading<a class="heading-anchor" href="#additional-reading" aria-label="Copy link to Additional reading">#</a></h2>
 <ul>
 <li><a href="https://huggingface.co/learn/llm-course/en/chapter11/4" target="_blank" rel="noopener noreferrer">HF LLM-Course LoRA</a></li>
 <li><a href="https://magazine.sebastianraschka.com/p/practical-tips-for-finetuning-llms" target="_blank" rel="noopener noreferrer">Practical Tips for Finetuning LLMs using LoRA</a></li>
@@ -454,12 +446,12 @@ def pointwise_add3_silu_triton(x: torch.Tensor, y: torch.Tensor, z: torch.Tensor
 <li><a href="https://arxiv.org/abs/2506.19852" target="_blank" rel="noopener noreferrer">Radial Attention</a></li>
 <li><a href="https://arxiv.org/abs/2505.13389" target="_blank" rel="noopener noreferrer">VSA: Faster Video Diffusion with Trainable Sparse Attention</a></li>
 </ul>
-<div class="alert alert-note"><div class="alert-title">💡 Note</div><p>
+<div class="alert alert-note"><div class="alert-title">Note</div><p>
 This post was originally written in July 2025 to be published on the <a href="https://huggingface.co/blog" target="_blank" rel="noopener noreferrer">HF Blog</a>. However, shortly after this, and before the last blog was fully completed, I decided to leave my job at HF and start another chapter of my life elsewhere. This stalled progress on the blogs and I did not have the energy to finish up the series. Originally, walkthroughs of custom GEMM in CUDA, non-trivial fusions, showcasing end-to-end deployment on HF ZeroGPU stack, having accompanying video explanations, and so much more was planned. But due to other important priorities, and the ever-delaying schedule to release this series of posts, I've now decided to cut it short and post just the written posts at this time. My target audience is students–folks finding it difficult to transition from outdated university courses to relevant real-world ML engineering, but I hope all readers may find it useful and valuable!</p>
 <p>Many thanks to my team and colleagues at Hugging Face for allowing me the time to work on this. And, of course, for the unlimited H100 GPUs used in testing and debugging things! Lastly, very appreciative of <a href="https://x.com/linoy_tsaban" target="_blank" rel="noopener noreferrer">Linoy Tsaban</a> for taking the time to read everything I put down and providing valuable feedback &lt;3</p></div>
-<h2 id="citation">Citation</h2>
+<h2 id="citation">Citation<a class="heading-anchor" href="#citation" aria-label="Copy link to Citation">#</a></h2>
 <p>If you found this post useful in your work, please consider citing it as:</p>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code>@misc{avs2026optdiff,
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight">@misc{avs2026optdiff,
   author = {Aryan V S},
   title = {Optimizing Diffusion for Production-Ready Speeds},
   year = {2026},
@@ -469,7 +461,9 @@ This post was originally written in July 2025 to be published on the <a href="ht
 }
 </code></pre></div>
 
-        </main>
+            </main>
+        </div>
+        <aside class="post-toc" id="post-toc" aria-label="Table of contents"><div class="toc-title">On this page</div><ul class="toc-list"><li class="toc-item toc-h2"><a class="toc-link" href="#lora">LoRA</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#training">Training</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#wan-text-to-video">Wan text-to-video</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#sparse-attention">Sparse Attention</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#uncommon-deployment-environments">Uncommon Deployment Environments</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#lower-level-languages">Lower level languages</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#triton-kernels">Triton kernels</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#pointwise-add-and-silu">Pointwise Add and SiLU</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#fused-adaptive-layernorm-zero-dual">Fused Adaptive LayerNorm Zero Dual</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#fused-adaptive-layernorm-zero-single">Fused Adaptive LayerNorm Zero Single</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#rope">RoPE</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#others-ideas">Others Ideas</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#additional-reading">Additional reading</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#citation">Citation</a></li></ul></aside>
     </div>
     <div class="lightbox-overlay" id="lightbox">
       <div class="lightbox-close" onclick="closeLightbox()">×</div>
@@ -485,21 +479,14 @@ This post was originally written in July 2025 to be published on the <a href="ht
   </div>
     <footer>
         <div class="social-links">
-            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                <i class="fab fa-github"></i>
-            </a>
-            <a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
-                <i class="fab fa-x-twitter"></i>
-            </a>
-            <a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                <i class="fab fa-linkedin"></i>
-            </a>
-            <a href="mailto:contact.aryanvs@gmail.com" aria-label="Email">
-                <i class="fas fa-envelope"></i>
-            </a>
+            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.76 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.66.79.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg></a>
+<a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+<a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg></a>
+<a href="mailto:contact.aryanvs@gmail.com" aria-label="Email"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3h15A2.5 2.5 0 0 1 22 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5v-13zm2.3-.5L12 10.7 19.7 5H4.3zM20 7.25l-7.4 5.47a1 1 0 0 1-1.2 0L4 7.25V18.5c0 .28.22.5.5.5h15a.5.5 0 0 0 .5-.5V7.25z"/></svg></a>
+<a href="/feed.xml" aria-label="RSS Feed" title="RSS Feed"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.18 15.64a2.18 2.18 0 1 1 0 4.36 2.18 2.18 0 0 1 0-4.36zM4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44zm0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg></a>
         </div>
     </footer>
-    <script src="/assets/particle-life.js"></script>
-    <script src="/assets/script.js"></script>
+    <script src="/assets/particle-life.js?v=f4a24e94"></script>
+    <script src="/assets/script.js?v=38be224d"></script>
 </body>
 </html>

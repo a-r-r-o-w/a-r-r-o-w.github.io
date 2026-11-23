@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Aryan V S</title>
+    <link>https://a-r-r-o-w.github.io/</link>
+    <description>GPU programming, diffusion models, and systems engineering.</description>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 23 Nov 2026 08:30:13 +0000</lastBuildDate>
+    <atom:link href="https://a-r-r-o-w.github.io/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>Looking inside your kernels</title>
+      <link>https://a-r-r-o-w.github.io/blog/3_blossom/00005_looking_inside_your_kernels/</link>
+      <guid isPermaLink="true">https://a-r-r-o-w.github.io/blog/3_blossom/00005_looking_inside_your_kernels/</guid>
+      <pubDate>Sun, 05 Jul 2026 00:00:00 +0000</pubDate>
+      <description>Interest in writing specialized high performance programs for GPUs and other accelerators has been on the rise in the past few years. There are many r...</description>
+      <category>cuda</category>
+      <category>profiling</category>
+      <category>gpu</category>
+      <category>mlsys</category>
+    </item>
+    <item>
+      <title>Optimizing diffusion for production-ready speeds - IV</title>
+      <link>https://a-r-r-o-w.github.io/blog/3_blossom/00004_productionizing_diffusion-4/</link>
+      <guid isPermaLink="true">https://a-r-r-o-w.github.io/blog/3_blossom/00004_productionizing_diffusion-4/</guid>
+      <pubDate>Thu, 29 Jan 2026 00:00:00 +0000</pubDate>
+      <description>Diffusion models have rapidly advanced generative modeling across a wide range of modalities - from images and video to music, 3D objects, and even te...</description>
+      <category>diffusion</category>
+      <category>optimization</category>
+      <category>mlsys</category>
+    </item>
+    <item>
+      <title>Optimizing diffusion for production-ready speeds - III</title>
+      <link>https://a-r-r-o-w.github.io/blog/3_blossom/00003_productionizing_diffusion-3/</link>
+      <guid isPermaLink="true">https://a-r-r-o-w.github.io/blog/3_blossom/00003_productionizing_diffusion-3/</guid>
+      <pubDate>Sun, 25 Jan 2026 00:00:00 +0000</pubDate>
+      <description>Diffusion models have rapidly advanced generative modeling across a wide range of modalities - from images and video to music, 3D objects, and even te...</description>
+      <category>diffusion</category>
+      <category>optimization</category>
+      <category>mlsys</category>
+    </item>
+    <item>
+      <title>Optimizing diffusion for production-ready speeds - II</title>
+      <link>https://a-r-r-o-w.github.io/blog/3_blossom/00002_productionizing_diffusion-2/</link>
+      <guid isPermaLink="true">https://a-r-r-o-w.github.io/blog/3_blossom/00002_productionizing_diffusion-2/</guid>
+      <pubDate>Sat, 10 Jan 2026 00:00:00 +0000</pubDate>
+      <description>Diffusion models have rapidly advanced generative modeling across a wide range of modalities - from images and video to music, 3D objects, and even te...</description>
+      <category>diffusion</category>
+      <category>optimization</category>
+      <category>mlsys</category>
+    </item>
+    <item>
+      <title>Optimizing diffusion for production-ready speeds - I</title>
+      <link>https://a-r-r-o-w.github.io/blog/3_blossom/00001_productionizing_diffusion-1/</link>
+      <guid isPermaLink="true">https://a-r-r-o-w.github.io/blog/3_blossom/00001_productionizing_diffusion-1/</guid>
+      <pubDate>Mon, 29 Dec 2025 00:00:00 +0000</pubDate>
+      <description>Diffusion models have rapidly advanced generative modeling across a wide range of modalities - from images and video to music, 3D objects, and even te...</description>
+      <category>diffusion</category>
+      <category>optimization</category>
+      <category>mlsys</category>
+    </item>
+  </channel>
+</rss>

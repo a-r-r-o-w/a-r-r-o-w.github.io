@@ -306,7 +306,7 @@
         frameDirty = false;
         stepInFlight = true;
 
-        worker = new Worker('/assets/particle-worker.js');
+        worker = new Worker('/assets/particle-worker.js?v=f3129b15');
         worker.onmessage = function (e) {
             var d = e.data;
             if (d.type === 'frame') {
@@ -643,6 +643,7 @@
             '<button id="pl-mode-simple" class="pl-mode-btn' + (editorMode === 'simple' ? ' active' : '') + '">Simple</button>' +
             '<button id="pl-mode-advanced" class="pl-mode-btn' + (editorMode === 'advanced' ? ' active' : '') + '">Advanced</button>' +
             '<button id="pl-mode-presets" class="pl-mode-btn' + (editorMode === 'presets' ? ' active' : '') + '">Presets</button>' +
+            '<button id="pl-share" class="pl-mode-btn" title="Copy shareable link">Share</button>' +
             '</div>';
 
         var showKnobs = editorMode !== 'presets';
@@ -743,6 +744,21 @@
             syncSlider('pl-repulsion', Math.round(REPULSION_SCALE * 100));
         });
 
+        document.getElementById('pl-share').addEventListener('click', function () {
+            var shareBtn = this;
+            var hash = buildShareHash();
+            var url = window.location.origin + window.location.pathname + hash;
+            try { history.replaceState(null, '', hash); } catch (e) { }
+            var done = function () {
+                shareBtn.textContent = 'Copied!';
+                setTimeout(function () { shareBtn.textContent = 'Share'; }, 1600);
+            };
+            if (window.copyWithToast) {
+                window.copyWithToast(url, 'Link copied!', done);
+            } else if (navigator.clipboard) {
+                navigator.clipboard.writeText(url).then(done);
+            }
+        });
         document.getElementById('pl-export').addEventListener('click', exportConfig);
         document.getElementById('pl-import').addEventListener('change', function (e) {
             if (e.target.files && e.target.files[0]) {
@@ -887,14 +903,70 @@
         controlsPanel = null;
     }
 
-    function enterImmersive() {
+    function slugifyPreset(name) {
+        return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    }
+
+    function buildShareHash() {
+        if (activePreset) return '#pl=' + slugifyPreset(activePreset);
+        var n = NUM_SPECIES, att = [], md = [];
+        for (var i = 0; i < n * n; i++) {
+            att.push(Math.round(currentAttractions[i] * 100));
+            md.push(Math.round(currentMinDist[i] * 100));
+        }
+        var payload = {
+            s: n, n: NUM_PARTICLES, r: Math.round(RMAX),
+            f: Math.round(FRICTION * 100), d: Math.round(DT * 1000),
+            k: Math.round(FORCE_SCALE), p: Math.round(REPULSION_SCALE * 100),
+            w: WALL_MODE, a: att, m: md
+        };
+        if (lifecycle.enabled) payload.l = lifecycle;
+        var b64 = btoa(JSON.stringify(payload)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        return '#pl=cfg:' + b64;
+    }
+
+    function parseShareHash() {
+        var h = window.location.hash || '';
+        if (h.indexOf('#pl=') !== 0) return null;
+        var val = h.slice(4);
+        if (val.indexOf('cfg:') === 0) {
+            try {
+                var b64 = val.slice(4).replace(/-/g, '+').replace(/_/g, '/');
+                while (b64.length % 4) b64 += '=';
+                var o = JSON.parse(atob(b64));
+                return {
+                    name: null,
+                    cfg: {
+                        numSpecies: o.s, numParticles: o.n, rmax: o.r,
+                        friction: o.f / 100, dt: o.d / 1000, forceScale: o.k,
+                        repulsionScale: o.p / 100, wallMode: o.w,
+                        attractions: o.a.map(function (x) { return x / 100; }),
+                        minDist: o.m.map(function (x) { return x / 100; }),
+                        lifecycle: o.l || { enabled: false }
+                    }
+                };
+            } catch (e) { return null; }
+        }
+        for (var i = 0; i < PRESETS.length; i++) {
+            if (slugifyPreset(PRESETS[i].name) === val) {
+                return { name: PRESETS[i].name, cfg: PRESETS[i] };
+            }
+        }
+        return null;
+    }
+
+    function enterImmersive(initialShare) {
         immersive = true;
         running = true;
         document.body.classList.add('immersive-mode');
         canvas.style.pointerEvents = 'auto';
-        resetSession(false);
-        buildControls();
-        if (editorMode === 'advanced') buildSpeciesPanel();
+        if (initialShare) {
+            applyConfig(initialShare.cfg, initialShare.name);
+        } else {
+            resetSession(false);
+            buildControls();
+            if (editorMode === 'advanced') buildSpeciesPanel();
+        }
         animId = requestAnimationFrame(render);
     }
 
@@ -914,6 +986,9 @@
         displayView = null;
         displayN = 0;
         recycleBuf = null;
+        if ((window.location.hash || '').indexOf('#pl=') === 0) {
+            try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch (e) { }
+        }
     }
 
     var btn = document.getElementById('immersive-toggle');
@@ -921,7 +996,7 @@
         btn.innerHTML = plIconSvg;
         btn.addEventListener('click', function () {
             if (immersive) exitImmersive();
-            else enterImmersive();
+            else enterImmersive(null);
         });
 
         setInterval(function () {
@@ -935,4 +1010,9 @@
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && immersive) exitImmersive();
     });
+
+    var shared = parseShareHash();
+    if (shared) {
+        enterImmersive(shared);
+    }
 })();

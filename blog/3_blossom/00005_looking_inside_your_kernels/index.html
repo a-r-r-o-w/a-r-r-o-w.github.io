@@ -8,7 +8,14 @@
     <meta property="og:description" content="Interest in writing specialized high performance programs for GPUs and other accelerators has been on the rise in the past few years. There are many r...">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://a-r-r-o-w.github.io/blog/3_blossom/00005_looking_inside_your_kernels/">
+    <meta property="og:image" content="https://a-r-r-o-w.github.io/assets/og/3_blossom_00005_looking_inside_your_kernels.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Looking inside your kernels">
+    <meta name="twitter:description" content="Interest in writing specialized high performance programs for GPUs and other accelerators has been on the rise in the past few years. There are many r...">
+    <meta name="twitter:image" content="https://a-r-r-o-w.github.io/assets/og/3_blossom_00005_looking_inside_your_kernels.png">
     <link rel="canonical" href="https://a-r-r-o-w.github.io/blog/3_blossom/00005_looking_inside_your_kernels/">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate" type="application/rss+xml" title="Aryan V S" href="/feed.xml">
     <title>Looking inside your kernels - Aryan V S</title>
     <script>
       (function() {
@@ -16,18 +23,10 @@
         document.documentElement.dataset.theme = t;
       })();
     </script>
-    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/assets/style.css?v=337e3457">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
-      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
-      crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}, {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}], throwOnError: false});"></script>
-    <!-- Copy style from here: https://github.com/highlightjs/highlight.js/tree/5697ae5187746c24732e62cd625f3f83004a44ce/src/styles -->
-    <link rel="stylesheet" id="hljs-dark" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
-    <link rel="stylesheet" id="hljs-light" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" disabled>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -42,6 +41,7 @@
     </script>
 </head>
 <body>
+    <div class="reading-progress" id="reading-progress"></div>
     <canvas id="particle-life"></canvas>
     <header>
         <div class="header-inner">
@@ -67,22 +67,24 @@
             </div>
         </div>
     </header>
-    <div class="container">
-        <main class="post-page">
-          <div class="post-title-wrapper">
-              <div class="post-date-stats">
-                  <div class="post-date">2026-07-05</div>
-                  <div class="post-stats">1,662 words • ~8 min</div>
+    <div class="post-layout">
+        <div class="container">
+            <main class="post-page">
+              <div class="post-title-wrapper">
+                  <div class="post-date-stats">
+                      <div class="post-date">2026-07-05</div>
+                      <div class="post-stats">1,662 words • ~8 min</div>
+                  </div>
+                  <h2 class="post-title">Looking inside your kernels</h2>
+                  <button class="post-info-btn" aria-label="Post info"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 4.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM10.75 11h2.5v6.5h-2.5V11z"/></svg></button>
               </div>
-              <h2 class="post-title">Looking inside your kernels</h2>
-              <button class="post-info-btn" aria-label="Post info"><i class="fas fa-info-circle"></i></button>
-          </div>
-            <div class="post-meta">
-                <div class="post-tags"><span class="tag">cuda</span> <span class="tag">profiling</span> <span class="tag">gpu</span> <span class="tag">mlsys</span></div>
-                
-                <div class="post-links"><a href="https://github.com/a-r-r-o-w/a-r-r-o-w.github.io/tree/main/src/blog/3_blossom/00005_looking_inside_your_kernels" class="post-link code"><i class="fab fa-github"></i> Code</a></div>
-            </div>
-            <p>Interest in writing specialized high performance programs for GPUs and other accelerators has been on the rise in the past few years. There are many resources for doing so today, but not as much on how to look inside these programs and visually dissect them.</p>
+                <div class="post-meta">
+                    <div class="post-tags"><span class="tag">cuda</span> <span class="tag">profiling</span> <span class="tag">gpu</span> <span class="tag">mlsys</span></div>
+                    
+                    <div class="post-links"><a href="https://github.com/a-r-r-o-w/a-r-r-o-w.github.io/tree/main/src/blog/3_blossom/00005_looking_inside_your_kernels" class="post-link code"><svg class="icon icon-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.76 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.66.79.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg> Code</a></div>
+                </div>
+                <details class="post-toc-mobile"><summary>Table of contents</summary><ul class="toc-list"><li class="toc-item toc-h2"><a class="toc-link" href="#table-of-contents">Table of contents</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#rmsnorm">RMSNorm</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#benchmarks">Benchmarks</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#adding-instrumentation">Adding instrumentation</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#trace-output">Trace output</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#design-choices-and-tradeoffs">Design choices and tradeoffs</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#comparison-with-other-approaches">Comparison with other approaches</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#triton-proton">Triton Proton</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#additional-reading">Additional reading</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#citation">Citation</a></li></ul></details>
+                <p>Interest in writing specialized high performance programs for GPUs and other accelerators has been on the rise in the past few years. There are many resources for doing so today, but not as much on how to look inside these programs and visually dissect them.</p>
 <p>Let's say you have a kernel and you want to make it faster: you run Nsight, look at the roofline plots, do calculations on what the bottlenecks are, and guess what the profiler is trying to tell you. The problem with this is that these tools treat your kernel as a black box. What happens inside the kernel is opaque to them aside from certain specifics. You get aggregate metrics (bandwidth utilization, warp occupancy, instruction mix, ...) but no visibility into the <em>internal</em> structure of execution.</p>
 <p>Which warps are blocked at a barrier? How long does the reduction actually take? Is the load latency hidden effectively? It can tell you when a kernel started and stopped, bytes that were moved, instructions that were executed, time spent per instruction, and lots more helpful information, but it cannot observe internal control flow.</p>
 <p>This matters most for:</p>
@@ -93,9 +95,9 @@
 </ul>
 <p>Here, we look at a lightweight technique for answering some of these questions. We take RMSNorm as our example kernel and apply <em>intra-kernel profiling</em> to record timestamps inside the kernel at different logical phase boundaries.</p>
 <p>Access the full code <a href="https://github.com/a-r-r-o-w/a-r-r-o-w.github.io/tree/main/src/blog/3_blossom/00005_looking_inside_your_kernels" target="_blank" rel="noopener noreferrer">here</a>.</p>
-<div class="alert alert-note"><div class="alert-title">💡 Note</div><p>
+<div class="alert alert-note"><div class="alert-title">Note</div><p>
 All benchmarks were done on a single A100 80GB SXM4. <a href="https://verda.com/" target="_blank" rel="noopener noreferrer">Verda</a> provided the compute resources for this. I'm not affiliated with them in any way but, in my experience, they are one of the best platforms for low-level optimization work and I've had a wonderful time working with them. Check them out!</p></div>
-<h2 id="table-of-contents">Table of contents</h2>
+<h2 id="table-of-contents">Table of contents<a class="heading-anchor" href="#table-of-contents" aria-label="Copy link to Table of contents">#</a></h2>
 <ul>
 <li><a href="#rmsnorm">RMSNorm</a></li>
 <li><a href="#benchmarks">Benchmarks</a></li>
@@ -105,7 +107,7 @@ All benchmarks were done on a single A100 80GB SXM4. <a href="https://verda.com/
 <li><a href="#additional-reading">Additional reading</a></li>
 <li><a href="#citation">Citation</a></li>
 </ul>
-<h2 id="rmsnorm">RMSNorm</h2>
+<h2 id="rmsnorm">RMSNorm<a class="heading-anchor" href="#rmsnorm" aria-label="Copy link to RMSNorm">#</a></h2>
 <p><a href="https://arxiv.org/abs/1910.07467" target="_blank" rel="noopener noreferrer">RMSNorm</a> is used in most modern transformer architectures. Given an input vector $x$ and a learned scale $\gamma$, it computes:</p>
 <p>$$\text{RMSNorm}(x) = \frac{x}{\sqrt{\frac{1}{n}\sum x_i^2 + \epsilon}} \cdot \gamma$$</p>
 <p>A naive implementation requires two passes over data:</p>
@@ -116,75 +118,74 @@ All benchmarks were done on a single A100 80GB SXM4. <a href="https://verda.com/
 <p>Two passes require two global memory reads, which is extremely expensive. Practically, only a single pass is done by keeping data in registers between the two passes (if possible, i.e. when the sum reduction dimension is small enough). In our implementation, similar to most standard implementations, each thread handles exactly one 128-bit vector (8 bf16 values). For <code>hidden_dim=5120</code> this means 640 threads (20 warps) per block, well within the A100's register file capacity.</p>
 <details>
 <summary>Core implementation (bf16 input/output, fp32 accumulation)</summary>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-cpp">// cache-streaming store that bypasses L1/L2 on writes to avoid polluting cache
-__device__ __forceinline__ void store_cs_128(void* addr, float4 val) {
-  asm volatile(
-    "st.global.cs.v4.b32 [%0], {%1, %2, %3, %4};" :: "l"(addr), "r"(__float_as_int(val.x)), "r"(__float_as_int(val.y)), "r"(__float_as_int(val.z)), "r"(__float_as_int(val.w))
-  );
-}
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight language-cpp"><span class="c1">// cache-streaming store that bypasses L1/L2 on writes to avoid polluting cache</span>
+<span class="n">__device__</span><span class="w"> </span><span class="n">__forceinline__</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">store_cs_128</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">addr</span><span class="p">,</span><span class="w"> </span><span class="n">float4</span><span class="w"> </span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">asm</span><span class="w"> </span><span class="k">volatile</span><span class="p">(</span>
+<span class="w">    </span><span class="s">"st.global.cs.v4.b32 [%0], {%1, %2, %3, %4};"</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"l"</span><span class="p">(</span><span class="n">addr</span><span class="p">),</span><span class="w"> </span><span class="s">"r"</span><span class="p">(</span><span class="n">__float_as_int</span><span class="p">(</span><span class="n">val</span><span class="p">.</span><span class="n">x</span><span class="p">)),</span><span class="w"> </span><span class="s">"r"</span><span class="p">(</span><span class="n">__float_as_int</span><span class="p">(</span><span class="n">val</span><span class="p">.</span><span class="n">y</span><span class="p">)),</span><span class="w"> </span><span class="s">"r"</span><span class="p">(</span><span class="n">__float_as_int</span><span class="p">(</span><span class="n">val</span><span class="p">.</span><span class="n">z</span><span class="p">)),</span><span class="w"> </span><span class="s">"r"</span><span class="p">(</span><span class="n">__float_as_int</span><span class="p">(</span><span class="n">val</span><span class="p">.</span><span class="n">w</span><span class="p">))</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
 
-template&lt;bool T, int NWARPS&gt;
-__global__ void rmsnorm_fwd(
-  const bf16 * __restrict__ input,
-  const bf16 * __restrict__ weight,
-  bf16 * __restrict__ output,
-  u32 hidden_dim,
-  f32 epsilon,
-  RawEvent* __restrict__ trace_buf,
-  u32* __restrict__ trace_counts
-) {
-  const u32 row = blockIdx.x;
-  const u32 tid = threadIdx.x;
-  const u32 lane = tid &amp; 31;
-  const u32 warp = tid &gt;&gt; 5;
-  const u32 vec_dim = hidden_dim &gt;&gt; 3;
+<span class="k">template</span><span class="o">&lt;</span><span class="kt">bool</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">NWARPS</span><span class="o">&gt;</span>
+<span class="n">__global__</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">rmsnorm_fwd</span><span class="p">(</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">bf16</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__restrict__</span><span class="w"> </span><span class="n">input</span><span class="p">,</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">bf16</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__restrict__</span><span class="w"> </span><span class="n">weight</span><span class="p">,</span>
+<span class="w">  </span><span class="n">bf16</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__restrict__</span><span class="w"> </span><span class="n">output</span><span class="p">,</span>
+<span class="w">  </span><span class="n">u32</span><span class="w"> </span><span class="n">hidden_dim</span><span class="p">,</span>
+<span class="w">  </span><span class="n">f32</span><span class="w"> </span><span class="n">epsilon</span><span class="p">,</span>
+<span class="w">  </span><span class="n">RawEvent</span><span class="o">*</span><span class="w"> </span><span class="n">__restrict__</span><span class="w"> </span><span class="n">trace_buf</span><span class="p">,</span>
+<span class="w">  </span><span class="n">u32</span><span class="o">*</span><span class="w"> </span><span class="n">__restrict__</span><span class="w"> </span><span class="n">trace_counts</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">u32</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">u32</span><span class="w"> </span><span class="n">tid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">u32</span><span class="w"> </span><span class="n">lane</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tid</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">31</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">u32</span><span class="w"> </span><span class="n">warp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tid</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">u32</span><span class="w"> </span><span class="n">vec_dim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hidden_dim</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
 
-  const bf16 *x = input + (u64)row * hidden_dim;
-  bf16 *out = output + (u64)row * hidden_dim;
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">bf16</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">input</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">u64</span><span class="p">)</span><span class="n">row</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">hidden_dim</span><span class="p">;</span>
+<span class="w">  </span><span class="n">bf16</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">u64</span><span class="p">)</span><span class="n">row</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">hidden_dim</span><span class="p">;</span>
 
-  // phase 1: load into registers + accumulate sum of squares
-  f32 local_vals[8];
-  f32 sum_sq = 0.0f;
+<span class="w">  </span><span class="c1">// phase 1: load into registers + accumulate sum of squares</span>
+<span class="w">  </span><span class="n">f32</span><span class="w"> </span><span class="n">local_vals</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>
+<span class="w">  </span><span class="n">f32</span><span class="w"> </span><span class="n">sum_sq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">;</span>
 
-  if (tid &lt; vec_dim) {
-    float4 v = *reinterpret_cast&lt;const float4 *&gt;(x + tid * 8);
-    const bf16 *vals = reinterpret_cast&lt;const bf16 *&gt;(&amp;v);
-    #pragma unroll
-    for (int j = 0; j &lt; 8; j++) {
-      local_vals[j] = __bfloat162float(vals[j]);
-      sum_sq += local_vals[j] * local_vals[j];
-    }
-  }
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tid</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">vec_dim</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">float4</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">float4</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tid</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">8</span><span class="p">);</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">bf16</span><span class="w"> </span><span class="o">*</span><span class="n">vals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">bf16</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">v</span><span class="p">);</span>
+<span class="w">    </span><span class="cp">#pragma unroll</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">local_vals</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">__bfloat162float</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span>
+<span class="w">      </span><span class="n">sum_sq</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">local_vals</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">local_vals</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
 
-  // shared memory block reduction
-  for (int offset = 16; offset &gt; 0; offset &gt;&gt;= 1) {
-    sum_sq += __shfl_xor_sync(0xffffffff, sum_sq, offset);
-  }
+<span class="w">  </span><span class="c1">// shared memory block reduction</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">&gt;&gt;=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">sum_sq</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">__shfl_xor_sync</span><span class="p">(</span><span class="mh">0xffffffff</span><span class="p">,</span><span class="w"> </span><span class="n">sum_sq</span><span class="p">,</span><span class="w"> </span><span class="n">offset</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
 
-  __shared__ f32 warp_sums[32];
-  if (lane == 0) warp_sums[warp] = sum_sq;
-  __syncthreads();
+<span class="w">  </span><span class="n">__shared__</span><span class="w"> </span><span class="n">f32</span><span class="w"> </span><span class="n">warp_sums</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lane</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">warp_sums</span><span class="p">[</span><span class="n">warp</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sum_sq</span><span class="p">;</span>
+<span class="w">  </span><span class="n">__syncthreads</span><span class="p">();</span>
 
-  // ...
-  // ... warp 0 reduces, broadcasts via warp_sums[0] ...
-  // ...
-  __syncthreads();
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="w">  </span><span class="c1">// ... warp 0 reduces, broadcasts via warp_sums[0] ...</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="w">  </span><span class="n">__syncthreads</span><span class="p">();</span>
 
-  // phase 2: normalize
-  if (tid &lt; vec_dim) {
-    f32 inv_rms = rsqrtf(warp_sums[0] / f32(hidden_dim) + epsilon);
-    float4 wv = *reinterpret_cast&lt;const float4 *&gt;(weight + tid * 8);
-    const bf16 *wvals = reinterpret_cast&lt;const bf16 *&gt;(&amp;wv);
+<span class="w">  </span><span class="c1">// phase 2: normalize</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tid</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">vec_dim</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">f32</span><span class="w"> </span><span class="n">inv_rms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rsqrtf</span><span class="p">(</span><span class="n">warp_sums</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">f32</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">epsilon</span><span class="p">);</span>
+<span class="w">    </span><span class="n">float4</span><span class="w"> </span><span class="n">wv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">float4</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">weight</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tid</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">8</span><span class="p">);</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">bf16</span><span class="w"> </span><span class="o">*</span><span class="n">wvals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">bf16</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wv</span><span class="p">);</span>
 
-    bf16 result[8];
-    #pragma unroll
-    for (int j = 0; j &lt; 8; j++) {
-      result[j] = __float2bfloat16(local_vals[j] * inv_rms * __bfloat162float(wvals[j]));
-    }
-    store_cs_128(out + tid * 8, *reinterpret_cast&lt;float4 *&gt;(result));
-  }
-}
-</code></pre></div>
+<span class="w">    </span><span class="n">bf16</span><span class="w"> </span><span class="n">result</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>
+<span class="w">    </span><span class="cp">#pragma unroll</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">result</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">__float2bfloat16</span><span class="p">(</span><span class="n">local_vals</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">inv_rms</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__bfloat162float</span><span class="p">(</span><span class="n">wvals</span><span class="p">[</span><span class="n">j</span><span class="p">]));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">store_cs_128</span><span class="p">(</span><span class="n">out</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tid</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">float4</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">result</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span></code></pre></div>
 </details>
 <p>In this kernel:</p>
 <ul>
@@ -192,7 +193,7 @@ __global__ void rmsnorm_fwd(
 <li>cache streaming stores to avoid lingering in the L1/L2 cache with data that won't be read again soon (to those familiar with Triton, this is the evict-first policy).</li>
 <li>warp shuffle reduction is used to reduce the sum-of-squares within each warp. These results are written to shared memory, and then warp 0 does a final shuffle reduction (as it now has the full sum-of-squares for the block via shared memory).</li>
 </ul>
-<h2 id="benchmarks">Benchmarks</h2>
+<h2 id="benchmarks">Benchmarks<a class="heading-anchor" href="#benchmarks" aria-label="Copy link to Benchmarks">#</a></h2>
 <p>We compare against two implementations:</p>
 <ul>
 <li><strong>pytorch</strong>: <code>torch.nn.functional.rms_norm</code> (dispatches to <a href="https://github.com/pytorch/pytorch/blob/main/aten/src/ATen/native/cuda/layer_norm_kernel.cu" target="_blank" rel="noopener noreferrer"><code>layer_norm_kernel.cu</code></a> with <code>rms_norm=true</code>)</li>
@@ -261,27 +262,26 @@ __global__ void rmsnorm_fwd(
 </table></div>
 <p><img src="bandwidth.png" alt="bandwidth comparison" loading="lazy" /></p>
 <p><img src="latency.png" alt="latency comparison" loading="lazy" /></p>
-<h2 id="adding-instrumentation">Adding instrumentation</h2>
+<h2 id="adding-instrumentation">Adding instrumentation<a class="heading-anchor" href="#adding-instrumentation" aria-label="Copy link to Adding instrumentation">#</a></h2>
 <p>A template parameter <code>T</code> controls tracing. When <code>T=false</code>, the compiler eliminates all tracing code (binary identical to the un-instrumented kernel). When <code>T=true</code>, lane 0 of each warp records timestamps.</p>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-cpp">struct alignas(8) RawEvent {
-  uint64_t clock;
-  uint32_t meta;
-};
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight language-cpp"><span class="k">struct</span><span class="w"> </span><span class="nc">alignas</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="n">RawEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">clock</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">meta</span><span class="p">;</span>
+<span class="p">};</span>
 
-__device__ __forceinline__ uint64_t globaltimer_ns() {
-  uint64_t t;
-  asm volatile("mov.u64 %0, %%globaltimer;" : "=l"(t));
-  return t;
-}
+<span class="n">__device__</span><span class="w"> </span><span class="n">__forceinline__</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">globaltimer_ns</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="w">  </span><span class="k">asm</span><span class="w"> </span><span class="k">volatile</span><span class="p">(</span><span class="s">"mov.u64 %0, %%globaltimer;"</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"=l"</span><span class="p">(</span><span class="n">t</span><span class="p">));</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="p">}</span>
 
-__device__ __forceinline__ uint64_t clk() {
-  uint64_t t;
-  asm volatile("mov.u64 %0, %%clock64;" : "=l"(t));
-  return t;
-}
+<span class="n">__device__</span><span class="w"> </span><span class="n">__forceinline__</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">clk</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="w">  </span><span class="k">asm</span><span class="w"> </span><span class="k">volatile</span><span class="p">(</span><span class="s">"mov.u64 %0, %%clock64;"</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"=l"</span><span class="p">(</span><span class="n">t</span><span class="p">));</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="p">}</span>
 
-#define MARK() do { if (__builtin_expect(do_trace, 0)) { my_smem[ei++] = {clk(), ei}; } } while(0)
-</code></pre></div>
+<span class="cp">#define MARK() do { if (__builtin_expect(do_trace, 0)) { my_smem[ei++] = {clk(), ei}; } } while(0)</span></code></pre></div>
 <p>Two timers are used together. <code>%globaltimer</code> is a system-wide nanosecond counter, read once per block to anchor it on a global time axis. <code>%clock64</code> is per-SM with cycle resolution (~0.7ns/tick), used for all individual phase marks. Thread 0 writes both to shared memory before any work begins so all warps share the same reference.</p>
 <p>A single <code>MARK()</code> is placed at each phase boundary. The span between consecutive marks is the phase. A <code>__syncwarp()</code> precedes each mark so that pending loads/stores retire before the timestamp is read.</p>
 <p>Events are buffered in shared memory and flushed to global memory once at kernel end. Only lane 0 of each warp writes to its own region, so there are no bank conflicts.</p>
@@ -329,7 +329,7 @@ __device__ __forceinline__ uint64_t clk() {
 </tbody>
 </table></div>
 <p>The instrumented code can be found <a href="https://github.com/a-r-r-o-w/a-r-r-o-w.github.io/tree/main/src/blog/3_blossom/00005_looking_inside_your_kernels/rmsnorm_trace.cu" target="_blank" rel="noopener noreferrer">here</a>.</p>
-<h2 id="trace-output">Trace output</h2>
+<h2 id="trace-output">Trace output<a class="heading-anchor" href="#trace-output" aria-label="Copy link to Trace output">#</a></h2>
 <p>We run the instrumented kernel on a 432x5120 bf16 tensor (432 blocks, 20 warps per block). A few warmup iterations populate TLBs, then we flush L2 so the traced run hits DRAM on every load (otherwise the trace grossly understates memory latency because of L2 hits). Timestamps are dumped as a binary file and parsed by a <a href="https://github.com/a-r-r-o-w/a-r-r-o-w.github.io/tree/main/src/blog/3_blossom/00005_looking_inside_your_kernels/render_trace.py" target="_blank" rel="noopener noreferrer">rendering script</a>.</p>
 <p>Block-level overview (all 432 blocks on a global time axis):</p>
 <p><img src="trace_overview.png" alt="trace overview" loading="lazy" /></p>
@@ -344,20 +344,19 @@ __device__ __forceinline__ uint64_t clk() {
 <li><strong>Store</strong> (orange) is fast. Cache-streaming writes are fire-and-forget.</li>
 <li><strong>Barriers</strong> (yellow) show synchronization cost. Warps that finish loading early wait for slower warps.</li>
 </ul>
-<h3 id="design-choices-and-tradeoffs">Design choices and tradeoffs</h3>
+<h3 id="design-choices-and-tradeoffs">Design choices and tradeoffs<a class="heading-anchor" href="#design-choices-and-tradeoffs" aria-label="Copy link to Design choices and tradeoffs">#</a></h3>
 <p><strong>Hybrid timer.</strong> <code>clock64</code> has cycle resolution but is per-SM (can't compare across blocks). <code>globaltimer</code> is global but only ~1024ns resolution on A100. We read <code>globaltimer</code> once per block as an anchor, then use <code>clock64</code> for everything else.</p>
 <p><strong>Shared memory buffering.</strong> Global stores take 200+ cycles each. We buffer all timestamps in shared memory (~5 cycles/write) and flush once at kernel end.</p>
 <p><strong><code>__syncwarp()</code> before marks.</strong> The GPU can execute <code>clock64</code> while loads or other ops are still in flight. Without this, latency may be misattributed.</p>
-<h2 id="comparison-with-other-approaches">Comparison with other approaches</h2>
+<h2 id="comparison-with-other-approaches">Comparison with other approaches<a class="heading-anchor" href="#comparison-with-other-approaches" aria-label="Copy link to Comparison with other approaches">#</a></h2>
 <p>Each approach makes different architectural decisions. Let me walk through another interesting one in detail.</p>
-<h3 id="triton-proton">Triton Proton</h3>
+<h3 id="triton-proton">Triton Proton<a class="heading-anchor" href="#triton-proton" aria-label="Copy link to Triton Proton">#</a></h3>
 <p>Proton implements profiling as an MLIR dialect integrated into Triton's compilation pipeline. The user annotates scopes in their Triton kernel:</p>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="language-python">import triton.profiler.language as pl
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight language-python"><span class="kn">import</span><span class="w"> </span><span class="nn">triton.profiler.language</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
 
-with pl.scope("load_and_add"):
-    x = tl.load(ptr)
-    y = x + 1
-</code></pre></div>
+<span class="k">with</span> <span class="n">pl</span><span class="o">.</span><span class="n">scope</span><span class="p">(</span><span class="s2">"load_and_add"</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span></code></pre></div>
 <p>The compiler lowers these annotations through three stages:</p>
 <ol>
 <li><strong><code>proton.record</code> ops</strong> in Triton IR lowered to <code>ScopeIdAllocation</code> assigns numeric IDs and validates nesting (<a href="https://github.com/triton-lang/triton/blob/main/third_party/proton/Dialect/lib/Analysis/ScopeIdAllocation.cpp" target="_blank" rel="noopener noreferrer"><code>Dialect/lib/Analysis/ScopeIdAllocation.cpp</code></a>)</li>
@@ -371,7 +370,7 @@ with pl.scope("load_and_add"):
 <li><strong>Overhead correction.</strong> Subtracts a fixed per-scope cost (7 cycles NVIDIA, 36 AMD) from each interval to account for the clock read itself. (<a href="https://github.com/triton-lang/triton/blob/main/third_party/proton/common/lib/TraceDataIO/CircularLayoutParser.cpp" target="_blank" rel="noopener noreferrer"><code>CircularLayoutParser.cpp</code></a>)</li>
 </ul>
 <p>There is also a TTGIR override workflow: dump the compiled IR, manually insert <code>proton.record start/end "scope"</code> at exact instruction boundaries, and re-run with <code>TRITON_KERNEL_OVERRIDE=1</code>. This gives precise control without touching the Python source.</p>
-<h2 id="additional-reading">Additional reading</h2>
+<h2 id="additional-reading">Additional reading<a class="heading-anchor" href="#additional-reading" aria-label="Copy link to Additional reading">#</a></h2>
 <ul>
 <li><a href="https://github.com/triton-lang/triton/blob/main/third_party/proton/docs/intra-kernel.md" target="_blank" rel="noopener noreferrer">Triton Proton intra-kernel docs</a></li>
 <li><a href="https://github.com/triton-lang/triton/tree/main/third_party/proton/Dialect" target="_blank" rel="noopener noreferrer">Triton Proton MLIR dialect source</a></li>
@@ -380,9 +379,9 @@ with pl.scope("load_and_add"):
 <li><a href="https://docs.nvidia.com/nsight-compute/index.html" target="_blank" rel="noopener noreferrer">NVIDIA Nsight Compute documentation</a></li>
 <li><a href="https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#special-registers" target="_blank" rel="noopener noreferrer">PTX ISA special registers</a></li>
 </ul>
-<h2 id="citation">Citation</h2>
+<h2 id="citation">Citation<a class="heading-anchor" href="#citation" aria-label="Copy link to Citation">#</a></h2>
 <p>If you find this useful in your research, please consider citing:</p>
-<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code>@article{avs2026lookinginsideyourkernels,
+<div class="code-block-wrapper"><button class="copy-code-btn" onclick="copyCode(this)">Copy</button><pre><code class="highlight">@article{avs2026lookinginsideyourkernels,
   author = {Aryan V S},
   title = {Looking inside your kernels},
   year = {2026},
@@ -390,7 +389,9 @@ with pl.scope("load_and_add"):
 }
 </code></pre></div>
 
-        </main>
+            </main>
+        </div>
+        <aside class="post-toc" id="post-toc" aria-label="Table of contents"><div class="toc-title">On this page</div><ul class="toc-list"><li class="toc-item toc-h2"><a class="toc-link" href="#table-of-contents">Table of contents</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#rmsnorm">RMSNorm</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#benchmarks">Benchmarks</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#adding-instrumentation">Adding instrumentation</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#trace-output">Trace output</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#design-choices-and-tradeoffs">Design choices and tradeoffs</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#comparison-with-other-approaches">Comparison with other approaches</a></li><li class="toc-item toc-h3"><a class="toc-link" href="#triton-proton">Triton Proton</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#additional-reading">Additional reading</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#citation">Citation</a></li></ul></aside>
     </div>
     <div class="lightbox-overlay" id="lightbox">
       <div class="lightbox-close" onclick="closeLightbox()">×</div>
@@ -406,21 +407,14 @@ with pl.scope("load_and_add"):
   </div>
     <footer>
         <div class="social-links">
-            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                <i class="fab fa-github"></i>
-            </a>
-            <a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
-                <i class="fab fa-x-twitter"></i>
-            </a>
-            <a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                <i class="fab fa-linkedin"></i>
-            </a>
-            <a href="mailto:contact.aryanvs@gmail.com" aria-label="Email">
-                <i class="fas fa-envelope"></i>
-            </a>
+            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.76 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.66.79.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg></a>
+<a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+<a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg></a>
+<a href="mailto:contact.aryanvs@gmail.com" aria-label="Email"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3h15A2.5 2.5 0 0 1 22 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5v-13zm2.3-.5L12 10.7 19.7 5H4.3zM20 7.25l-7.4 5.47a1 1 0 0 1-1.2 0L4 7.25V18.5c0 .28.22.5.5.5h15a.5.5 0 0 0 .5-.5V7.25z"/></svg></a>
+<a href="/feed.xml" aria-label="RSS Feed" title="RSS Feed"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.18 15.64a2.18 2.18 0 1 1 0 4.36 2.18 2.18 0 0 1 0-4.36zM4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44zm0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg></a>
         </div>
     </footer>
-    <script src="/assets/particle-life.js"></script>
-    <script src="/assets/script.js"></script>
+    <script src="/assets/particle-life.js?v=f4a24e94"></script>
+    <script src="/assets/script.js?v=38be224d"></script>
 </body>
 </html>
