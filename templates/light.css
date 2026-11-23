@@ -1,171 +1,164 @@
 [data-theme="light"] {
-    --bg: #fafaea;
-    --text: #1a1a1a;
-    --accent: #0d9377;
-    --link: #0d9377;
-    --code-bg: #f1f8f5;
-    --border: #b0b8c0;
-    --tag-bg: #dadaca;
-    --post-title: #0d9367;
-    --seed: #0a7f00;
-    --sprout: #1a8f00;
-    --sapling: #2a9f00;
-    --blossom: #3aaf00;
+    --bg: #e9e7e1;
+    --surface: #e0ddd5;
+    --text: #1f2328;
+    --text-muted: #5b616a;
+    --accent: #1a5b7a;
+    --link: #1a5b7a;
+    --code-bg: #e0ddd5;
+    --border: #c9c5bb;
+    --tag-bg: #dad6cd;
+    --post-title: #14171a;
 }
 
 [data-theme="light"] header h1 a {
-    color: #0d9377 !important;
+    color: var(--accent) !important;
 }
 
 [data-theme="light"] .slider {
-    background: #ccc;
+    background: #c5c1b7;
 }
 
 [data-theme="light"] input:checked + .slider {
-    background: #0d9377;
+    background: var(--accent);
 }
 
 [data-theme="light"] input:checked + .slider:before {
     content: "☀️";
 }
 
-[data-theme="light"] .blog-page details summary,
-[data-theme="light"] .blog-page details summary::before,
-[data-theme="light"] .blog-page details > summary:hover { opacity: 0.85; }
-
-[data-theme="light"] .blog-page details:nth-of-type(1) summary { --accent: var(--seed); }
-[data-theme="light"] .blog-page details:nth-of-type(2) summary { --accent: var(--sprout); }
-[data-theme="light"] .blog-page details:nth-of-type(3) summary { --accent: var(--sapling); }
-[data-theme="light"] .blog-page details:nth-of-type(4) summary { --accent: var(--blossom); }
-
 [data-theme="light"] .pw-modal-backdrop {
-    background: rgba(240, 240, 224, 0.96);
+    background: rgba(224, 221, 213, 0.96);
 }
 [data-theme="light"] .pw-modal-content {
-    background: rgba(250, 250, 234, 0.98);
-    border-color: rgba(13, 147, 119, 0.2);
-    box-shadow: 0 0 60px rgba(13, 147, 119, 0.06), 0 0 1px rgba(13, 147, 119, 0.3);
+    background: rgba(233, 231, 225, 0.98);
+    border-color: var(--border);
+    box-shadow: 0 12px 48px rgba(20, 23, 26, 0.1);
 }
 
 [data-theme="light"] .pl-controls {
-    background: rgba(250, 250, 234, 0.92);
-    border-color: rgba(13, 147, 119, 0.15);
+    background: rgba(233, 231, 225, 0.94);
+    border-color: var(--border);
 }
 [data-theme="light"] .pl-species-panel {
-    background: rgba(250, 250, 234, 0.92);
-    border-color: rgba(13, 147, 119, 0.15);
+    background: rgba(233, 231, 225, 0.94);
+    border-color: var(--border);
 }
 
 [data-theme="light"] .search-fixed {
-    background: #fafaea;
+    background: var(--surface);
 }
 
 [data-theme="light"] .right-sidebar {
-    background: #f5f5e5;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    background: var(--surface);
+    box-shadow: 0 4px 20px rgba(20, 23, 26, 0.06);
 }
 
 [data-theme="light"] .scrollable-news {
-    background: #f5f5e5;
+    background: var(--surface);
+}
+
+[data-theme="light"] .tag-list label:hover {
+    background: rgba(26, 91, 122, 0.08);
 }
 
 [data-theme="light"] .tags-scrollable:hover::-webkit-scrollbar-thumb {
-    background: #0d9377;
+    background: var(--accent);
 }
 
 [data-theme="light"] pre {
-    border-color: #d0d8c0;
+    border-color: var(--border);
 }
 
 [data-theme="light"] pre code {
-    scrollbar-color: #ccc transparent;
+    scrollbar-color: #b5b1a7 transparent;
 }
 
 [data-theme="light"] pre code:hover::-webkit-scrollbar-thumb {
-    background: #bbb;
+    background: #a5a197;
 }
 
 [data-theme="light"] pre code::-webkit-scrollbar-thumb:hover {
-    background: #999;
+    background: #8a867c;
 }
 
 [data-theme="light"] main img,
 [data-theme="light"] main video {
-    border-color: rgba(13, 147, 119, 0.3);
+    border-color: var(--border);
 }
 
 [data-theme="light"] .immersive-toggle {
-    border-color: #b0b8c0;
+    border-color: var(--border);
 }
 [data-theme="light"] .immersive-toggle:hover {
-    border-color: #0d9377;
-    color: #0d9377;
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 [data-theme="light"] .experience-date {
-    color: #666;
+    color: var(--text-muted);
 }
 
 [data-theme="light"] .alert-note {
-    background: rgba(13, 147, 119, 0.08);
-    border-color: #0d9377;
+    background: rgba(26, 91, 122, 0.07);
+    border-color: #1a5b7a;
 }
 [data-theme="light"] .alert-note .alert-title {
-    color: #0d9377;
+    color: #1a5b7a;
 }
 [data-theme="light"] .alert-tip {
-    background: rgba(10, 127, 0, 0.08);
-    border-color: #0a7f00;
+    background: rgba(34, 108, 62, 0.07);
+    border-color: #226c3e;
 }
 [data-theme="light"] .alert-tip .alert-title {
-    color: #0a7f00;
+    color: #226c3e;
 }
 [data-theme="light"] .alert-warning {
-    background: rgba(180, 100, 0, 0.08);
-    border-color: #b46400;
+    background: rgba(166, 96, 12, 0.07);
+    border-color: #a6600c;
 }
 [data-theme="light"] .alert-warning .alert-title {
-    color: #b46400;
+    color: #a6600c;
 }
 [data-theme="light"] .alert-caution {
-    background: rgba(200, 50, 50, 0.08);
-    border-color: #c83232;
+    background: rgba(180, 44, 44, 0.07);
+    border-color: #b42c2c;
 }
 [data-theme="light"] .alert-caution .alert-title {
-    color: #c83232;
+    color: #b42c2c;
 }
 
 [data-theme="light"] .lightbox-overlay {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(233, 231, 225, 0.96);
 }
 [data-theme="light"] .lightbox-close {
-    color: #1a1a1a;
-    background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.2);
+    color: var(--text);
+    background: rgba(20, 23, 26, 0.06);
+    border-color: rgba(20, 23, 26, 0.2);
 }
 [data-theme="light"] .lightbox-controls {
-    background: rgba(250, 250, 234, 0.9);
+    background: rgba(224, 221, 213, 0.94);
 }
 [data-theme="light"] .lightbox-btn {
-    color: #1a1a1a;
-    background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.2);
+    color: var(--text);
+    background: rgba(20, 23, 26, 0.06);
+    border-color: rgba(20, 23, 26, 0.2);
 }
 [data-theme="light"] .zoom-level {
-    color: #1a1a1a;
+    color: var(--text);
 }
 
 [data-theme="light"] #search-input {
-    background: white;
-    border-color: #b0b8c0;
+    background: #f0eee9;
+    border-color: var(--border);
 }
 
 [data-theme="light"] .copy-code-btn {
-    background: #e8e8d8;
-    border-color: #b0b8c0;
-    color: #1a1a1a;
+    background: var(--tag-bg);
+    border-color: var(--border);
+    color: var(--text);
 }
 [data-theme="light"] .copy-code-btn:hover {
-    background: #0d9377;
-    color: white;
+    background: var(--accent);
+    color: #f0eee9;
 }

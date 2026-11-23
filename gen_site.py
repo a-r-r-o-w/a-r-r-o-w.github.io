@@ -243,8 +243,6 @@ def collect_posts(src_dir):
         if "title" not in fm:
             continue
         rel_path = os.path.relpath(root, src_dir)
-        category_folder = rel_path.split("/")[0]
-        category = category_folder.split("_")[1].capitalize()
         date_str = fm.get("date")
         date = date_str.split(" - ")[0] if " - " in date_str else date_str
         date_obj = datetime.datetime.strptime(date, "%Y-%m-%d")
@@ -262,7 +260,6 @@ def collect_posts(src_dir):
                 "body": body,
                 "root": root,
                 "rel_path": rel_path,
-                "category": category,
                 "date_obj": date_obj,
                 "word_count": word_count,
                 "read_time": read_time,
@@ -373,7 +370,7 @@ def generate_home_html(template, news: list[dict], posts: list[dict], css_path, 
     for p in combined_news_posts:
         has_url = p.get("url", None) is not None
         if has_url:
-            html = f'<li class="news-item"><span class="news-date">{p["date"]}</span><a href="{p["url"]}">[Blog] {p["title"]}</a></li>'
+            html = f'<li class="news-item"><span class="news-date">{p["date"]}</span><a href="{p["url"]}">[Post] {p["title"]}</a></li>'
         else:
             html = f'<li class="news-item"><span class="news-date">{p["date"]}</span>{p["title"]}</li>'
         news_html += html
@@ -382,22 +379,19 @@ def generate_home_html(template, news: list[dict], posts: list[dict], css_path, 
 
 
 def generate_blog_html(template, posts, css_path, js_path):
-    posts_by_cat = collections.defaultdict(list)
+    post_list = ""
     for p in posts:
-        posts_by_cat[p["category"]].append(p)
-    categories = reversed(["Seed", "Sprout", "Sapling", "Blossom"])
-    cat_icons = {"Seed": "🌰", "Sprout": "🌱", "Sapling": "🪴", "Blossom": "🌸"}
-    cat_html = ""
-    for cat in categories:
-        if cat not in posts_by_cat:
-            continue
-        post_list = ""
-        for p in posts_by_cat[cat]:
-            tags_html = " ".join(f'<span class="tag">{t}</span>' for t in p["tags"])
-            post_list += f'<li class="post-item" data-tags="{" ".join(p["tags"])}"><div class="post-info"><span class="post-date">{p["date"]}</span><div class="post-content"><a href="{p["url"]}">{p["title"]}</a><div class="post-tags">{tags_html}</div></div></div></li>\n'
-        icon = cat_icons.get(cat, "")
-        details_open = "open" if cat == "Blossom" else ""
-        cat_html += f'<details {details_open}><summary><span class="cat-icon">{icon}</span> {cat}</summary><ul>{post_list}</ul></details>\n'
+        tags_html = " ".join(f'<span class="tag">{t}</span>' for t in p["tags"])
+        post_list += (
+            f'<li class="post-item" data-tags="{" ".join(p["tags"])}">'
+            f'<div class="post-info">'
+            f'<span class="post-date">{p["date"]}</span>'
+            f'<div class="post-content">'
+            f'<a href="{p["url"]}">{p["title"]}</a>'
+            f'<div class="post-tags">{tags_html}</div>'
+            f'</div></div></li>\n'
+        )
+    posts_html = f'<ul class="post-list">{post_list}</ul>\n'
     all_tags = set()
     for p in posts:
         all_tags.update(p["tags"])
@@ -406,7 +400,7 @@ def generate_blog_html(template, posts, css_path, js_path):
         for t in sorted(all_tags)
     )
     return template.format(
-        css_path=css_path, cat_html=cat_html, tag_list=tag_list, js_path=js_path
+        css_path=css_path, cat_html=posts_html, tag_list=tag_list, js_path=js_path
     )
 
 
@@ -421,6 +415,7 @@ def main():
     out_dir = "_site"
     assets_out_dir = os.path.join(out_dir, "assets")
     blog_out_dir = os.path.join(out_dir, "blog")
+    posts_out_dir = os.path.join(out_dir, "posts")
     post_template = load_template(template_dir, "post.html.template")
     home_template = load_template(template_dir, "home.html.template")
     blog_template = load_template(template_dir, "blog.html.template")
@@ -429,10 +424,11 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     os.makedirs(assets_out_dir, exist_ok=True)
     os.makedirs(blog_out_dir, exist_ok=True)
+    os.makedirs(posts_out_dir, exist_ok=True)
     shutil.copytree(assets_dir, assets_out_dir, dirs_exist_ok=True)
 
     posts = collect_posts(src_blog_dir)
-    post_info_keys = {"title", "url", "date", "tags", "excerpt", "category"}
+    post_info_keys = {"title", "url", "date", "tags", "excerpt"}
     with open(os.path.join(out_dir, "posts.json"), "w", encoding="utf-8") as f:
         post_info = [
             {k: v for k, v in p.items() if k in post_info_keys}
@@ -462,14 +458,21 @@ def main():
     with open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8") as f:
         f.write(home_html)
     
+    posts_page_html = generate_blog_html(
+        blog_template,
+        posts,
+        "/" + css_path.lstrip("/"),
+        "/" + js_path.lstrip("/"),
+    )
+    with open(os.path.join(posts_out_dir, "index.html"), "w", encoding="utf-8") as f:
+        f.write(posts_page_html)
+
     with open(os.path.join(blog_out_dir, "index.html"), "w", encoding="utf-8") as f:
         f.write(
-            generate_blog_html(
-                blog_template,
-                posts,
-                "/" + css_path.lstrip("/"),
-                "/" + js_path.lstrip("/"),
-            )
+            '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+            '<meta http-equiv="refresh" content="0; url=/posts/">'
+            '<link rel="canonical" href="https://a-r-r-o-w.github.io/posts/">'
+            '</head><body><a href="/posts/">Posts</a></body></html>'
         )
 
     for post in posts:

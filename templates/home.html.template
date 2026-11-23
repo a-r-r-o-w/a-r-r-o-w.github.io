@@ -34,7 +34,7 @@
       }});
     </script>
 </head>
-<body data-theme="dark">
+<body>
     <canvas id="particle-life"></canvas>
     <header>
         <div class="header-inner">
@@ -47,7 +47,7 @@
             <nav>
                 <a href="/" aria-current="page">Home</a>
                 <span class="nav-separator">|</span>
-                <a href="/blog/">Blog</a>
+                <a href="/posts/">Posts</a>
             </nav>
             <div class="header-controls">
                 <button class="immersive-toggle" id="immersive-toggle" aria-label="Toggle immersive mode"></button>
@@ -65,11 +65,9 @@
             <main>
                 <section id="about">
                   <p>Hello stranger. Welcome to my corner of the internet.</p>
-                  <p>Carl Sagan once said "We are a way for the cosmos to know itself." We are, indeed. My life's ambition is to build machines that can understand the cosmos and, in doing so, improve our own understanding.</p>
-                  <p>Right now, my personal interests revolve around programming at the lowest levels. Eventually, I want to go deeper: understanding the electrical, mechanical, and materials engineering that make modern computers work at all. The entire stack, from silicon to intelligence. Maybe understanding the full silicon stack, alongside biological evolution, is how we eventually put artificial souls into rocks.</p>
-                  <p>After all, we've already managed to fool rocks into thinking. I want to understand how that happened at the level where things almost don't work at all: how transistors got so tiny, how unreliable signals are coerced into stable logic, how timing, noise, power draw, and heat constrain design choices, and how layers of (fragile?) assumptions and abstractions were stacked on top of one another until computation emerged. Not the abstract diagrams from school textbooks, but the details where the different worlds of engineering collide.</p>
-                  <p>I hold a simple belief: what I cannot build, I probably don't understand very well. This is why, if you know me IRL, you'll find me reversing things and writing my own implementations constantly. It's the best way to truly learn how something works. (Though, please don't do this in production code—your coworkers will hate you.)</p>
-                  <p>I'm not much of a writer, but I wanted a place to collect thoughts and disperse them to interested readers. That place is here on the blogs page. Posts are organized by maturity: <strong>Seed</strong> for raw ideas and scattered thoughts, <strong>Sprout</strong> for concepts taking shape, <strong>Sapling</strong> for well-developed content, and <strong>Blossom</strong> for fully matured posts with comprehensive information.</p>
+                  <p>Carl Sagan once said "We are a way for the cosmos to know itself." My goal is to build machines that can understand the cosmos, and deepen our own understanding along the way. Right now I spend most of my time on low-level programming. Eventually I want to go further down the stack, into the electrical, mechanical, and materials engineering that make modern hardware work.</p>
+                  <p>I believe that if I cannot build something, I don't really understand it. That's why, if you know me IRL, you'll find me reversing things and writing my own implementations constantly.</p>
+                  <p>See <a href="/posts/">posts</a> for my writing.</p>
                 </section>
                 <section id="news">
                     <h2 class="section-title">News</h2>

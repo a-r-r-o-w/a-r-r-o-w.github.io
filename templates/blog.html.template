@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Blog by Aryan V S on CUDA, GPU programming, diffusion models, and systems engineering.">
-    <meta property="og:title" content="Blog - Aryan V S">
-    <meta property="og:description" content="Blog posts on CUDA, GPU programming, diffusion models, and systems engineering.">
+    <meta name="description" content="Posts by Aryan V S on CUDA, GPU programming, diffusion models, and systems engineering.">
+    <meta property="og:title" content="Posts - Aryan V S">
+    <meta property="og:description" content="Posts on CUDA, GPU programming, diffusion models, and systems engineering.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://a-r-r-o-w.github.io/blog/">
-    <link rel="canonical" href="https://a-r-r-o-w.github.io/blog/">
-    <title>Blog</title>
+    <meta property="og:url" content="https://a-r-r-o-w.github.io/posts/">
+    <link rel="canonical" href="https://a-r-r-o-w.github.io/posts/">
+    <title>Posts - Aryan V S</title>
     <script>
       (function() {{
         const t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
@@ -26,14 +26,14 @@
       function gtag(){{dataLayer.push(arguments);}}
       gtag('js', new Date());
       gtag('config', 'G-R1R7JKELB2', {{
-        'page_title': 'Aryan V S - Blog',
-        'page_path': '/blog/',
+        'page_title': 'Aryan V S - Posts',
+        'page_path': '/posts/',
         'allow_google_signals': false,
         'allow_ad_personalization_signals': false
       }});
     </script>
 </head>
-<body data-theme="dark">
+<body>
     <canvas id="particle-life"></canvas>
     <header>
         <div class="header-inner">
@@ -46,7 +46,7 @@
             <nav>
                 <a href="/">Home</a>
                 <span class="nav-separator">|</span>
-                <a href="/blog/" aria-current="page">Blog</a>
+                <a href="/posts/" aria-current="page">Posts</a>
             </nav>
             <div class="header-controls">
                 <button class="immersive-toggle" id="immersive-toggle" aria-label="Toggle immersive mode"></button>
