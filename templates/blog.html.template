@@ -8,7 +8,14 @@
     <meta property="og:description" content="Posts on CUDA, GPU programming, diffusion models, and systems engineering.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://a-r-r-o-w.github.io/posts/">
+    <meta property="og:image" content="https://a-r-r-o-w.github.io/assets/og/posts.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Posts - Aryan V S">
+    <meta name="twitter:description" content="Posts on CUDA, GPU programming, diffusion models, and systems engineering.">
+    <meta name="twitter:image" content="https://a-r-r-o-w.github.io/assets/og/posts.png">
     <link rel="canonical" href="https://a-r-r-o-w.github.io/posts/">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate" type="application/rss+xml" title="Aryan V S" href="/feed.xml">
     <title>Posts - Aryan V S</title>
     <script>
       (function() {{
@@ -17,9 +24,6 @@
       }})();
     </script>
     <link rel="stylesheet" href="{css_path}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
-      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
-      crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -68,7 +72,7 @@
             <aside class="right-sidebar">
                 <div class="search-fixed">
                     <h3>Search</h3>
-                    <input type="text" id="search-input" placeholder="Type to filter...">
+                    <input type="text" id="search-input" placeholder="Search (press /)...">
                 </div>
                 <div class="tags-scrollable">
                     <h3>Tags</h3>
@@ -81,24 +85,13 @@
     </div>
     <footer>
         <div class="social-links">
-            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                <i class="fab fa-github"></i>
-            </a>
-            <a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
-                <i class="fab fa-x-twitter"></i>
-            </a>
-            <a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                <i class="fab fa-linkedin"></i>
-            </a>
-            <a href="mailto:contact.aryanvs@gmail.com" aria-label="Email">
-                <i class="fas fa-envelope"></i>
-            </a>
+            {social_links_html}
         </div>
     </footer>
     <button class="filter-toggle" aria-label="Toggle Filters">
-        <i class="fas fa-filter"></i>
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5a1 1 0 0 1 1-1h16a1 1 0 0 1 .8 1.6l-6.3 8.4V19a1 1 0 0 1-.55.89l-3 1.5A1 1 0 0 1 9.5 20.5v-6.5L3.2 5.6A1 1 0 0 1 3 5z"/></svg>
     </button>
-    <script src="/assets/particle-life.js"></script>
+    <script src="{pl_js_path}"></script>
     <script src="{js_path}"></script>
 </body>
 </html>

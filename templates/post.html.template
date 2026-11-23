@@ -8,7 +8,14 @@
     <meta property="og:description" content="{meta_description}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://a-r-r-o-w.github.io/blog/{rel_path}/">
+    <meta property="og:image" content="{og_image}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{title}">
+    <meta name="twitter:description" content="{meta_description}">
+    <meta name="twitter:image" content="{og_image}">
     <link rel="canonical" href="https://a-r-r-o-w.github.io/blog/{rel_path}/">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate" type="application/rss+xml" title="Aryan V S" href="/feed.xml">
     <title>{title} - Aryan V S</title>
     <script>
       (function() {{
@@ -17,17 +24,7 @@
       }})();
     </script>
     <link rel="stylesheet" href="{css_path}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
-      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
-      crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {{delimiters: [{{left: '$$', right: '$$', display: true}}, {{left: '$', right: '$', display: false}}, {{left: '\\(', right: '\\)', display: false}}, {{left: '\\[', right: '\\]', display: true}}], throwOnError: false}});"></script>
-    <!-- Copy style from here: https://github.com/highlightjs/highlight.js/tree/5697ae5187746c24732e62cd625f3f83004a44ce/src/styles -->
-    <link rel="stylesheet" id="hljs-dark" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
-    <link rel="stylesheet" id="hljs-light" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" disabled>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+    {katex_html}
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -42,6 +39,7 @@
     </script>
 </head>
 <body>
+    <div class="reading-progress" id="reading-progress"></div>
     <canvas id="particle-life"></canvas>
     <header>
         <div class="header-inner">
@@ -67,23 +65,27 @@
             </div>
         </div>
     </header>
-    <div class="container">
-        <main class="post-page">
-          <div class="post-title-wrapper">
-              <div class="post-date-stats">
-                  <div class="post-date">{date}</div>
-                  <div class="post-stats">{post_stats}</div>
+    <div class="post-layout">
+        <div class="container">
+            <main class="post-page">
+              <div class="post-title-wrapper">
+                  <div class="post-date-stats">
+                      <div class="post-date">{date}</div>
+                      <div class="post-stats">{post_stats}</div>
+                  </div>
+                  <h2 class="post-title">{title}</h2>
+                  <button class="post-info-btn" aria-label="Post info"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 4.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM10.75 11h2.5v6.5h-2.5V11z"/></svg></button>
               </div>
-              <h2 class="post-title">{title}</h2>
-              <button class="post-info-btn" aria-label="Post info"><i class="fas fa-info-circle"></i></button>
-          </div>
-            <div class="post-meta">
-                <div class="post-tags">{tags_html}</div>
-                {authors}
-                {post_links}
-            </div>
-            {body_html}
-        </main>
+                <div class="post-meta">
+                    <div class="post-tags">{tags_html}</div>
+                    {authors}
+                    {post_links}
+                </div>
+                {toc_mobile_html}
+                {body_html}
+            </main>
+        </div>
+        {toc_html}
     </div>
     <div class="lightbox-overlay" id="lightbox">
       <div class="lightbox-close" onclick="closeLightbox()">×</div>
@@ -99,21 +101,10 @@
   </div>
     <footer>
         <div class="social-links">
-            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                <i class="fab fa-github"></i>
-            </a>
-            <a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
-                <i class="fab fa-x-twitter"></i>
-            </a>
-            <a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                <i class="fab fa-linkedin"></i>
-            </a>
-            <a href="mailto:contact.aryanvs@gmail.com" aria-label="Email">
-                <i class="fas fa-envelope"></i>
-            </a>
+            {social_links_html}
         </div>
     </footer>
-    <script src="/assets/particle-life.js"></script>
+    <script src="{pl_js_path}"></script>
     <script src="{js_path}"></script>
 </body>
 </html>

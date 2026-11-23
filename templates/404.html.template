@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <title>404 - Aryan V S</title>
+    <script>
+      (function() {{
+        const t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = t;
+      }})();
+    </script>
+    <link rel="stylesheet" href="{css_path}">
+</head>
+<body>
+    <canvas id="particle-life"></canvas>
+    <header>
+        <div class="header-inner">
+            <a href="/"><h1>Aryan V S</h1></a>
+            <div class="burger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <nav>
+                <a href="/">Home</a>
+                <span class="nav-separator">|</span>
+                <a href="/posts/">Posts</a>
+            </nav>
+            <div class="header-controls">
+                <button class="immersive-toggle" id="immersive-toggle" aria-label="Toggle immersive mode"></button>
+                <div class="theme-toggle">
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="content-wrapper">
+        <div class="container">
+            <main class="not-found-page">
+                <div class="not-found-code">404</div>
+                <p class="not-found-msg">This page drifted off into the void.</p>
+                <div class="not-found-links">
+                    <a href="/">Home</a>
+                    <span class="nav-separator">&middot;</span>
+                    <a href="/posts/">Posts</a>
+                </div>
+            </main>
+        </div>
+    </div>
+    <footer>
+        <div class="social-links">
+            {social_links_html}
+        </div>
+    </footer>
+    <script src="{pl_js_path}"></script>
+    <script src="{js_path}"></script>
+</body>
+</html>

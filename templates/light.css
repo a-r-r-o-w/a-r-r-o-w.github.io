@@ -162,3 +162,60 @@
     background: var(--accent);
     color: #f0eee9;
 }
+
+/* Pygments syntax highlighting (Light - GitHub Light) */
+[data-theme="light"] .highlight .c,
+[data-theme="light"] .highlight .ch,
+[data-theme="light"] .highlight .cm,
+[data-theme="light"] .highlight .cp,
+[data-theme="light"] .highlight .cpf,
+[data-theme="light"] .highlight .c1,
+[data-theme="light"] .highlight .cs { color: #6e7781; font-style: italic; }
+[data-theme="light"] .highlight .k,
+[data-theme="light"] .highlight .kc,
+[data-theme="light"] .highlight .kd,
+[data-theme="light"] .highlight .kn,
+[data-theme="light"] .highlight .kp,
+[data-theme="light"] .highlight .kr,
+[data-theme="light"] .highlight .ow { color: #cf222e; }
+[data-theme="light"] .highlight .kt { color: #0550ae; }
+[data-theme="light"] .highlight .m,
+[data-theme="light"] .highlight .mb,
+[data-theme="light"] .highlight .mf,
+[data-theme="light"] .highlight .mh,
+[data-theme="light"] .highlight .mi,
+[data-theme="light"] .highlight .il,
+[data-theme="light"] .highlight .mo { color: #0550ae; }
+[data-theme="light"] .highlight .s,
+[data-theme="light"] .highlight .sa,
+[data-theme="light"] .highlight .sb,
+[data-theme="light"] .highlight .sc,
+[data-theme="light"] .highlight .dl,
+[data-theme="light"] .highlight .sd,
+[data-theme="light"] .highlight .s2,
+[data-theme="light"] .highlight .se,
+[data-theme="light"] .highlight .sh,
+[data-theme="light"] .highlight .si,
+[data-theme="light"] .highlight .sx,
+[data-theme="light"] .highlight .sr,
+[data-theme="light"] .highlight .s1,
+[data-theme="light"] .highlight .ss { color: #0a3069; }
+[data-theme="light"] .highlight .na,
+[data-theme="light"] .highlight .nb,
+[data-theme="light"] .highlight .bp { color: #0550ae; }
+[data-theme="light"] .highlight .nc,
+[data-theme="light"] .highlight .nn { color: #953800; }
+[data-theme="light"] .highlight .nd,
+[data-theme="light"] .highlight .nf,
+[data-theme="light"] .highlight .fm { color: #8250df; }
+[data-theme="light"] .highlight .nl { color: #953800; }
+[data-theme="light"] .highlight .nt { color: #116329; }
+[data-theme="light"] .highlight .nv,
+[data-theme="light"] .highlight .vc,
+[data-theme="light"] .highlight .vg,
+[data-theme="light"] .highlight .vi,
+[data-theme="light"] .highlight .vm { color: #953800; }
+[data-theme="light"] .highlight .o { color: #cf222e; }
+[data-theme="light"] .highlight .gd { color: #82071e; background: rgba(207, 34, 46, 0.12); }
+[data-theme="light"] .highlight .gi { color: #116329; background: rgba(17, 99, 41, 0.12); }
+
