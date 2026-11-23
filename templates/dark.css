@@ -1845,13 +1845,23 @@ body.immersive-mode .pl-species-panel {
     .post-toc-mobile {
         display: none;
     }
+    .post-layout {
+        display: grid;
+        grid-template-columns: 1fr minmax(0, 900px) 1fr;
+        align-items: start;
+    }
+    .post-layout > .container {
+        grid-column: 2;
+        width: 100%;
+    }
     .post-toc {
         display: block;
-        position: fixed;
-        top: 96px;
-        right: max(20px, calc((100vw - 900px) / 2 - 250px));
+        grid-column: 3;
+        position: sticky;
+        top: 32px;
+        margin: 40px 20px 0 28px;
         width: 220px;
-        max-height: calc(100vh - 140px);
+        max-height: calc(100vh - 64px);
         overflow-y: auto;
         scrollbar-width: thin;
         z-index: 5;

@@ -715,6 +715,9 @@ def main():
     with open(os.path.join(out_dir, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write(generate_sitemap_xml(posts))
 
+    with open(os.path.join(out_dir, "robots.txt"), "w", encoding="utf-8") as f:
+        f.write(f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n")
+
     with open(os.path.join(blog_out_dir, "index.html"), "w", encoding="utf-8") as f:
         f.write(
             '<!DOCTYPE html><html><head><meta charset="UTF-8">'
