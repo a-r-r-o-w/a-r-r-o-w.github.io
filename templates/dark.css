@@ -892,9 +892,17 @@ body.immersive-mode .pl-species-panel {
 .pl-controls-inner {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 10px 16px;
     flex-wrap: wrap;
     justify-content: center;
+}
+.pl-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
 }
 .pl-ctrl-group {
     display: flex;
@@ -966,14 +974,39 @@ body.immersive-mode .pl-species-panel {
 .pl-mode-btn:first-child {
     border-radius: 4px 0 0 4px;
 }
+.pl-mode-btn:not(:first-child) {
+    border-left: none;
+}
 .pl-mode-btn:last-child {
     border-radius: 0 4px 4px 0;
-    border-left: none;
 }
 .pl-mode-btn.active {
     opacity: 1;
     background: rgba(116, 185, 255, 0.1);
     border-color: var(--accent);
+    color: var(--accent);
+}
+.pl-presets-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
+    gap: 8px;
+    max-width: 600px;
+}
+.pl-controls .pl-preset-btn {
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    background: rgba(116, 185, 255, 0.03);
+    color: var(--text);
+    font-size: 0.85em;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.pl-controls .pl-preset-btn:hover,
+.pl-controls .pl-preset-btn.active {
+    border-color: var(--accent);
+    background: rgba(116, 185, 255, 0.14);
     color: var(--accent);
 }
 .pl-import-label {
@@ -1635,6 +1668,9 @@ body.immersive-mode .pl-species-panel {
   }
   .pl-controls input[type="range"] {
       width: 50px;
+  }
+  .pl-presets-grid {
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
   }
   .pl-ctrl-label {
       font-size: 0.65em;
