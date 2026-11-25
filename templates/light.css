@@ -3,8 +3,8 @@
     --surface: #e0ddd5;
     --text: #1f2328;
     --text-muted: #5b616a;
-    --accent: #1a5b7a;
-    --link: #1a5b7a;
+    --accent: #18626b;
+    --link: #18626b;
     --code-bg: #e0ddd5;
     --border: #c9c5bb;
     --tag-bg: #dad6cd;
@@ -28,12 +28,33 @@
 }
 
 [data-theme="light"] .pw-modal-backdrop {
-    background: rgba(224, 221, 213, 0.96);
+    background: rgba(224, 221, 213, 0.92);
 }
 [data-theme="light"] .pw-modal-content {
-    background: rgba(233, 231, 225, 0.98);
+    background: #eceae4;
     border-color: var(--border);
-    box-shadow: 0 12px 48px rgba(20, 23, 26, 0.1);
+    box-shadow: 0 20px 60px rgba(20, 23, 26, 0.14);
+}
+[data-theme="light"] header {
+    background: rgba(233, 231, 225, 0.88);
+    border-bottom-color: var(--border);
+}
+[data-theme="light"] .scrollable-news {
+    background: var(--surface);
+    border-color: var(--border);
+}
+[data-theme="light"] .past-work-link a {
+    border-color: var(--border);
+    background: rgba(0, 0, 0, 0.02);
+}
+[data-theme="light"] .paper-item {
+    border-color: var(--border);
+    background: rgba(0, 0, 0, 0.015);
+}
+[data-theme="light"] .author-preview-card {
+    background: #f2f0eb;
+    border-color: var(--border);
+    box-shadow: 0 16px 40px rgba(20, 23, 26, 0.18);
 }
 
 [data-theme="light"] .pl-controls {

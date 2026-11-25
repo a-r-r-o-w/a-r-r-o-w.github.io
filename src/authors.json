@@ -4,22 +4,75 @@
   "Baixin Xu": "https://scholar.google.com/citations?user=WpN22HAAAAAJ",
   "Biao Jiang": "https://scholar.google.com/citations?user=PsUFNaIAAAAJ",
   "Boyang Wang": "https://scholar.google.com/citations?user=hSVNCIQAAAAJ",
-  "Chris Rockwell": "https://crockwell.github.io/",
+  "Chenfeng Xu": {
+    "url": "https://www.chenfengx.com/",
+    "affiliation": "UT Austin"
+  },
+  "Chris Rockwell": {
+    "url": "https://crockwell.github.io/",
+    "affiliation": "Roblox"
+  },
   "Demis Hassabis": "https://scholar.google.com/citations?user=dYpPMQEAAAAJ",
+  "Dennis Menn": {
+    "url": "https://dennismenn.github.io/",
+    "affiliation": "UT Austin · Roblox"
+  },
+  "Dennis Yuren Menn": {
+    "url": "https://dennismenn.github.io/",
+    "affiliation": "UT Austin · Roblox"
+  },
+  "Desai Xie": {
+    "url": "https://desaixie.github.io/",
+    "affiliation": "Roblox"
+  },
+  "Diana Marculescu": {
+    "url": "https://www.ece.utexas.edu/faculty/diana-marculescu",
+    "affiliation": "UT Austin"
+  },
   "Eli Shechtman": "https://research.adobe.com/person/eli-shechtman/",
   "Fei-Fei Li": "https://profiles.stanford.edu/fei-fei-li",
   "Geoffrey Hinton": "https://www.cs.toronto.edu/~hinton/",
-  "Guande He": "https://guandehe.github.io/",
+  "Guande He": {
+    "url": "https://guandehe.github.io/",
+    "affiliation": "Roblox"
+  },
   "Hao-Xiang Guo": "https://scholar.google.com/citations?user=HojKXRoAAAAJ",
   "Ian Goodfellow": "https://www.iangoodfellow.com/",
   "Joonghyuk Shin": "https://joonghyuk.com/",
   "Kaixiong Gong": "https://scholar.google.com/citations?user=kBVshUUAAAAJ",
+  "Ming-Hsuan Yang": {
+    "url": "https://faculty.ucmerced.edu/mhyang/",
+    "affiliation": "UC Merced"
+  },
   "Mingyuan Zhou": "https://mingyuanzhou.github.io/",
+  "Nan Liu": {
+    "url": "https://scholar.google.com/citations?user=9Gq7BxoAAAAJ&hl=en",
+    "affiliation": "Roblox"
+  },
+  "Shuo Chen": {
+    "url": "https://chenshuo20.github.io/",
+    "affiliation": "UC Merced · Roblox"
+  },
+  "Tianpei Gu": {
+    "url": "https://gutianpei.com/",
+    "affiliation": "Roblox"
+  },
   "Xianglong He": "https://xianglonghe.github.io/",
   "Xuchen Song": "https://www.linkedin.com/in/shawn-xuchen-song-297149118/",
-  "Xun Huang": "https://www.xunhuang.me/",
+  "Xun Huang": {
+    "url": "https://www.xunhuang.me/",
+    "affiliation": "Roblox"
+  },
+  "Yanke Song": {
+    "url": "https://yankeesong.github.io/",
+    "affiliation": "Roblox"
+  },
   "Yanze Wu": "https://tothebeginning.github.io/",
   "Yifan Zhang": "https://sites.google.com/view/yifan-zhang/",
+  "Yong-Hyun Park": {
+    "url": "https://enkeejunior1.github.io/",
+    "affiliation": "UPenn · Roblox"
+  },
   "Yongqi Chen": "https://brianchen1129.github.io/",
   "Yoshua Bengio": "https://yoshuabengio.org/",
   "Zexiang Liu": "https://scholar.google.com/citations?user=bkPJckwAAAAJ",

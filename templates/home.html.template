@@ -79,12 +79,45 @@
                         {news_html}
                     </div>
                 </section>
-                <p class="past-work-link"><a href="#" id="past-work-trigger">Past work &amp; talks</a></p>
+                <p class="past-work-link"><a href="#" id="past-work-trigger">Papers, experience &amp; talks</a></p>
                 <div id="past-work-modal" class="pw-modal">
                     <div class="pw-modal-backdrop"></div>
                     <div class="pw-modal-content">
                         <button class="pw-modal-close">&times;</button>
-                        <h2 class="pw-modal-title">Experience</h2>
+                        <h2 class="pw-modal-title">Papers</h2>
+                        <div class="papers-grid">
+                            <div class="paper-item">
+                                <a class="paper-thumb-link" href="https://chenshuo20.github.io/PixVid/" target="_blank" rel="noopener noreferrer">
+                                    <img class="paper-thumb" src="/assets/papers/pixvid.png" alt="PixVid teaser">
+                                </a>
+                                <div class="paper-details">
+                                    <p class="paper-title"><a href="https://chenshuo20.github.io/PixVid/" target="_blank" rel="noopener noreferrer">Back to Pixels: Lifting Latent Video Diffusion into Pixel Space (PixVid)</a> <span class="experience-date">Nov 2026</span></p>
+                                    <p class="paper-authors">{pixvid_authors}</p>
+                                    <p class="paper-summary">Adapts pretrained latent video diffusion models to generate directly in pixel space, removing the VAE.</p>
+                                    <div class="paper-links">
+                                        <a href="https://arxiv.org/abs/2611.17336" target="_blank" rel="noopener noreferrer"><svg class="icon icon-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm7 1.5L18.5 9H13V3.5zM8 13h8v1.5H8V13zm0 3.5h8V18H8v-1.5z"/></svg> arXiv</a>
+                                        <a href="https://chenshuo20.github.io/PixVid/" target="_blank" rel="noopener noreferrer"><svg class="icon icon-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.93 6h-3.02a15.3 15.3 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14a8.1 8.1 0 0 1 0-4h3.38a16.5 16.5 0 0 0-.14 2c0 .68.05 1.35.14 2H4.26zm.81 2h3.02c.32 1.25.78 2.45 1.38 3.56A8.03 8.03 0 0 1 5.07 16zm3.02-8H5.07a8.03 8.03 0 0 1 4.4-3.56A15.3 15.3 0 0 0 8.09 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66a14.7 14.7 0 0 1-.16-2c0-.68.06-1.35.16-2h4.68c.1.65.16 1.32.16 2s-.06 1.35-.16 2zm.19 5.56c.6-1.11 1.06-2.31 1.38-3.56h3.02a8.03 8.03 0 0 1-4.4 3.56zM16.36 14c.09-.65.14-1.32.14-2s-.05-1.35-.14-2h3.38a8.1 8.1 0 0 1 0 4h-3.38z"/></svg> Project</a>
+                                        <!-- <a href="GITHUB_URL" target="_blank" rel="noopener noreferrer"><svg class="icon icon-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.76 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.66.79.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg> GitHub</a> -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="paper-item">
+                                <a class="paper-thumb-link" href="https://dennismenn.github.io/mpeg-diffusion/" target="_blank" rel="noopener noreferrer">
+                                    <img class="paper-thumb" src="/assets/papers/mpeg-diffusion.png" alt="MPEG-Diffusion teaser">
+                                </a>
+                                <div class="paper-details">
+                                    <p class="paper-title"><a href="https://dennismenn.github.io/mpeg-diffusion/" target="_blank" rel="noopener noreferrer">MPEG-Diffusion: Mixed-Resolution Video Generation</a> <span class="experience-date">Nov 2026</span></p>
+                                    <p class="paper-authors">{mpeg_authors}</p>
+                                    <p class="paper-summary">Allocates high-resolution tokens only where needed in video diffusion, speeding up denoising by up to 4.8&times;.</p>
+                                    <div class="paper-links">
+                                        <a href="https://arxiv.org/abs/2611.12069" target="_blank" rel="noopener noreferrer"><svg class="icon icon-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm7 1.5L18.5 9H13V3.5zM8 13h8v1.5H8V13zm0 3.5h8V18H8v-1.5z"/></svg> arXiv</a>
+                                        <a href="https://dennismenn.github.io/mpeg-diffusion/" target="_blank" rel="noopener noreferrer"><svg class="icon icon-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.93 6h-3.02a15.3 15.3 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14a8.1 8.1 0 0 1 0-4h3.38a16.5 16.5 0 0 0-.14 2c0 .68.05 1.35.14 2H4.26zm.81 2h3.02c.32 1.25.78 2.45 1.38 3.56A8.03 8.03 0 0 1 5.07 16zm3.02-8H5.07a8.03 8.03 0 0 1 4.4-3.56A15.3 15.3 0 0 0 8.09 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66a14.7 14.7 0 0 1-.16-2c0-.68.06-1.35.16-2h4.68c.1.65.16 1.32.16 2s-.06 1.35-.16 2zm.19 5.56c.6-1.11 1.06-2.31 1.38-3.56h3.02a8.03 8.03 0 0 1-4.4 3.56zM16.36 14c.09-.65.14-1.32.14-2s-.05-1.35-.14-2h3.38a8.1 8.1 0 0 1 0 4h-3.38z"/></svg> Project</a>
+                                        <!-- <a href="GITHUB_URL" target="_blank" rel="noopener noreferrer"><svg class="icon icon-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.76 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.66.79.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg> GitHub</a> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <h2 class="pw-modal-title pw-modal-section">Experience</h2>
                         <div class="experience-grid">
                             <div class="experience-item">
                                 <img class="experience-logo" src="/assets/logos/roblox.jpeg" alt="Roblox">

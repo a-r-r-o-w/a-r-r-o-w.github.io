@@ -1,4 +1,5 @@
 from email.utils import format_datetime
+from urllib.parse import urlparse
 import datetime
 import hashlib
 import html
@@ -453,6 +454,42 @@ def build_toc_html(headings):
     return desktop, mobile
 
 
+def get_author_info(name, authors):
+    entry = authors.get(name)
+    if not entry:
+        return None
+    if isinstance(entry, str):
+        return {"url": entry, "affiliation": "", "bio": ""}
+    return {
+        "url": entry.get("url", ""),
+        "affiliation": entry.get("affiliation", ""),
+        "bio": entry.get("bio", ""),
+    }
+
+
+def render_author_link(name, authors):
+    if name == "Aryan V S":
+        return "<strong>Aryan V S</strong>"
+    info = get_author_info(name, authors)
+    if not info or not info["url"]:
+        return html.escape(name)
+    url = info["url"]
+    host = urlparse(url).netloc.replace("www.", "")
+    slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+    preview_local = os.path.join("assets", "authors", f"{slug}.png")
+    preview_attr = f' data-preview="/assets/authors/{slug}.png"' if os.path.exists(preview_local) else ""
+    return (
+        f'<a class="coauthor-link" href="{html.escape(url)}" target="_blank" rel="noopener noreferrer" '
+        f'data-name="{html.escape(name)}" data-affil="{html.escape(info["affiliation"])}" '
+        f'data-host="{html.escape(host)}"{preview_attr}>'
+        f"{html.escape(name)}</a>"
+    )
+
+
+def render_author_list(names, authors):
+    return ", ".join(render_author_link(n, authors) for n in names)
+
+
 def generate_post_html(template, post, authors, css_path, js_path, pl_js_path):
     with Renderer() as r:
         body_html = r.render(mistletoe.Document(post["body"]))
@@ -463,9 +500,10 @@ def generate_post_html(template, post, authors, css_path, js_path, pl_js_path):
 
     authors_list = list(post["fm"].get("authors", []))
     for i, author in enumerate(authors_list):
-        if author not in authors:
+        info = get_author_info(author, authors)
+        if not info or not info["url"]:
             continue
-        authors_list[i] = f'<a href="{authors[author]}">{author}</a>'
+        authors_list[i] = render_author_link(author, authors)
     authors_html = (
         f'<div class="post-authors">{" • ".join(authors_list)}</div>' if authors_list else ""
     )
@@ -513,7 +551,7 @@ def generate_post_html(template, post, authors, css_path, js_path, pl_js_path):
     )
 
 
-def generate_home_html(template, news, posts, css_path, js_path, pl_js_path):
+def generate_home_html(template, news, posts, authors, css_path, js_path, pl_js_path):
     combined_news_posts = []
     combined_news_posts.extend(news)
     combined_news_posts.extend(posts[:5])
@@ -525,11 +563,30 @@ def generate_home_html(template, news, posts, css_path, js_path, pl_js_path):
         else:
             news_html += f'<li class="news-item"><span class="news-date">{p["date"]}</span>{p["title"]}</li>'
     news_html += "</ul>"
+
+    pixvid_authors = render_author_list(
+        [
+            "Yanke Song", "Shuo Chen", "Chris Rockwell", "Guande He", "Nan Liu",
+            "Desai Xie", "Tianpei Gu", "Yong-Hyun Park", "Aryan V S",
+            "Dennis Yuren Menn", "Ming-Hsuan Yang", "Xun Huang",
+        ],
+        authors,
+    )
+    mpeg_authors = render_author_list(
+        [
+            "Dennis Menn", "Tianpei Gu", "Guande He", "Aryan V S", "Yanke Song",
+            "Nan Liu", "Desai Xie", "Xun Huang", "Chenfeng Xu", "Diana Marculescu",
+        ],
+        authors,
+    )
+
     return template.format(
         css_path=css_path,
         js_path=js_path,
         pl_js_path=pl_js_path,
         news_html=news_html,
+        pixvid_authors=pixvid_authors,
+        mpeg_authors=mpeg_authors,
         social_links_html=SOCIAL_LINKS_HTML,
     )
 
@@ -694,7 +751,7 @@ def main():
         )
 
     with open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8") as f:
-        f.write(generate_home_html(home_template, news, posts, css_path, js_path, pl_js_path))
+        f.write(generate_home_html(home_template, news, posts, authors, css_path, js_path, pl_js_path))
 
     with open(os.path.join(posts_out_dir, "index.html"), "w", encoding="utf-8") as f:
         f.write(generate_blog_html(blog_template, posts, css_path, js_path, pl_js_path))
