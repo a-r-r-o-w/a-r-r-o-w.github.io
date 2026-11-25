@@ -437,4 +437,74 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    const authorLinks = document.querySelectorAll('.coauthor-link');
+    if (authorLinks.length > 0) {
+        const card = document.createElement('div');
+        card.className = 'author-preview-card';
+        card.innerHTML =
+            '<div class="ap-shot-wrap"><img class="ap-shot" alt=""></div>' +
+            '<div class="ap-meta">' +
+              '<div class="ap-top">' +
+                '<span class="ap-name"></span>' +
+                '<span class="ap-ext">&#8599;</span>' +
+              '</div>' +
+              '<div class="ap-sub">' +
+                '<span class="ap-affil"></span>' +
+                '<span class="ap-host"></span>' +
+              '</div>' +
+            '</div>';
+        document.body.appendChild(card);
+
+        const elName = card.querySelector('.ap-name');
+        const elAffil = card.querySelector('.ap-affil');
+        const elHost = card.querySelector('.ap-host');
+        const elShotWrap = card.querySelector('.ap-shot-wrap');
+        const elShot = card.querySelector('.ap-shot');
+        let hideTimer = null;
+
+        const positionCard = (link) => {
+            const rect = link.getBoundingClientRect();
+            const cw = card.offsetWidth || 300;
+            const ch = card.offsetHeight || 220;
+            let left = rect.left + rect.width / 2 - cw / 2;
+            left = Math.max(12, Math.min(window.innerWidth - cw - 12, left));
+            let top = rect.top - ch - 10;
+            if (top < 12) top = rect.bottom + 10;
+            if (top + ch > window.innerHeight - 12) top = Math.max(12, window.innerHeight - ch - 12);
+            card.style.left = left + 'px';
+            card.style.top = top + 'px';
+        };
+
+        const showCard = (link) => {
+            clearTimeout(hideTimer);
+            elName.textContent = link.dataset.name || link.textContent;
+            const affil = link.dataset.affil || '';
+            elAffil.textContent = affil;
+            elAffil.style.display = affil ? 'inline' : 'none';
+            elHost.textContent = link.dataset.host || '';
+
+            const previewUrl = link.dataset.preview ||
+                ('https://s0.wp.com/mshots/v1/' + encodeURIComponent(link.href) + '?w=640&h=400');
+            elShotWrap.style.display = 'block';
+            if (elShot.getAttribute('src') !== previewUrl) {
+                elShot.onerror = () => { elShotWrap.style.display = 'none'; };
+                elShot.src = previewUrl;
+            }
+
+            card.classList.add('visible');
+            positionCard(link);
+        };
+
+        const hideCard = () => {
+            hideTimer = setTimeout(() => card.classList.remove('visible'), 120);
+        };
+
+        authorLinks.forEach(link => {
+            link.addEventListener('mouseenter', () => showCard(link));
+            link.addEventListener('mouseleave', hideCard);
+            link.addEventListener('focus', () => showCard(link));
+            link.addEventListener('blur', hideCard);
+        });
+    }
 });
