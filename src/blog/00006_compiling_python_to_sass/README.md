@@ -889,7 +889,7 @@ At small sizes (`<= 2^20`), the GPU runs the kernel faster than Python can queue
 
 ## Closing thoughts
 
-This post is a moderately friendly intro to SASS. The reason for writing and sharing this is because I believe that being able to program powerful hardware as close to the very essence of what the hardware can do is how we achieve an order of magnitude worth of speedups. Historically, almost nobody works at this level because the human cost is too high. Encodings are undocumented, scheduling is super tedious -- well who the heck, outside of NVDIA's IC7's, knows how to do it, and everything changes with every new architecture. We, as users, just have to believe and accept that closed-source compiler stacks are giving us the maximal performance.
+This post is a moderately friendly intro to SASS. The reason for writing and sharing this is because I believe that being able to program powerful hardware as close to the very essence of what the hardware can do is how we achieve an order of magnitude worth of speedups. Historically, almost nobody works at this level because the human cost is too high. Encodings are undocumented, scheduling is super tedious (well, who the heck outside of NVIDIA's IC7s knows how to do it?), and everything changes with every new architecture. We, as users, just have to believe and accept that closed-source compiler stacks are giving us the maximal performance.
 
 As AI agents become more powerful, this changes. Most of what we did in this post, such as probing undocumented fields and iterating on instruction layouts/schedules, is a mechanical, verifiable loop that agents can run tirelessly. Agents will be able to drop straight to the metal and find instruction sequences humans would never have the patience to design. The limit should truly just be the physics.
 
@@ -907,6 +907,6 @@ As AI agents become more powerful, this changes. Most of what we did in this pos
   author = {Aryan V S},
   title = {Compiling Python to SASS},
   year = {2026},
-  url = {https://github.com/a-r-r-o-w/pycubin}
+  url = {https://a-r-r-o-w.github.io/blog/00006_compiling_python_to_sass/}
 }
 ```
