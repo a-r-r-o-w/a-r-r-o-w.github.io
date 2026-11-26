@@ -12,19 +12,30 @@
 }
 
 [data-theme="light"] header h1 a {
-    color: var(--accent) !important;
+    color: var(--post-title) !important;
 }
 
 [data-theme="light"] .slider {
-    background: #c5c1b7;
+    background: transparent;
+    border-color: var(--border);
 }
 
 [data-theme="light"] input:checked + .slider {
-    background: var(--accent);
+    background: transparent;
 }
 
 [data-theme="light"] input:checked + .slider:before {
-    content: "☀️";
+    content: "";
+}
+
+[data-theme="light"] .news-item {
+    border-bottom-color: rgba(20, 23, 26, 0.08);
+}
+
+[data-theme="light"] .scrollable-news {
+    background: transparent;
+    border-top-color: var(--border);
+    border-bottom-color: var(--border);
 }
 
 [data-theme="light"] .pw-modal-backdrop {
@@ -38,10 +49,6 @@
 [data-theme="light"] header {
     background: rgba(233, 231, 225, 0.88);
     border-bottom-color: var(--border);
-}
-[data-theme="light"] .scrollable-news {
-    background: var(--surface);
-    border-color: var(--border);
 }
 [data-theme="light"] .past-work-link a {
     border-color: var(--border);
@@ -73,10 +80,6 @@
 [data-theme="light"] .right-sidebar {
     background: var(--surface);
     box-shadow: 0 4px 20px rgba(20, 23, 26, 0.06);
-}
-
-[data-theme="light"] .scrollable-news {
-    background: var(--surface);
 }
 
 [data-theme="light"] .tag-list label:hover {
@@ -213,10 +216,10 @@
 [data-theme="light"] .highlight .c,
 [data-theme="light"] .highlight .ch,
 [data-theme="light"] .highlight .cm,
-[data-theme="light"] .highlight .cp,
-[data-theme="light"] .highlight .cpf,
 [data-theme="light"] .highlight .c1,
 [data-theme="light"] .highlight .cs { color: #6e7781; font-style: italic; }
+[data-theme="light"] .highlight .cp { color: #cf222e; font-style: normal; }
+[data-theme="light"] .highlight .cpf { color: #0a3069; font-style: normal; }
 [data-theme="light"] .highlight .k,
 [data-theme="light"] .highlight .kc,
 [data-theme="light"] .highlight .kd,
@@ -264,4 +267,18 @@
 [data-theme="light"] .highlight .o { color: #cf222e; }
 [data-theme="light"] .highlight .gd { color: #82071e; background: rgba(207, 34, 46, 0.12); }
 [data-theme="light"] .highlight .gi { color: #116329; background: rgba(17, 99, 41, 0.12); }
+
+/* Opt-in theme-adaptive images in light mode */
+[data-theme="light"] img.theme-adapt {
+    filter: none;
+    mix-blend-mode: multiply;
+}
+[data-theme="light"] img.theme-adapt-dark {
+    filter: invert(0.92) hue-rotate(180deg);
+    mix-blend-mode: multiply;
+}
+[data-theme="light"] .lightbox-media.theme-adapt {
+    filter: invert(0.955) hue-rotate(180deg);
+    mix-blend-mode: normal;
+}
 

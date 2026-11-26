@@ -24,6 +24,9 @@
         document.documentElement.dataset.theme = t;
       }})();
     </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{css_path}">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
     <script>
@@ -122,7 +125,7 @@
                             <div class="experience-item">
                                 <img class="experience-logo" src="/assets/logos/roblox.jpeg" alt="Roblox">
                                 <div class="experience-details">
-                                    <p>Senior AI Scientist, Roblox <span class="experience-date">Jun 2026 - Present</span></p>
+                                    <p>AI Scientist, Roblox <span class="experience-date">Jun 2026 - Present</span></p>
                                     <p>Foundation AI. Video world models.</p>
                                 </div>
                             </div>
@@ -183,11 +186,20 @@
                             </div>
                         </div>
                         <h2 class="pw-modal-title pw-modal-section">Talks</h2>
-                        <ul class="talks-details">
-                            <li><strong>IIT Indore</strong> - Aug 2025, "Careers in ML". Career guidance for undergrads.</li>
-                            <li><strong>MLADS Conference</strong> - Jul 2024, "Hybrid Hallway". Presented and live-demoed <a href="https://www.microsoft.com/en-us/research/project/hyway/">Hybrid Hallway</a>, and early explorations into real-time avatars and privacy-focused user state understanding, to Microsoft research leadership, professors, and hundreds of attendees.</li>
-                            <li><strong>Microsoft Research India</strong> - Mar 2024, "Hybrid Hallway". Presented and live-demoed <a href="https://www.microsoft.com/en-us/research/project/hyway/">Hybrid Hallway</a>.</li>
-                        </ul>
+                        <div class="talks-list">
+                            <div class="talk-item">
+                                <span class="talk-date">Aug 2025</span>
+                                <span class="talk-body"><strong>IIT Indore</strong>, "Careers in ML". Career guidance for undergrads.</span>
+                            </div>
+                            <div class="talk-item">
+                                <span class="talk-date">Jul 2024</span>
+                                <span class="talk-body"><strong>MLADS Conference</strong>, "Hybrid Hallway". Live demo of <a href="https://www.microsoft.com/en-us/research/project/hyway/">Hybrid Hallway</a>, real-time avatars, and privacy-focused user state understanding.</span>
+                            </div>
+                            <div class="talk-item">
+                                <span class="talk-date">Mar 2024</span>
+                                <span class="talk-body"><strong>Microsoft Research India</strong>, "Hybrid Hallway". Live demo of <a href="https://www.microsoft.com/en-us/research/project/hyway/">Hybrid Hallway</a>.</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>

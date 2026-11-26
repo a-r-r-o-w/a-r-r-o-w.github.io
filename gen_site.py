@@ -15,6 +15,7 @@ import mistletoe
 from mistletoe.html_renderer import HtmlRenderer
 from PIL import Image, ImageDraw, ImageFont
 from pygments import highlight
+from pygments.filter import Filter
 from pygments.formatters import HtmlFormatter
 from pygments.lexer import RegexLexer, bygroups
 from pygments.lexers import CudaLexer, get_lexer_by_name
@@ -73,8 +74,8 @@ class PtxSassLexer(RegexLexer):
             (r"@!?%?[A-Za-z0-9_.]+", Name.Decorator),
             (r"\b[A-Za-z_][A-Za-z0-9_]*:", Name.Label),
             (r"\.(?:version|target|address_size|visible|entry|func|reg|param|shared|local|global|const|align|b8|b16|b32|b64|b128|u8|u16|u32|u64|s8|s16|s32|s64|f16|f32|f64|bf16|pred|v2|v4|sync|cta|gpu|sys|ca|cg|cs|lu|cv|wb|wt|rn|rz|rm|rp|approx|ftz|sat|hi|lo|wide|cc|nc|relaxed|acquire|release)\b", Keyword.Type),
-            (r"\b(?:ld|st|mov|add|sub|mul|mad|fma|div|rem|neg|abs|min|max|and|or|xor|not|shl|shr|selp|setp|bra|ret|exit|call|bar|membar|fence|atom|red|cvt|rcp|sqrt|rsqrt|sin|cos|lg2|ex2|shfl|vote|mma|wgmma|cp|mbarrier|tex|tld4|suld|sust|prmt|bfi|bfe|lop3|LDG|STG|LDS|STS|LD|ST|MOV|FADD|FMUL|FFMA|HADD2|HMUL2|HFMA2|IADD3|IMAD|IMUL|ISETP|FSETP|SEL|BRA|EXIT|RET|BAR|MEMBAR|SHFL|LOP3|LEA|S2R|CS2R|R2P|P2R|NOP|WARPSYNC|DEPBAR|HMMA|GMMA|UTCOMMA|UTMABAR|UTMALDG|UTMASTG|LDGSTS)(?:\.[A-Za-z0-9_]+)*\b", Keyword),
-            (r"(?:%[a-zA-Z0-9_.]+|\b(?:RZ|PT|URZ|UPT|SR_[A-Z0-9_]+|R[0-9]+|UR[0-9]+|P[0-9]+|UP[0-9]+|B[0-9]+|SB[0-9]+|c\[0x[0-9a-fA-F]+\])\b)", Name.Variable),
+            (r"\b(?:ld|st|mov|add|sub|mul|mad|fma|div|rem|neg|abs|min|max|and|or|xor|not|shl|shr|selp|setp|bra|ret|exit|call|bar|membar|fence|atom|red|cvt|rcp|sqrt|rsqrt|sin|cos|lg2|ex2|shfl|vote|mma|wgmma|cp|mbarrier|tex|tld4|suld|sust|prmt|bfi|bfe|lop3|LDG|STG|LDS|STS|LDC|LDCU|ULDC|LD|ST|MOV|UMOV|FADD|FMUL|FFMA|DADD|DMUL|DFMA|HADD2|HMUL2|HFMA2|IADD3|UIADD3|IMAD|IMUL|ISETP|FSETP|SEL|BRA|EXIT|RET|BAR|MEMBAR|SHFL|LOP3|LEA|S2R|CS2R|S2UR|CS2UR|R2P|P2R|NOP|WARPSYNC|DEPBAR|HMMA|GMMA|UTCOMMA|UTMABAR|UTMALDG|UTMASTG|LDGSTS)(?:\.[A-Za-z0-9_]+)*\b", Keyword),
+            (r"(?:%[a-zA-Z0-9_.]+|\b(?:RZ|PT|URZ|UPT|SR_[A-Z0-9_]+|R[0-9]+(?:\.[0-9]+)?|UR[0-9]+|P[0-9]+|UP[0-9]+|B[0-9]+|SB[0-9]+|c\[0x[0-9a-fA-F]+\]|desc)\b)", Name.Variable),
             (r"0[xX][0-9a-fA-F]+[uUlL]*", Number.Hex),
             (r"-?\b\d+\.\d+(?:[eE][+-]?\d+)?[fF]?\b", Number.Float),
             (r"-?\b\d+[uUlL]*\b", Number.Integer),
@@ -87,6 +88,49 @@ class PtxSassLexer(RegexLexer):
     }
 
 
+CUDA_C_TYPES = {
+    "CUdevice", "CUcontext", "CUmodule", "CUfunction", "CUdeviceptr", "CUresult",
+    "CUstream", "CUevent", "CUtexObject", "CUsurfObject", "CUgraph", "CUgraphExec",
+    "cudaError_t", "cudaStream_t", "cudaEvent_t", "cudaDeviceProp", "dim3",
+    "half", "half2", "__half", "__half2", "__nv_bfloat16", "__nv_bfloat162",
+    "float2", "float3", "float4", "int2", "int3", "int4", "uint2", "uint3", "uint4",
+    "size_t", "ssize_t", "ptrdiff_t", "intptr_t", "uintptr_t",
+    "int8_t", "int16_t", "int32_t", "int64_t", "uint8_t", "uint16_t", "uint32_t", "uint64_t",
+    "FILE",
+}
+CUDA_C_BUILTINS = {
+    "threadIdx", "blockIdx", "blockDim", "gridDim", "warpSize",
+    "__syncthreads", "__syncwarp", "__threadfence", "__threadfence_block",
+    "CUDA_SUCCESS", "cudaSuccess", "NULL", "nullptr",
+}
+CUDA_C_QUALIFIERS = {
+    "__global__", "__device__", "__host__", "__shared__", "__constant__",
+    "__managed__", "__restrict__", "__forceinline__", "__noinline__", "__launch_bounds__",
+}
+
+
+class CudaCFilter(Filter):
+    def filter(self, lexer, stream):
+        tokens = list(stream)
+        n = len(tokens)
+        for i, (ttype, value) in enumerate(tokens):
+            if ttype is Name:
+                if value in CUDA_C_QUALIFIERS:
+                    ttype = Keyword
+                elif value in CUDA_C_TYPES:
+                    ttype = Keyword.Type
+                elif value in CUDA_C_BUILTINS:
+                    ttype = Name.Builtin
+                else:
+                    # Highlight function calls: Name followed by '(' (skipping whitespace)
+                    j = i + 1
+                    while j < n and tokens[j][0] in Text.Whitespace:
+                        j += 1
+                    if j < n and tokens[j][0] is Punctuation and tokens[j][1] == "(":
+                        ttype = Name.Function
+            yield ttype, value
+
+
 PYGMENTS_FORMATTER = HtmlFormatter(nowrap=True)
 
 
@@ -95,11 +139,14 @@ def highlight_code(code, lang):
     lexer = None
     if lang_norm in ("cu", "cuda"):
         lexer = CudaLexer()
+        lexer.add_filter(CudaCFilter())
     elif lang_norm in ("ptx", "sass"):
         lexer = PtxSassLexer()
     elif lang_norm:
         try:
             lexer = get_lexer_by_name(lang_norm)
+            if lang_norm in ("c", "h", "cpp", "c++", "cxx", "cc", "hpp"):
+                lexer.add_filter(CudaCFilter())
         except ClassNotFound:
             lexer = None
     if lexer is None:
@@ -151,9 +198,16 @@ class Renderer(HtmlRenderer):
         return template.format(target=target, title=title, attrs=attrs, inner=inner)
 
     def render_image(self, token):
-        template = '<img src="{}" alt="{}"{} loading="lazy" />'
+        src = token.src
+        cls = ""
+        if src.endswith("#theme-dark"):
+            src = src[: -len("#theme-dark")]
+            cls = ' class="theme-adapt-dark"'
+        elif src.endswith("#theme"):
+            src = src[: -len("#theme")]
+            cls = ' class="theme-adapt"'
         title = ' title="{}"'.format(html.escape(token.title)) if token.title else ""
-        return template.format(token.src, self.render_to_plain(token), title)
+        return f'<img src="{src}" alt="{self.render_to_plain(token)}"{cls}{title} loading="lazy" />'
 
     def render_table(self, token):
         inner = super().render_table(token)
@@ -477,13 +531,10 @@ def render_author_link(name, authors):
         return html.escape(name)
     url = info["url"]
     host = urlparse(url).netloc.replace("www.", "")
-    slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
-    preview_local = os.path.join("assets", "authors", f"{slug}.png")
-    preview_attr = f' data-preview="/assets/authors/{slug}.png"' if os.path.exists(preview_local) else ""
     return (
         f'<a class="coauthor-link" href="{html.escape(url)}" target="_blank" rel="noopener noreferrer" '
         f'data-name="{html.escape(name)}" data-affil="{html.escape(info["affiliation"])}" '
-        f'data-host="{html.escape(host)}"{preview_attr}>'
+        f'data-host="{html.escape(host)}">'
         f"{html.escape(name)}</a>"
     )
 
@@ -561,9 +612,9 @@ def generate_home_html(template, news, posts, authors, css_path, js_path, pl_js_
     news_html = '<ul class="news-list">'
     for p in combined_news_posts:
         if p.get("url") is not None:
-            news_html += f'<li class="news-item"><span class="news-date">{p["date"]}</span><a href="{p["url"]}">[Post] {p["title"]}</a></li>'
+            news_html += f'<li class="news-item"><span class="news-date">{p["date"]}</span><span class="news-text"><a href="{p["url"]}">[Post] {p["title"]}</a></span></li>'
         else:
-            news_html += f'<li class="news-item"><span class="news-date">{p["date"]}</span>{p["title"]}</li>'
+            news_html += f'<li class="news-item"><span class="news-date">{p["date"]}</span><span class="news-text">{p["title"]}</span></li>'
     news_html += "</ul>"
 
     pixvid_authors = render_author_list(
@@ -823,6 +874,17 @@ def main():
                     f'<link rel="canonical" href="{canonical}">'
                     f'</head><body><a href="{new_url}">{html.escape(post["title"])}</a></body></html>'
                 )
+
+    projects_dir = "projects"
+    if os.path.isdir(projects_dir):
+        for slug in sorted(os.listdir(projects_dir)):
+            src_proj = os.path.join(projects_dir, slug)
+            if not os.path.isdir(src_proj):
+                continue
+            dst_proj = os.path.join(out_dir, slug)
+            if os.path.exists(dst_proj):
+                shutil.rmtree(dst_proj)
+            shutil.copytree(src_proj, dst_proj)
 
 
 if __name__ == "__main__":

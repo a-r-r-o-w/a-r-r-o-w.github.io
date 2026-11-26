@@ -233,7 +233,10 @@ function openLightbox(element) {
             img.id = 'lightbox-media';
             media.replaceWith(img);
         }
-        document.getElementById('lightbox-media').src = element.src;
+        const lbImg = document.getElementById('lightbox-media');
+        lbImg.src = element.src;
+        lbImg.classList.toggle('theme-adapt', element.classList.contains('theme-adapt'));
+        lbImg.classList.toggle('theme-adapt-dark', element.classList.contains('theme-adapt-dark'));
     }
     
     lightbox.classList.add('active');
@@ -446,13 +449,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Co-author hover preview card (with real webpage screenshot)
+    // Co-author live hover preview card (on-the-fly scaled iframe)
     const authorLinks = document.querySelectorAll('.coauthor-link');
     if (authorLinks.length > 0) {
         const card = document.createElement('div');
         card.className = 'author-preview-card';
         card.innerHTML =
-            '<div class="ap-shot-wrap"><img class="ap-shot" alt=""></div>' +
+            '<div class="ap-shot-wrap"></div>' +
             '<div class="ap-meta">' +
               '<div class="ap-top">' +
                 '<span class="ap-name"></span>' +
@@ -469,15 +472,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const elAffil = card.querySelector('.ap-affil');
         const elHost = card.querySelector('.ap-host');
         const elShotWrap = card.querySelector('.ap-shot-wrap');
-        const elShot = card.querySelector('.ap-shot');
         let hideTimer = null;
-        let activeToken = 0;
-        const previewCache = new Map();
+        const frameCache = new Map();
 
         const positionCard = (link) => {
             const rect = link.getBoundingClientRect();
             const cw = card.offsetWidth || 300;
-            const ch = card.offsetHeight || 220;
+            const ch = card.offsetHeight || 240;
             let left = rect.left + rect.width / 2 - cw / 2;
             left = Math.max(12, Math.min(window.innerWidth - cw - 12, left));
             let top = rect.top - ch - 10;
@@ -489,48 +490,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const showCard = (link) => {
             clearTimeout(hideTimer);
-            const token = ++activeToken;
             elName.textContent = link.dataset.name || link.textContent;
             const affil = link.dataset.affil || '';
             elAffil.textContent = affil;
             elAffil.style.display = affil ? 'inline' : 'none';
             elHost.textContent = link.dataset.host || '';
 
-            const previewUrl = link.dataset.preview ||
-                ('https://s0.wp.com/mshots/v1/' + encodeURIComponent(link.href) + '?w=640&h=400');
-            elShotWrap.style.display = 'block';
-
-            const cached = previewCache.get(previewUrl);
-            if (cached && cached.complete && cached.naturalWidth > 0) {
-                elShot.src = previewUrl;
-                elShot.style.opacity = '1';
-            } else {
-                // Immediately clear the previous author's bitmap so it never lingers
-                elShot.style.opacity = '0';
-                elShot.removeAttribute('src');
-                const loader = cached || new Image();
-                if (!cached) {
-                    loader.src = previewUrl;
-                    previewCache.set(previewUrl, loader);
-                }
-                const reveal = () => {
-                    if (token !== activeToken) return;
-                    if (loader.naturalWidth > 0) {
-                        elShot.src = previewUrl;
-                        elShot.style.opacity = '1';
-                    } else {
-                        elShotWrap.style.display = 'none';
-                    }
-                };
-                if (loader.complete) {
-                    reveal();
-                } else {
-                    loader.addEventListener('load', reveal, { once: true });
-                    loader.addEventListener('error', () => {
-                        if (token === activeToken) elShotWrap.style.display = 'none';
-                    }, { once: true });
-                }
+            const url = link.href;
+            let entry = frameCache.get(url);
+            if (!entry) {
+                const iframe = document.createElement('iframe');
+                iframe.className = 'ap-frame';
+                iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
+                iframe.setAttribute('referrerpolicy', 'no-referrer');
+                iframe.setAttribute('tabindex', '-1');
+                iframe.setAttribute('aria-hidden', 'true');
+                iframe.style.opacity = '0';
+                entry = { iframe, loaded: false };
+                iframe.addEventListener('load', () => {
+                    entry.loaded = true;
+                    iframe.style.opacity = '1';
+                }, { once: true });
+                iframe.src = url;
+                elShotWrap.appendChild(iframe);
+                frameCache.set(url, entry);
             }
+
+            frameCache.forEach((item, key) => {
+                item.iframe.style.display = key === url ? 'block' : 'none';
+            });
+            entry.iframe.style.opacity = entry.loaded ? '1' : '0';
 
             card.classList.add('visible');
             positionCard(link);
