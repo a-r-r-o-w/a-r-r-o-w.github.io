@@ -269,6 +269,14 @@
 [data-theme="light"] .highlight .gi { color: #116329; background: rgba(17, 99, 41, 0.12); }
 
 /* Opt-in theme-adaptive images in light mode */
+[data-theme="light"] .theme-img-light {
+    display: block !important;
+    mix-blend-mode: multiply;
+    border-color: var(--border) !important;
+}
+[data-theme="light"] .theme-img-dark {
+    display: none !important;
+}
 [data-theme="light"] img.theme-adapt {
     filter: none;
     mix-blend-mode: multiply;

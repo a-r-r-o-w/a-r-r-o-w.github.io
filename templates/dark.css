@@ -992,6 +992,16 @@ body.modal-open footer {
 }
 
 /* Opt-in theme-adaptive images (via #theme or #theme-dark URL fragment) */
+.theme-img-pair {
+    display: block;
+}
+.theme-img-light {
+    display: none !important;
+}
+.theme-img-dark {
+    display: block;
+    border-color: var(--border) !important;
+}
 img.theme-adapt {
     filter: invert(0.955) hue-rotate(180deg);
     mix-blend-mode: lighten;

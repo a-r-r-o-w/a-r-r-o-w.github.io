@@ -154,11 +154,40 @@ def highlight_code(code, lang):
     return highlight(code, lexer, PYGMENTS_FORMATTER).rstrip("\n")
 
 
+SVG_DARK_COLOR_MAP = {
+    "#ffffff": "#0d0f14",
+    "#fff": "#0d0f14",
+    "#f3f3f3": "#1d222e",
+    "#f2f2f2": "#1d222e",
+    "#e5e5e5": "#252b38",
+    "#111111": "#f0f4f9",
+    "#111": "#f0f4f9",
+    "#000000": "#f0f4f9",
+    "#000": "#f0f4f9",
+    "#444444": "#9aa4b2",
+    "#444": "#9aa4b2",
+    "#555555": "#74b9ff",
+    "#555": "#9aa4b2",
+    "#666666": "#9aa4b2",
+    "#666": "#9aa4b2",
+    "#888888": "#f0b24a",
+    "#888": "#f0b24a",
+}
+
+
+def convert_svg_to_dark(svg_text):
+    def repl(match):
+        raw = match.group(0)
+        return SVG_DARK_COLOR_MAP.get(raw.lower(), raw)
+    return re.sub(r"#[0-9a-fA-F]{3,6}\b", repl, svg_text)
+
+
 class Renderer(HtmlRenderer):
     def __init__(self, *extras):
         super().__init__(*extras)
         self.headings = []
         self._id_counts = {}
+        self.theme_svgs = set()
 
     def render_heading(self, token):
         inner = self.render_inner(token)
@@ -199,15 +228,24 @@ class Renderer(HtmlRenderer):
 
     def render_image(self, token):
         src = token.src
-        cls = ""
-        if src.endswith("#theme-dark"):
-            src = src[: -len("#theme-dark")]
-            cls = ' class="theme-adapt-dark"'
-        elif src.endswith("#theme"):
-            src = src[: -len("#theme")]
-            cls = ' class="theme-adapt"'
+        alt = self.render_to_plain(token)
         title = ' title="{}"'.format(html.escape(token.title)) if token.title else ""
-        return f'<img src="{src}" alt="{self.render_to_plain(token)}"{cls}{title} loading="lazy" />'
+        if src.endswith("#theme"):
+            clean_src = src[: -len("#theme")]
+            if clean_src.lower().endswith(".svg"):
+                dark_src = clean_src[:-4] + "-dark.svg"
+                self.theme_svgs.add(clean_src)
+                return (
+                    f'<span class="theme-img-pair">'
+                    f'<img class="theme-img-light" src="{clean_src}" alt="{alt}"{title} loading="lazy" />'
+                    f'<img class="theme-img-dark" src="{dark_src}" alt="{alt}"{title} loading="lazy" />'
+                    f'</span>'
+                )
+            return f'<img src="{clean_src}" alt="{alt}" class="theme-adapt"{title} loading="lazy" />'
+        if src.endswith("#theme-dark"):
+            clean_src = src[: -len("#theme-dark")]
+            return f'<img src="{clean_src}" alt="{alt}" class="theme-adapt-dark"{title} loading="lazy" />'
+        return f'<img src="{src}" alt="{alt}"{title} loading="lazy" />'
 
     def render_table(self, token):
         inner = super().render_table(token)
@@ -547,6 +585,7 @@ def generate_post_html(template, post, authors, css_path, js_path, pl_js_path):
     with Renderer() as r:
         body_html = r.render(mistletoe.Document(post["body"]))
         headings = r.headings
+        post["theme_svgs"] = r.theme_svgs
 
     toc_html, toc_mobile_html = build_toc_html(headings)
     tags_html = " ".join(f'<span class="tag">{t}</span>' for t in post["tags"])
@@ -853,6 +892,7 @@ def main():
                 )
             )
 
+        theme_svgs = post.get("theme_svgs", set())
         for fname in os.listdir(post["root"]):
             if fname == "README.md":
                 continue
@@ -861,6 +901,14 @@ def main():
             if not os.path.isfile(src):
                 continue
             shutil.copyfile(src, dst)
+            if fname in theme_svgs and fname.lower().endswith(".svg"):
+                dark_name = fname[:-4] + "-dark.svg"
+                manual_dark = os.path.join(post["root"], dark_name)
+                if not os.path.isfile(manual_dark):
+                    with open(src, "r", encoding="utf-8") as sf:
+                        dark_svg = convert_svg_to_dark(sf.read())
+                    with open(os.path.join(post_out_dir, dark_name), "w", encoding="utf-8") as df:
+                        df.write(dark_svg)
 
         if post["orig_rel_path"] != post["rel_path"]:
             old_out_dir = os.path.join(out_dir, "blog", post["orig_rel_path"])
