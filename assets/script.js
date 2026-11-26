@@ -462,6 +462,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const elShotWrap = card.querySelector('.ap-shot-wrap');
         const elShot = card.querySelector('.ap-shot');
         let hideTimer = null;
+        let activeToken = 0;
+        const previewCache = new Map();
 
         const positionCard = (link) => {
             const rect = link.getBoundingClientRect();
@@ -478,6 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const showCard = (link) => {
             clearTimeout(hideTimer);
+            const token = ++activeToken;
             elName.textContent = link.dataset.name || link.textContent;
             const affil = link.dataset.affil || '';
             elAffil.textContent = affil;
@@ -487,9 +490,36 @@ document.addEventListener('DOMContentLoaded', () => {
             const previewUrl = link.dataset.preview ||
                 ('https://s0.wp.com/mshots/v1/' + encodeURIComponent(link.href) + '?w=640&h=400');
             elShotWrap.style.display = 'block';
-            if (elShot.getAttribute('src') !== previewUrl) {
-                elShot.onerror = () => { elShotWrap.style.display = 'none'; };
+
+            const cached = previewCache.get(previewUrl);
+            if (cached && cached.complete && cached.naturalWidth > 0) {
                 elShot.src = previewUrl;
+                elShot.style.opacity = '1';
+            } else {
+                elShot.style.opacity = '0';
+                elShot.removeAttribute('src');
+                const loader = cached || new Image();
+                if (!cached) {
+                    loader.src = previewUrl;
+                    previewCache.set(previewUrl, loader);
+                }
+                const reveal = () => {
+                    if (token !== activeToken) return;
+                    if (loader.naturalWidth > 0) {
+                        elShot.src = previewUrl;
+                        elShot.style.opacity = '1';
+                    } else {
+                        elShotWrap.style.display = 'none';
+                    }
+                };
+                if (loader.complete) {
+                    reveal();
+                } else {
+                    loader.addEventListener('load', reveal, { once: true });
+                    loader.addEventListener('error', () => {
+                        if (token === activeToken) elShotWrap.style.display = 'none';
+                    }, { once: true });
+                }
             }
 
             card.classList.add('visible');
