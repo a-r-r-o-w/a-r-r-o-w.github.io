@@ -73,15 +73,6 @@
     border-color: var(--border);
 }
 
-[data-theme="light"] .search-fixed {
-    background: var(--surface);
-}
-
-[data-theme="light"] .right-sidebar {
-    background: var(--surface);
-    box-shadow: 0 4px 20px rgba(20, 23, 26, 0.06);
-}
-
 [data-theme="light"] .tag-list label:hover {
     background: rgba(26, 91, 122, 0.08);
 }
@@ -183,11 +174,6 @@
     color: var(--text);
 }
 
-[data-theme="light"] #search-input {
-    background: #f0eee9;
-    border-color: var(--border);
-}
-
 [data-theme="light"] .copy-code-btn {
     background: #f3f1ec;
     border-color: #cdc8bc;
@@ -269,14 +255,6 @@
 [data-theme="light"] .highlight .gi { color: #116329; background: rgba(17, 99, 41, 0.12); }
 
 /* Opt-in theme-adaptive images in light mode */
-[data-theme="light"] .theme-img-light {
-    display: block !important;
-    mix-blend-mode: multiply;
-    border-color: var(--border) !important;
-}
-[data-theme="light"] .theme-img-dark {
-    display: none !important;
-}
 [data-theme="light"] img.theme-adapt {
     filter: none;
     mix-blend-mode: multiply;
@@ -288,5 +266,25 @@
 [data-theme="light"] .lightbox-media.theme-adapt {
     filter: invert(0.955) hue-rotate(180deg);
     mix-blend-mode: normal;
+}
+[data-theme="light"] .cmd-backdrop {
+    background: rgba(224, 221, 213, 0.86);
+}
+[data-theme="light"] .cmd-palette-box {
+    background: #eceae4;
+    border-color: var(--border);
+    box-shadow: 0 20px 60px rgba(20, 23, 26, 0.16);
+}
+[data-theme="light"] .cmd-item.active {
+    background: rgba(24, 98, 107, 0.09);
+}
+[data-theme="light"] .code-plate-header {
+    background: rgba(0, 0, 0, 0.025);
+}
+[data-theme="light"] .tag-filter {
+    border-color: var(--border);
+}
+[data-theme="light"] .tag-list label:hover {
+    background: rgba(20, 23, 26, 0.04);
 }
 
