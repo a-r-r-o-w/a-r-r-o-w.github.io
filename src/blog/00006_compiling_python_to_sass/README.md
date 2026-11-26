@@ -15,7 +15,7 @@ $$
 \text{Python AST} \longrightarrow \text{MLIR} \longrightarrow \text{LLVM / NVVM IR} \longrightarrow \text{PTX} \longrightarrow \texttt{ptxas} \longrightarrow \text{cubin}
 $$
 
-I originally wanted to understand how CuTeDSL lowers kernels. If you dump the intermediate stages of a CuTeDSL vector-add kernel with `CUTE_DSL_KEEP=all`, you get the initial MLIR and the final PTX. Everything in between happens inside a `_cutlass_ir.so`, which is a shared library, stripped of debug symbols and helpful reverse engineering info, that statically links to the different toolchains.
+Try peeking inside that pipeline on a CuTeDSL vector-add kernel with `CUTE_DSL_KEEP=all` and you only get the initial MLIR and the final PTX. Everything in between happens inside `_cutlass_ir.so`, a shared library stripped of debug symbols and helpful reverse engineering info that statically links to the different toolchains.
 
 For vector add, that long compilation pipeline ultimately emits just 20 SASS instructions. This made me wonder: what does the GPU driver actually need to load and run a kernel? How do I control exactly what runs on the GPU? And can we skip the different stages entirely, compiling python straight to a `cubin` binary?
 
@@ -291,7 +291,7 @@ The cubin describes this info because the driver has no way of knowing this layo
 
 As for `.nv.constant0.saxpy`, it reserves space for bank 0 in the cubin. The driver copies the argument values into it at launch. It must be at least the declared size (in this case, at least `0x380 + 32 = 0x3a0`). A smaller size fails to launch, but larger seems to wrok fine. Lastly, notice the script printed `removed .nv.info` above: `.nv.info` holds an `EIATTR_REGCOUNT` (`0x2f`) record for the register count, and while this tiny kernel runs okay without it, larger kernels fail to launch if the count is too low, so we keep `.nv.info` anyway.
 
-![Minimal cubin layout and constant bank 0](cubin_layout.svg)
+![Minimal cubin layout and constant bank 0](cubin_layout.svg#theme)
 
 ## Reverse engineering Blackwell SASS
 
@@ -318,7 +318,7 @@ To have something to work with, let's use the following PTX kernel:
 
 It reads two floats from a pointer `p` and writes `p[1] - p[0]` into `p[0]`. The `ptxas` output for this is:
 
-```
+```sass
 LDC R1, c[0x0][0x37c]
 LDC.64 R2, c[0x0][0x380]
 LDCU.64 UR4, c[0x0][0x358]
@@ -470,7 +470,7 @@ bit  75: LDG.E.U8 R0, desc[UR4][R2.64]
 
 Bits 73-75 together are a 3-bit field. The 32-bit load has the value `4`, flipping bit 73 makes it `5` (64-bit), bit 74 makes it `6` (128-bit), and bit 75 makes it `0` (8-bit). We will need the 128-bit one later for vectorization.
 
-![128-bit Blackwell SASS instruction layout](sass_128bit.svg)
+![128-bit Blackwell SASS instruction layout](sass_128bit.svg#theme)
 
 Unless we do this for multiple different types of instructions, it's hard to learn what every bit does. Fortunately, it seems we don't need to fully understand the role of each bit to do SASS codegen or cubin encoding. For each instruction we plan to use, we can take one encoded 128-bit word from `ptxas` as a template and overwrite the register, modifier, and constant bits. This, obviously, assumes that there are no unintended side effects (there is a very high chance there could be, since our investigation is quite naive).
 
@@ -866,7 +866,7 @@ def vadd(x: ptr_f32, y: ptr_f32, out: ptr_f32, n: i32):
 
 For example, with `n = 10`, threads `0` and `1` take the vectorized path (`0..3` and `4..7`), thread `2` runs the `while` loop for elements `8` and `9`, and any extra threads from rounding up to a full block skip the loop because `g << 2 >= n`. The vectorized branch compiles to:
 
-```
+```sass
 IMAD.WIDE R14, R0, 0x10, R12
 LDG.E.128 R8, desc[UR4][R14.64]
 IMAD.WIDE R14, R0, 0x10, R20
@@ -883,7 +883,7 @@ STG.E.128 desc[UR4][R14.64], R24
 
 Below is vector add bandwidth on a B200 compared against eager `torch.add(a, b, out=c)`:
 
-![Vector add bandwidth on B200](vadd_bench.svg)
+![Vector add bandwidth on B200](vadd_bench.svg#theme)
 
 At small sizes (`<= 2^20`), the GPU runs the kernel faster than Python can queue a launch, so our measurements are host dispatch latency bound. At larger sizes, the scalar kernel tops out around 3.8 TB/s while the vectorized kernel and `torch.add` reach roughly the same bandwidth utilization of ~6.9-7.0 TB/s (even with our lazy hack of `delay = 5` scheduler).
 
