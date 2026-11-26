@@ -23,6 +23,9 @@
         document.documentElement.dataset.theme = t;
       }})();
     </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{css_path}">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
     <script>
@@ -53,6 +56,7 @@
                 <a href="/posts/" aria-current="page">Posts</a>
             </nav>
             <div class="header-controls">
+                <button class="cmd-trigger" id="cmd-trigger" type="button" aria-label="Open command palette" title="Command palette (⌘K)">⌘K</button>
                 <button class="immersive-toggle" id="immersive-toggle" aria-label="Toggle immersive mode"></button>
                 <div class="theme-toggle">
                     <label class="switch">
@@ -72,7 +76,11 @@
             <aside class="right-sidebar">
                 <div class="search-fixed">
                     <h3>Search</h3>
-                    <input type="text" id="search-input" placeholder="Search (press /)...">
+                    <div class="search-field">
+                        <span class="search-prompt" aria-hidden="true">&gt;</span>
+                        <input type="text" id="search-input" placeholder="Filter posts..." autocomplete="off" spellcheck="false">
+                        <kbd class="search-kbd" aria-hidden="true">/</kbd>
+                    </div>
                 </div>
                 <div class="tags-scrollable">
                     <h3>Tags</h3>
