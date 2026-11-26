@@ -387,7 +387,8 @@ def collect_posts(src_dir):
         fm, body = parse_front_matter(content)
         if "title" not in fm:
             continue
-        rel_path = os.path.relpath(root, src_dir)
+        orig_rel_path = os.path.relpath(root, src_dir)
+        rel_path = orig_rel_path.removeprefix("3_blossom/")
         date_str = fm.get("date")
         date = date_str.split(" - ")[0] if " - " in date_str else date_str
         date_obj = datetime.datetime.strptime(date, "%Y-%m-%d")
@@ -406,6 +407,7 @@ def collect_posts(src_dir):
                 "body": body,
                 "root": root,
                 "rel_path": rel_path,
+                "orig_rel_path": orig_rel_path,
                 "slug": slug,
                 "date_obj": date_obj,
                 "word_count": word_count,
@@ -627,6 +629,7 @@ def generate_rss_xml(posts):
     items = []
     for p in posts:
         link = f'{SITE_URL}/blog/{p["rel_path"]}/'
+        guid = f'{SITE_URL}/blog/{p["orig_rel_path"]}/'
         pub_dt = p["date_obj"].replace(tzinfo=datetime.timezone.utc)
         pub_date = format_datetime(pub_dt)
         desc = html.escape(re.sub(r"<[^>]+>", "", p["excerpt"]))
@@ -635,7 +638,7 @@ def generate_rss_xml(posts):
             "    <item>\n"
             f'      <title>{html.escape(p["title"])}</title>\n'
             f"      <link>{link}</link>\n"
-            f'      <guid isPermaLink="true">{link}</guid>\n'
+            f'      <guid isPermaLink="true">{guid}</guid>\n'
             f"      <pubDate>{pub_date}</pubDate>\n"
             f"      <description>{desc}</description>\n"
             f"{cats}"
@@ -807,6 +810,19 @@ def main():
             if not os.path.isfile(src):
                 continue
             shutil.copyfile(src, dst)
+
+        if post["orig_rel_path"] != post["rel_path"]:
+            old_out_dir = os.path.join(out_dir, "blog", post["orig_rel_path"])
+            os.makedirs(old_out_dir, exist_ok=True)
+            new_url = f'/blog/{post["rel_path"]}/'
+            canonical = f'{SITE_URL}{new_url}'
+            with open(os.path.join(old_out_dir, "index.html"), "w", encoding="utf-8") as f:
+                f.write(
+                    '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+                    f'<meta http-equiv="refresh" content="0; url={new_url}">'
+                    f'<link rel="canonical" href="{canonical}">'
+                    f'</head><body><a href="{new_url}">{html.escape(post["title"])}</a></body></html>'
+                )
 
 
 if __name__ == "__main__":

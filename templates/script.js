@@ -52,8 +52,12 @@ function copyCode(button) {
     const code = button.nextElementSibling.querySelector('code').textContent;
     const original = button.textContent;
     copyWithToast(code, 'Code copied!', () => {
-        button.textContent = 'Copied!';
-        setTimeout(() => button.textContent = original, 2000);
+        button.textContent = 'Copied';
+        button.classList.add('copied');
+        setTimeout(() => {
+            button.textContent = original;
+            button.classList.remove('copied');
+        }, 1600);
     });
 }
 

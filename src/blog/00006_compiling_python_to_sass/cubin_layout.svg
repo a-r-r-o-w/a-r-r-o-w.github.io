@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" width="760" height="300">
+  <defs>
+    <style>
+      .hd { font: 600 12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; fill: #111; }
+      .mono { font: 11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; fill: #111; }
+      .dim { font: 11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; fill: #555; }
+      .box { fill: #fff; stroke: #111; stroke-width: 1; }
+      .muted { fill: #f3f3f3; stroke: #111; stroke-width: 1; }
+      .line { fill: none; stroke: #111; stroke-width: 1; }
+    </style>
+    <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#111"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="760" height="300" fill="#fff"/>
+
+  <!-- Left: cubin (ELF64) -->
+  <text class="hd" x="24" y="26">cubin (ELF64)</text>
+
+  <rect class="muted" x="24" y="36" width="256" height="28"/>
+  <text class="mono" x="34" y="54">ELF64 header</text>
+
+  <rect class="muted" x="24" y="64" width="256" height="28"/>
+  <text class="mono" x="34" y="82">.shstrtab  .strtab  .symtab</text>
+
+  <rect class="muted" x="24" y="92" width="256" height="28"/>
+  <text class="mono" x="34" y="110">.note.nv.tkinfo  .note.nv.cuinfo</text>
+
+  <rect class="box" x="24" y="120" width="256" height="28"/>
+  <text class="mono" x="34" y="138">.nv.info</text>
+  <text class="dim" x="270" y="138" text-anchor="end">0x2f REGCOUNT</text>
+
+  <rect class="box" x="24" y="148" width="256" height="40"/>
+  <text class="mono" x="34" y="164">.nv.info.saxpy</text>
+  <text class="dim" x="34" y="180">0x17 KPARAM_INFO, 0x0a PARAM_CBANK</text>
+
+  <rect class="box" x="24" y="188" width="256" height="30"/>
+  <text class="mono" x="34" y="207">.nv.constant0.saxpy</text>
+  <text class="dim" x="270" y="207" text-anchor="end">&gt;= 0x3a0 B</text>
+
+  <rect class="box" x="24" y="218" width="256" height="42"/>
+  <text class="mono" x="34" y="236">.text.saxpy</text>
+  <text class="dim" x="34" y="252">SASS (128-bit instructions)</text>
+
+  <!-- Right: Constant bank 0 -->
+  <text class="hd" x="456" y="26">constant bank 0 (c[0x0])</text>
+
+  <rect class="muted" x="456" y="36" width="244" height="68"/>
+  <text class="dim" x="466" y="54">0x000</text>
+  <text class="dim" x="578" y="74" text-anchor="middle">reserved (0x000..0x37f)</text>
+
+  <rect class="box" x="456" y="104" width="244" height="28"/>
+  <text class="dim" x="466" y="122">0x380</text>
+  <text class="mono" x="524" y="122">x</text>
+  <text class="dim" x="690" y="122" text-anchor="end">8 B</text>
+
+  <rect class="box" x="456" y="132" width="244" height="28"/>
+  <text class="dim" x="466" y="150">0x388</text>
+  <text class="mono" x="524" y="150">y</text>
+  <text class="dim" x="690" y="150" text-anchor="end">8 B</text>
+
+  <rect class="box" x="456" y="160" width="244" height="28"/>
+  <text class="dim" x="466" y="178">0x390</text>
+  <text class="mono" x="524" y="178">out</text>
+  <text class="dim" x="690" y="178" text-anchor="end">8 B</text>
+
+  <rect class="box" x="456" y="188" width="244" height="28"/>
+  <text class="dim" x="466" y="206">0x398</text>
+  <text class="mono" x="524" y="206">a</text>
+  <text class="dim" x="690" y="206" text-anchor="end">4 B</text>
+
+  <rect class="box" x="456" y="216" width="244" height="28"/>
+  <text class="dim" x="466" y="234">0x39c</text>
+  <text class="mono" x="524" y="234">n</text>
+  <text class="dim" x="690" y="234" text-anchor="end">4 B</text>
+
+  <!-- Right bracket for 32 B params -->
+  <path class="line" d="M 706 104 L 714 104 L 714 244 L 706 244"/>
+  <text class="dim" x="720" y="178">32 B</text>
+
+  <!-- Connections -->
+  <path class="line" d="M 280 168 L 352 168 L 352 118 L 454 118" marker-end="url(#arr)"/>
+  <text class="dim" x="368" y="110" text-anchor="middle">0x0a, 0x17</text>
+
+  <path class="line" d="M 280 203 L 454 203" marker-end="url(#arr)"/>
+  <text class="dim" x="368" y="197" text-anchor="middle">reserves bank 0</text>
+
+  <path class="line" d="M 456 232 L 368 232 L 368 240 L 282 240" marker-end="url(#arr)"/>
+  <text class="dim" x="368" y="256" text-anchor="middle">LDC / LDC.64</text>
+</svg>

@@ -87,11 +87,22 @@
     background: var(--accent);
 }
 
+[data-theme="light"] code {
+    background: #f3f1ec;
+    border-color: #cdc8bc;
+    color: #164e56;
+}
+
 [data-theme="light"] pre {
-    border-color: var(--border);
+    background: #f3f1ec;
+    border-color: #cdc8bc;
+    border-left-color: rgba(24, 98, 107, 0.45);
 }
 
 [data-theme="light"] pre code {
+    background: transparent;
+    border: none;
+    color: var(--text);
     scrollbar-color: #b5b1a7 transparent;
 }
 
@@ -175,13 +186,27 @@
 }
 
 [data-theme="light"] .copy-code-btn {
-    background: var(--tag-bg);
-    border-color: var(--border);
-    color: var(--text);
+    background: #f3f1ec;
+    border-color: #cdc8bc;
+    color: var(--text-muted);
 }
-[data-theme="light"] .copy-code-btn:hover {
-    background: var(--accent);
-    color: #f0eee9;
+[data-theme="light"] .copy-code-btn:hover,
+[data-theme="light"] .copy-code-btn.copied {
+    background: rgba(24, 98, 107, 0.08);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+[data-theme="light"] details:not(.post-toc-mobile) {
+    background: #f3f1ec;
+    border-color: #cdc8bc;
+    border-left-color: #cdc8bc;
+}
+[data-theme="light"] details:not(.post-toc-mobile):hover,
+[data-theme="light"] details:not(.post-toc-mobile)[open] {
+    border-left-color: var(--accent);
+}
+[data-theme="light"] details:not(.post-toc-mobile) > summary:hover {
+    background: rgba(24, 98, 107, 0.05);
 }
 
 /* Pygments syntax highlighting (Light - GitHub Light) */
