@@ -23,7 +23,10 @@
         document.documentElement.dataset.theme = t;
       })();
     </script>
-    <link rel="stylesheet" href="/assets/style.css?v=dd83ab1b">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/style.css?v=356508d5">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -53,6 +56,7 @@
                 <a href="/posts/" aria-current="page">Posts</a>
             </nav>
             <div class="header-controls">
+                <button class="cmd-trigger" id="cmd-trigger" type="button" aria-label="Open command palette" title="Command palette (⌘K)">⌘K</button>
                 <button class="immersive-toggle" id="immersive-toggle" aria-label="Toggle immersive mode"></button>
                 <div class="theme-toggle">
                     <label class="switch">
@@ -67,23 +71,28 @@
         <div class="page-wrapper">
             <div class="left-padding"></div>
             <main class="center-content blog-page" id="blog-content">
-                <ul class="post-list"><li class="post-item" data-tags="cuda profiling gpu mlsys"><div class="post-info"><span class="post-date">2026-07-05</span><div class="post-content"><a href="/blog/3_blossom/00005_looking_inside_your_kernels/index.html">Looking inside your kernels</a><div class="post-tags"><button type="button" class="tag tag-btn" data-tag="cuda">cuda</button> <button type="button" class="tag tag-btn" data-tag="profiling">profiling</button> <button type="button" class="tag tag-btn" data-tag="gpu">gpu</button> <button type="button" class="tag tag-btn" data-tag="mlsys">mlsys</button></div></div></div></li>
-<li class="post-item" data-tags="diffusion optimization mlsys"><div class="post-info"><span class="post-date">2026-01-29</span><div class="post-content"><a href="/blog/3_blossom/00004_productionizing_diffusion-4/index.html">Optimizing diffusion for production-ready speeds - IV</a><div class="post-tags"><button type="button" class="tag tag-btn" data-tag="diffusion">diffusion</button> <button type="button" class="tag tag-btn" data-tag="optimization">optimization</button> <button type="button" class="tag tag-btn" data-tag="mlsys">mlsys</button></div></div></div></li>
-<li class="post-item" data-tags="diffusion optimization mlsys"><div class="post-info"><span class="post-date">2026-01-25</span><div class="post-content"><a href="/blog/3_blossom/00003_productionizing_diffusion-3/index.html">Optimizing diffusion for production-ready speeds - III</a><div class="post-tags"><button type="button" class="tag tag-btn" data-tag="diffusion">diffusion</button> <button type="button" class="tag tag-btn" data-tag="optimization">optimization</button> <button type="button" class="tag tag-btn" data-tag="mlsys">mlsys</button></div></div></div></li>
-<li class="post-item" data-tags="diffusion optimization mlsys"><div class="post-info"><span class="post-date">2026-01-10</span><div class="post-content"><a href="/blog/3_blossom/00002_productionizing_diffusion-2/index.html">Optimizing diffusion for production-ready speeds - II</a><div class="post-tags"><button type="button" class="tag tag-btn" data-tag="diffusion">diffusion</button> <button type="button" class="tag tag-btn" data-tag="optimization">optimization</button> <button type="button" class="tag tag-btn" data-tag="mlsys">mlsys</button></div></div></div></li>
-<li class="post-item" data-tags="diffusion optimization mlsys"><div class="post-info"><span class="post-date">2025-12-29</span><div class="post-content"><a href="/blog/3_blossom/00001_productionizing_diffusion-1/index.html">Optimizing diffusion for production-ready speeds - I</a><div class="post-tags"><button type="button" class="tag tag-btn" data-tag="diffusion">diffusion</button> <button type="button" class="tag tag-btn" data-tag="optimization">optimization</button> <button type="button" class="tag tag-btn" data-tag="mlsys">mlsys</button></div></div></div></li>
+                <ul class="post-list"><li class="post-item" data-tags="cuda compilers sass gpu mlsys"><div class="post-info"><span class="post-date">2026-11-26</span><div class="post-content"><a href="/blog/00006_compiling_python_to_sass/index.html">Compiling Python to SASS</a><div class="post-tags"><button type="button" class="tag tag-btn" data-tag="cuda">cuda</button> <button type="button" class="tag tag-btn" data-tag="compilers">compilers</button> <button type="button" class="tag tag-btn" data-tag="sass">sass</button> <button type="button" class="tag tag-btn" data-tag="gpu">gpu</button> <button type="button" class="tag tag-btn" data-tag="mlsys">mlsys</button></div></div></div></li>
+<li class="post-item" data-tags="cuda profiling gpu mlsys"><div class="post-info"><span class="post-date">2026-07-05</span><div class="post-content"><a href="/blog/00005_looking_inside_your_kernels/index.html">Looking inside your kernels</a><div class="post-tags"><button type="button" class="tag tag-btn" data-tag="cuda">cuda</button> <button type="button" class="tag tag-btn" data-tag="profiling">profiling</button> <button type="button" class="tag tag-btn" data-tag="gpu">gpu</button> <button type="button" class="tag tag-btn" data-tag="mlsys">mlsys</button></div></div></div></li>
+<li class="post-item" data-tags="diffusion optimization mlsys"><div class="post-info"><span class="post-date">2026-01-29</span><div class="post-content"><a href="/blog/00004_productionizing_diffusion-4/index.html">Optimizing diffusion for production-ready speeds - IV</a><div class="post-tags"><button type="button" class="tag tag-btn" data-tag="diffusion">diffusion</button> <button type="button" class="tag tag-btn" data-tag="optimization">optimization</button> <button type="button" class="tag tag-btn" data-tag="mlsys">mlsys</button></div></div></div></li>
+<li class="post-item" data-tags="diffusion optimization mlsys"><div class="post-info"><span class="post-date">2026-01-25</span><div class="post-content"><a href="/blog/00003_productionizing_diffusion-3/index.html">Optimizing diffusion for production-ready speeds - III</a><div class="post-tags"><button type="button" class="tag tag-btn" data-tag="diffusion">diffusion</button> <button type="button" class="tag tag-btn" data-tag="optimization">optimization</button> <button type="button" class="tag tag-btn" data-tag="mlsys">mlsys</button></div></div></div></li>
+<li class="post-item" data-tags="diffusion optimization mlsys"><div class="post-info"><span class="post-date">2026-01-10</span><div class="post-content"><a href="/blog/00002_productionizing_diffusion-2/index.html">Optimizing diffusion for production-ready speeds - II</a><div class="post-tags"><button type="button" class="tag tag-btn" data-tag="diffusion">diffusion</button> <button type="button" class="tag tag-btn" data-tag="optimization">optimization</button> <button type="button" class="tag tag-btn" data-tag="mlsys">mlsys</button></div></div></div></li>
+<li class="post-item" data-tags="diffusion optimization mlsys"><div class="post-info"><span class="post-date">2025-12-29</span><div class="post-content"><a href="/blog/00001_productionizing_diffusion-1/index.html">Optimizing diffusion for production-ready speeds - I</a><div class="post-tags"><button type="button" class="tag tag-btn" data-tag="diffusion">diffusion</button> <button type="button" class="tag tag-btn" data-tag="optimization">optimization</button> <button type="button" class="tag tag-btn" data-tag="mlsys">mlsys</button></div></div></div></li>
 </ul>
 
             </main>
             <aside class="right-sidebar">
                 <div class="search-fixed">
                     <h3>Search</h3>
-                    <input type="text" id="search-input" placeholder="Search (press /)...">
+                    <div class="search-field">
+                        <span class="search-prompt" aria-hidden="true">&gt;</span>
+                        <input type="text" id="search-input" placeholder="Filter posts..." autocomplete="off" spellcheck="false">
+                        <kbd class="search-kbd" aria-hidden="true">/</kbd>
+                    </div>
                 </div>
                 <div class="tags-scrollable">
                     <h3>Tags</h3>
                     <ul class="tag-list">
-                        <li><label><input type="checkbox" class="tag-filter" data-tag="cuda"> cuda</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="diffusion"> diffusion</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="gpu"> gpu</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="mlsys"> mlsys</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="optimization"> optimization</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="profiling"> profiling</label></li>
+                        <li><label><input type="checkbox" class="tag-filter" data-tag="compilers"> compilers</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="cuda"> cuda</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="diffusion"> diffusion</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="gpu"> gpu</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="mlsys"> mlsys</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="optimization"> optimization</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="profiling"> profiling</label></li><li><label><input type="checkbox" class="tag-filter" data-tag="sass"> sass</label></li>
                     </ul>
                 </div>
             </aside>
@@ -102,6 +111,6 @@
         <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5a1 1 0 0 1 1-1h16a1 1 0 0 1 .8 1.6l-6.3 8.4V19a1 1 0 0 1-.55.89l-3 1.5A1 1 0 0 1 9.5 20.5v-6.5L3.2 5.6A1 1 0 0 1 3 5z"/></svg>
     </button>
     <script src="/assets/particle-life.js?v=f4a24e94"></script>
-    <script src="/assets/script.js?v=d006a192"></script>
+    <script src="/assets/script.js?v=f62a7337"></script>
 </body>
 </html>

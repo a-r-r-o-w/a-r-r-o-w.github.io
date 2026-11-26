@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Writing high-performance GPU kernels in Python has become standard practice. DSLs like [Triton](https://github.com/triton-lang/triton) and NVIDIA's [C...">
+    <meta property="og:title" content="Compiling Python to SASS">
+    <meta property="og:description" content="Writing high-performance GPU kernels in Python has become standard practice. DSLs like [Triton](https://github.com/triton-lang/triton) and NVIDIA's [C...">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://a-r-r-o-w.github.io/blog/00006_compiling_python_to_sass/">
+    <meta property="og:image" content="https://a-r-r-o-w.github.io/assets/og/00006_compiling_python_to_sass.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Compiling Python to SASS">
+    <meta name="twitter:description" content="Writing high-performance GPU kernels in Python has become standard practice. DSLs like [Triton](https://github.com/triton-lang/triton) and NVIDIA's [C...">
+    <meta name="twitter:image" content="https://a-r-r-o-w.github.io/assets/og/00006_compiling_python_to_sass.png">
+    <link rel="canonical" href="https://a-r-r-o-w.github.io/blog/00006_compiling_python_to_sass/">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate" type="application/rss+xml" title="Aryan V S" href="/feed.xml">
+    <title>Compiling Python to SASS - Aryan V S</title>
+    <script>
+      (function() {
+        const t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/style.css?v=356508d5">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}, {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}], throwOnError: false});"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R1R7JKELB2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-R1R7JKELB2', {
+        'page_title': 'Compiling Python to SASS',
+        'page_path': '/blog/00006_compiling_python_to_sass/',
+        'allow_google_signals': false,
+        'allow_ad_personalization_signals': false
+      });
+    </script>
+</head>
+<body>
+    <div class="reading-progress" id="reading-progress"></div>
+    <canvas id="particle-life"></canvas>
+    <header>
+        <div class="header-inner">
+            <a href="/"><h1>Aryan V S</h1></a>
+            <div class="burger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <nav>
+                <a href="/">Home</a>
+                <span class="nav-separator">|</span>
+                <a href="/posts/">Posts</a>
+            </nav>
+            <div class="header-controls">
+                <button class="cmd-trigger" id="cmd-trigger" type="button" aria-label="Open command palette" title="Command palette (⌘K)">⌘K</button>
+                <button class="immersive-toggle" id="immersive-toggle" aria-label="Toggle immersive mode"></button>
+                <div class="theme-toggle">
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="post-layout">
+        <div class="container">
+            <main class="post-page">
+              <div class="post-title-wrapper">
+                  <div class="post-date-stats">
+                      <div class="post-date">2026-11-26</div>
+                      <div class="post-stats">3,496 words • ~17 min</div>
+                  </div>
+                  <h2 class="post-title">Compiling Python to SASS</h2>
+                  <button class="post-info-btn" aria-label="Post info"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 4.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM10.75 11h2.5v6.5h-2.5V11z"/></svg></button>
+              </div>
+                <div class="post-meta">
+                    <div class="post-tags"><span class="tag">cuda</span> <span class="tag">compilers</span> <span class="tag">sass</span> <span class="tag">gpu</span> <span class="tag">mlsys</span></div>
+                    
+                    <div class="post-links"><a href="https://github.com/a-r-r-o-w/pycubin" class="post-link code"><svg class="icon icon-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.76 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.66.79.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg> Code</a></div>
+                </div>
+                <details class="post-toc-mobile"><summary>Table of contents</summary><ul class="toc-list"><li class="toc-item toc-h2"><a class="toc-link" href="#table-of-contents">Table of contents</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#anatomy-of-a-minimal-cubin">Anatomy of a minimal cubin</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#reverse-engineering-blackwell-sass">Reverse engineering Blackwell SASS</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#instruction-scheduling">Instruction scheduling</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#compiling-python-to-sass">Compiling Python to SASS</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#auto-vectorization-and-benchmarks">Auto-vectorization and benchmarks</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#closing-thoughts">Closing thoughts</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#additional-reading">Additional reading</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#citation">Citation</a></li></ul></details>
+                <p>Writing high-performance GPU kernels in Python has become standard practice. DSLs like <a href="https://github.com/triton-lang/triton" target="_blank" rel="noopener noreferrer">Triton</a> and NVIDIA's <a href="https://docs.nvidia.com/cutlass/media/docs/pythonDSL/cute_dsl_general/dsl_introduction.html" target="_blank" rel="noopener noreferrer">CuTeDSL</a> let you write kernels in Python and compile them down to fast machine code.</p>
+<p>Under the hood, however, these compilers rely on a massive stack, parts of which are closed-source:</p>
+<p>$$
+\text{Python AST} \longrightarrow \text{MLIR} \longrightarrow \text{LLVM / NVVM IR} \longrightarrow \text{PTX} \longrightarrow \texttt{ptxas} \longrightarrow \text{cubin}
+$$</p>
+<p>Try peeking inside that pipeline on a CuTeDSL vector-add kernel with <code>CUTE_DSL_KEEP=all</code> and you only get the initial MLIR and the final PTX. Everything in between happens inside <code>_cutlass_ir.so</code>, a shared library stripped of debug symbols and helpful reverse engineering info that statically links to the different toolchains.</p>
+<p>For vector add, that long compilation pipeline ultimately emits just 20 SASS instructions. This made me wonder: what does the GPU driver actually need to load and run a kernel? How do I control exactly what runs on the GPU? And can we skip the different stages entirely, compiling python straight to a <code>cubin</code> binary?</p>
+<p>Exploring in that direction, we build <code>pycubin</code>. It's a minimal Python-to-SASS toy compiler with Blackwell (sm100) support.</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">PYTHON</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight language-python"><span class="kn">from</span><span class="w"> </span><span class="nn">pycubin</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeviceArray</span><span class="p">,</span> <span class="n">f32</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">i32</span><span class="p">,</span> <span class="n">jit</span><span class="p">,</span> <span class="n">ptr_f32</span><span class="p">,</span> <span class="n">synchronize</span>
+
+<span class="nd">@jit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">saxpy</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">ptr_f32</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">ptr_f32</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="n">ptr_f32</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">f32</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">i32</span><span class="p">):</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">gid</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+<span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">255</span><span class="p">)</span> <span class="o">//</span> <span class="mi">256</span>
+<span class="n">saxpy</span><span class="p">[</span><span class="n">grid</span><span class="p">](</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dout</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">synchronize</span><span class="p">()</span></code></pre></div>
+<p>Note that the contents of this blog assume the reader has an amateur understanding of GPU programming and reverse engineering, plus tooling around them. To build <code>pycubin</code>, we need three things: the minimal ELF container the driver will accept, the binary encoding of Blackwell SASS instructions, and how to schedule them to run in a specific order.</p>
+<div class="alert alert-note"><div class="alert-title">Note</div><p>
+Thanks to <a href="https://verda.com/" target="_blank" rel="noopener noreferrer">Verda</a> for providing GPU compute used for some of the compiler verification work. I'm not affiliated with them in any way, but in my experience they are one of the best platforms for low-level optimization work and I've had a wonderful time working with them. Check them out!</p></div>
+<h2 id="table-of-contents">Table of contents<a class="heading-anchor" href="#table-of-contents" aria-label="Copy link to Table of contents">#</a></h2>
+<ul>
+<li><a href="#anatomy-of-a-minimal-cubin">Anatomy of a minimal cubin</a></li>
+<li><a href="#reverse-engineering-blackwell-sass">Reverse engineering Blackwell SASS</a></li>
+<li><a href="#instruction-scheduling">Instruction scheduling</a></li>
+<li><a href="#compiling-python-to-sass">Compiling Python to SASS</a></li>
+<li><a href="#auto-vectorization-and-benchmarks">Auto-vectorization and benchmarks</a></li>
+<li><a href="#closing-thoughts">Closing thoughts</a></li>
+<li><a href="#additional-reading">Additional reading</a></li>
+<li><a href="#citation">Citation</a></li>
+</ul>
+<h2 id="anatomy-of-a-minimal-cubin">Anatomy of a minimal cubin<a class="heading-anchor" href="#anatomy-of-a-minimal-cubin" aria-label="Copy link to Anatomy of a minimal cubin">#</a></h2>
+<p>A <code>cubin</code> is an <a href="https://en.wikipedia.org/wiki/Executable_and_Linkable_Format" target="_blank" rel="noopener noreferrer">ELF</a> file. Running <code>readelf -S</code> on the <code>ptxas</code> output for a simple kernel shows a lot of sections:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">TEXT</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight">.shstrtab .strtab .symtab .debug_frame .note.nv.tkinfo .note.nv.cuinfo
+.nv.info .nv.compat .nv.info.saxpy .nv.callgraph .rela.debug_frame
+.text.saxpy .nv.shared.reserved.0 .nv.constant0.saxpy
+.nv.capmerc.text.saxpy .nv.merc.* ...
+</code></pre></div>
+<p>Most of these sections have no public documentation so we have no concrete way of understanding what each does. However, we can use the CUDA driver (<code>cuModuleLoadData</code>) as an oracle to figure out the minimal important subset by dropping one section/record at a time, rebuilding the ELF, launching the kernel, and checking if the output still matches.</p>
+<p>To do these steps, here's a minimal snippet that loads a cubin using <code>cuModuleLoadData</code>, launches a <code>saxpy</code> kernel on 1000 floats, and exits with 0 on correct output. Build with <code>gcc -o run_saxpy run_saxpy.c -lcuda</code>.</p>
+<details>
+<summary>run_saxpy.c</summary>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">C</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight language-c"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+
+<span class="cp">#define N 1000</span>
+
+<span class="cp">#define CHECK(call)                                  \</span>
+<span class="cp">    do {                                             \</span>
+<span class="cp">        CUresult status = (call);                    \</span>
+<span class="cp">        if (status != CUDA_SUCCESS) {                \</span>
+<span class="cp">            fprintf(stderr, "%s failed: %d\n", #call, status); \</span>
+<span class="cp">            exit(1);                                 \</span>
+<span class="cp">        }                                            \</span>
+<span class="cp">    } while (0)</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">fopen</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="s">"rb"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">cubin</span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">20</span><span class="p">];</span>
+<span class="w">    </span><span class="nf">fread</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">cubin</span><span class="p">),</span><span class="w"> </span><span class="n">file</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kt">CUdevice</span><span class="w"> </span><span class="n">device</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">CUcontext</span><span class="w"> </span><span class="n">context</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">CUmodule</span><span class="w"> </span><span class="n">module</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">CUfunction</span><span class="w"> </span><span class="n">kernel</span><span class="p">;</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuInit</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuDeviceGet</span><span class="p">(</span><span class="o">&amp;</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuDevicePrimaryCtxRetain</span><span class="p">(</span><span class="o">&amp;</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">device</span><span class="p">));</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuCtxSetCurrent</span><span class="p">(</span><span class="n">context</span><span class="p">));</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuModuleLoadData</span><span class="p">(</span><span class="o">&amp;</span><span class="n">module</span><span class="p">,</span><span class="w"> </span><span class="n">cubin</span><span class="p">));</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuModuleGetFunction</span><span class="p">(</span><span class="o">&amp;</span><span class="n">kernel</span><span class="p">,</span><span class="w"> </span><span class="n">module</span><span class="p">,</span><span class="w"> </span><span class="s">"saxpy"</span><span class="p">));</span>
+
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="n">y</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="n">out</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">        </span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">CUdeviceptr</span><span class="w"> </span><span class="n">dx</span><span class="p">,</span><span class="w"> </span><span class="n">dy</span><span class="p">,</span><span class="w"> </span><span class="n">dout</span><span class="p">;</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuMemAlloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dx</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">x</span><span class="p">)));</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuMemAlloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dy</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">y</span><span class="p">)));</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuMemAlloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dout</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">out</span><span class="p">)));</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuMemcpyHtoD</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">x</span><span class="p">)));</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuMemcpyHtoD</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">y</span><span class="p">)));</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuMemsetD8</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">out</span><span class="p">)));</span>
+
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0f</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">args</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="o">&amp;</span><span class="n">dx</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">dy</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">dout</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">n</span><span class="p">};</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuLaunchKernel</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">));</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuCtxSynchronize</span><span class="p">());</span>
+<span class="w">    </span><span class="nf">CHECK</span><span class="p">(</span><span class="nf">cuMemcpyDtoH</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">dout</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">out</span><span class="p">)));</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nf">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">"wrong output at %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+</details>
+<p>Every section in an ELF file has a 64-byte header in a table. If we zero a header, the driver no longer sees that section (other sections remain unaffected). Below is a script that does the section-by-section removal, builds a cubin, and then checks if the output is still correct. If correct, it is likely that we wouldn't need that specific section/record when crafting a minimal cubin ourselves via the compiler.</p>
+<details>
+<summary>Code</summary>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">PYTHON</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight language-python"><span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+
+<span class="n">HEADER</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">Struct</span><span class="p">(</span><span class="s2">"&lt;IIQQQQIIQQ"</span><span class="p">)</span>
+<span class="n">Section</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">"Section"</span><span class="p">,</span> <span class="s2">"name_offset type flags addr offset size link info align entsize"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">read_sections</span><span class="p">(</span><span class="n">cubin</span><span class="p">):</span>
+    <span class="p">(</span><span class="n">table_offset</span><span class="p">,)</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&lt;Q"</span><span class="p">,</span> <span class="n">cubin</span><span class="p">,</span> <span class="mh">0x28</span><span class="p">)</span>
+    <span class="n">count</span><span class="p">,</span> <span class="n">names_index</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&lt;HH"</span><span class="p">,</span> <span class="n">cubin</span><span class="p">,</span> <span class="mh">0x3C</span><span class="p">)</span>
+    <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span><span class="n">Section</span><span class="p">(</span><span class="o">*</span><span class="n">HEADER</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">table_offset</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">HEADER</span><span class="o">.</span><span class="n">size</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">)]</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">sections</span><span class="p">[</span><span class="n">names_index</span><span class="p">]</span><span class="o">.</span><span class="n">offset</span> <span class="o">+</span> <span class="n">section</span><span class="o">.</span><span class="n">name_offset</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cubin</span><span class="p">[</span><span class="n">start</span> <span class="p">:</span> <span class="n">cubin</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">start</span><span class="p">)]</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">table_offset</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">names</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">remove_section</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="n">table_offset</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">read_sections</span><span class="p">(</span><span class="n">cubin</span><span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">table_offset</span> <span class="o">+</span> <span class="n">index</span> <span class="o">*</span> <span class="n">HEADER</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">return</span> <span class="n">cubin</span><span class="p">[:</span><span class="n">start</span><span class="p">]</span> <span class="o">+</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">HEADER</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="n">cubin</span><span class="p">[</span><span class="n">start</span> <span class="o">+</span> <span class="n">HEADER</span><span class="o">.</span><span class="n">size</span> <span class="p">:]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">read_records</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">records</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="p">[],</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&lt;H"</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span> <span class="k">else</span> <span class="mi">4</span>
+        <span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">size</span><span class="p">])</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="n">size</span>
+    <span class="k">return</span> <span class="n">records</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">write_records</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">records</span><span class="p">):</span>
+    <span class="n">table_offset</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">read_sections</span><span class="p">(</span><span class="n">cubin</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">records</span><span class="p">)</span>
+    <span class="n">patched</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">cubin</span><span class="p">)</span>
+    <span class="n">patched</span><span class="p">[</span><span class="n">sections</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">offset</span> <span class="p">:</span> <span class="n">sections</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">offset</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="n">struct</span><span class="o">.</span><span class="n">pack_into</span><span class="p">(</span><span class="s2">"&lt;Q"</span><span class="p">,</span> <span class="n">patched</span><span class="p">,</span> <span class="n">table_offset</span> <span class="o">+</span> <span class="n">index</span> <span class="o">*</span> <span class="n">HEADER</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="mi">32</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">patched</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">kernel_runs_correctly</span><span class="p">(</span><span class="n">cubin</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"modified.cubin"</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cubin</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">"./run_saxpy"</span><span class="p">,</span> <span class="s2">"modified.cubin"</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span>
+
+
+<span class="n">cubin</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"rb"</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+<span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="n">read_sections</span><span class="p">(</span><span class="n">cubin</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">smaller</span> <span class="o">=</span> <span class="n">remove_section</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kernel_runs_correctly</span><span class="p">(</span><span class="n">smaller</span><span class="p">):</span>
+        <span class="n">cubin</span> <span class="o">=</span> <span class="n">smaller</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"removed"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"needed "</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+<span class="n">_</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="n">read_sections</span><span class="p">(</span><span class="n">cubin</span><span class="p">)</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">".nv.info.saxpy"</span><span class="p">)</span>
+<span class="n">records</span> <span class="o">=</span> <span class="n">read_records</span><span class="p">(</span><span class="n">cubin</span><span class="p">[</span><span class="n">sections</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">offset</span> <span class="p">:][:</span> <span class="n">sections</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">records</span><span class="p">):</span>
+    <span class="n">fewer</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">records</span> <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">record</span><span class="p">]</span>
+    <span class="n">smaller</span> <span class="o">=</span> <span class="n">write_records</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">fewer</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kernel_runs_correctly</span><span class="p">(</span><span class="n">smaller</span><span class="p">):</span>
+        <span class="n">cubin</span><span class="p">,</span> <span class="n">records</span> <span class="o">=</span> <span class="n">smaller</span><span class="p">,</span> <span class="n">fewer</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"removed record"</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"needed  record"</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></code></pre></div>
+<p>Running it on the <code>ptxas</code>-generated cubin file:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">TEXT</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight">needed  .shstrtab
+needed  .strtab
+needed  .symtab
+removed .debug_frame
+needed  .note.nv.tkinfo
+needed  .note.nv.cuinfo
+removed .nv.info
+removed .nv.compat
+needed  .nv.info.saxpy
+removed .nv.callgraph
+removed .rela.debug_frame
+needed  .text.saxpy
+removed .nv.shared.reserved.0
+needed  .nv.constant0.saxpy
+removed .nv.capmerc.text.saxpy
+removed .nv.merc.debug_frame
+removed .nv.merc.nv.info
+removed .nv.merc.nv.info.saxpy
+removed .nv.merc.nv.callgraph
+removed .nv.merc.rela.debug_frame
+removed .nv.merc.nv.shared.reserved.0
+removed .nv.merc.symtab
+removed record 0x66
+removed record 0x37
+needed  record 0x17
+needed  record 0x17
+needed  record 0x17
+needed  record 0x17
+needed  record 0x17
+removed record 0x50
+removed record 0x1b
+removed record 0x5f
+removed record 0x4a
+removed record 0x1c
+removed record 0x10
+removed record 0x19
+needed  record 0xa
+removed record 0x36
+removed record 0x6b
+removed record 0x6d
+</code></pre></div>
+</details>
+<p>Most of the file, such as the debug info, call graph, <code>.nv.compat</code> and all of the merc sections (<code>.nv.merc.*</code>, <code>.nv.capmerc.*</code>, short for Mercury, NVIDIA's intermediate binary format for forward compatibility), turns out to be optional. The rest is needed:</p>
+<div class="scrollable-table"><table>
+<thead>
+<tr>
+<th align="left">Section</th>
+<th align="left">Failure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>.strtab</code>, <code>.symtab</code>, <code>.note.nv.tkinfo</code>, <code>.note.nv.cuinfo</code></td>
+<td align="left"><code>cuModuleLoadData</code> rejects the file</td>
+</tr>
+<tr>
+<td align="left"><code>.shstrtab</code></td>
+<td align="left">program crashes</td>
+</tr>
+<tr>
+<td align="left"><code>.text.saxpy</code></td>
+<td align="left">driver can't find the kernel</td>
+</tr>
+<tr>
+<td align="left"><code>.nv.constant0.saxpy</code></td>
+<td align="left">launch fails</td>
+</tr>
+<tr>
+<td align="left"><code>.nv.info.saxpy</code></td>
+<td align="left">kernel runs but wrong output</td>
+</tr>
+</tbody>
+</table></div>
+<p>The first three rows are straightforward: <code>.shstrtab</code>, <code>.strtab</code>, and <code>.symtab</code> are standard ELF tables for section names, symbol names, and the kernel symbol itself; <code>.note.nv.tkinfo</code> and <code>.note.nv.cuinfo</code> are small NVIDIA metadata notes that <code>cuModuleLoadData</code> checks; and <code>.text.saxpy</code> holds the machine code.</p>
+<p>The last two rows are used to describe how a kernel receives arguments. Before a launch, the driver copies the arguments into constant memory (a read-only memory space on the GPU), which is split into banks. A location is addressed by <code>c[bank][offset]</code>. Arguments fill the bank 0 starting at offset <code>0x380</code>. The kernel reads them using the <code>LDC</code> instruction. For <code>saxpy(x, y, out, a, n)</code> the arguments look like this:</p>
+<div class="scrollable-table"><table>
+<thead>
+<tr>
+<th align="left">Argument</th>
+<th align="left">Address</th>
+<th align="left">Size (in bytes)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>x</code></td>
+<td align="left"><code>c[0x0][0x380]</code></td>
+<td align="left">8</td>
+</tr>
+<tr>
+<td align="left"><code>y</code></td>
+<td align="left"><code>c[0x0][0x388]</code></td>
+<td align="left">8</td>
+</tr>
+<tr>
+<td align="left"><code>out</code></td>
+<td align="left"><code>c[0x0][0x390]</code></td>
+<td align="left">8</td>
+</tr>
+<tr>
+<td align="left"><code>a</code></td>
+<td align="left"><code>c[0x0][0x398]</code></td>
+<td align="left">4</td>
+</tr>
+<tr>
+<td align="left"><code>n</code></td>
+<td align="left"><code>c[0x0][0x39c]</code></td>
+<td align="left">4</td>
+</tr>
+</tbody>
+</table></div>
+<p>The cubin describes this info because the driver has no way of knowing this layout. Every kernel thus has a <code>.nv.info.&lt;kernel-name&gt;</code> section containing a sequence of binary records (what <code>read_records</code> parses above). Each record starts with two bytes: a format tag (<code>data[0]</code>, where <code>4</code> means a variable-length record followed by a 2-byte payload length and payload bytes, while other values are fixed 4-byte records) and an attribute id (<code>data[1]</code>). <code>ptxas</code> writes 18 records for this kernel. The second part of the above output shows that only two attribute ids are needed for a minimal working cubin (we can read their names from <code>cuobjdump --dump-elf</code>):</p>
+<ul>
+<li><code>0x17</code> (<code>EIATTR_KPARAM_INFO</code>): one record per argument with its byte offset (relative to <code>0x380</code>) and size. Here these are <code>0x0</code>, <code>0x8</code>, <code>0x10</code>, <code>0x18</code> and <code>0x1c</code>.</li>
+<li><code>0x0a</code> (<code>EIATTR_PARAM_CBANK</code>): where the arguments start (<code>0x380</code>) and how many bytes they take (32 in our example). It seems the driver rejects any other start than <code>0x380</code>.</li>
+</ul>
+<p>As for <code>.nv.constant0.saxpy</code>, it reserves space for bank 0 in the cubin. The driver copies the argument values into it at launch. It must be at least the declared size (in this case, at least <code>0x380 + 32 = 0x3a0</code>). A smaller size fails to launch, but larger seems to wrok fine. Lastly, notice the script printed <code>removed .nv.info</code> above: <code>.nv.info</code> holds an <code>EIATTR_REGCOUNT</code> (<code>0x2f</code>) record for the register count, and while this tiny kernel runs okay without it, larger kernels fail to launch if the count is too low, so we keep <code>.nv.info</code> anyway.</p>
+<p><img src="cubin_layout.svg" alt="Minimal cubin layout and constant bank 0" class="theme-adapt" loading="lazy" /></p>
+<h2 id="reverse-engineering-blackwell-sass">Reverse engineering Blackwell SASS<a class="heading-anchor" href="#reverse-engineering-blackwell-sass" aria-label="Copy link to Reverse engineering Blackwell SASS">#</a></h2>
+<p>The <code>.text</code> section holds the machine code (SASS). NVIDIA doesn't really document how instructions are encoded on Blackwell so we need to reverse engineer this. We can use another oracle-based approach as we have <code>ptxas</code> to produce real instruction encodings, and <code>nvdisasm</code> to change it back to assembly.</p>
+<p>To have something to work with, let's use the following PTX kernel:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">PTX</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight language-ptx"><span class="kt">.version</span><span class="w"> </span><span class="mf">9.0</span>
+<span class="kt">.target</span><span class="w"> </span><span class="n">sm_100a</span>
+<span class="kt">.address_size</span><span class="w"> </span><span class="mi">64</span>
+<span class="kt">.visible</span><span class="w"> </span><span class="kt">.entry</span><span class="w"> </span><span class="n">k</span><span class="p">(</span><span class="kt">.param</span><span class="w"> </span><span class="kt">.u64</span><span class="w"> </span><span class="n">p</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">.reg</span><span class="w"> </span><span class="kt">.f32</span><span class="w"> </span><span class="nv">%f</span><span class="o">&lt;</span><span class="mi">4</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">.reg</span><span class="w"> </span><span class="kt">.b64</span><span class="w"> </span><span class="nv">%rd</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">ld.param.u64</span><span class="w"> </span><span class="nv">%rd0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">p</span><span class="p">];</span>
+<span class="w">    </span><span class="k">ld.global.f32</span><span class="w"> </span><span class="nv">%f0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nv">%rd0</span><span class="p">];</span>
+<span class="w">    </span><span class="k">ld.global.f32</span><span class="w"> </span><span class="nv">%f1</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nv">%rd0</span><span class="o">+</span><span class="mi">4</span><span class="p">];</span>
+<span class="w">    </span><span class="k">sub.f32</span><span class="w"> </span><span class="nv">%f2</span><span class="p">,</span><span class="w"> </span><span class="nv">%f1</span><span class="p">,</span><span class="w"> </span><span class="nv">%f0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">st.global.f32</span><span class="w"> </span><span class="p">[</span><span class="nv">%rd0</span><span class="p">],</span><span class="w"> </span><span class="nv">%f2</span><span class="p">;</span>
+<span class="w">    </span><span class="k">ret</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+<p>It reads two floats from a pointer <code>p</code> and writes <code>p[1] - p[0]</code> into <code>p[0]</code>. The <code>ptxas</code> output for this is:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">SASS</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight language-sass"><span class="k">LDC</span><span class="w"> </span><span class="nv">R1</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">[</span><span class="mh">0x0</span><span class="p">][</span><span class="mh">0x37c</span><span class="p">]</span>
+<span class="k">LDC.64</span><span class="w"> </span><span class="nv">R2</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">[</span><span class="mh">0x0</span><span class="p">][</span><span class="mh">0x380</span><span class="p">]</span>
+<span class="k">LDCU.64</span><span class="w"> </span><span class="nv">UR4</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">[</span><span class="mh">0x0</span><span class="p">][</span><span class="mh">0x358</span><span class="p">]</span>
+<span class="k">LDG.E</span><span class="w"> </span><span class="nv">R0</span><span class="p">,</span><span class="w"> </span><span class="nv">desc</span><span class="p">[</span><span class="nv">UR4</span><span class="p">][</span><span class="nv">R2.64</span><span class="p">]</span>
+<span class="k">LDG.E</span><span class="w"> </span><span class="nv">R5</span><span class="p">,</span><span class="w"> </span><span class="nv">desc</span><span class="p">[</span><span class="nv">UR4</span><span class="p">][</span><span class="nv">R2.64</span><span class="o">+</span><span class="mh">0x4</span><span class="p">]</span>
+<span class="k">FADD</span><span class="w"> </span><span class="nv">R5</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="nv">R0</span><span class="p">,</span><span class="w"> </span><span class="nv">R5</span>
+<span class="k">STG.E</span><span class="w"> </span><span class="nv">desc</span><span class="p">[</span><span class="nv">UR4</span><span class="p">][</span><span class="nv">R2.64</span><span class="p">],</span><span class="w"> </span><span class="nv">R5</span>
+<span class="k">EXIT</span></code></pre></div>
+<p>Explanation: the CUDA driver pre-populates a few internal slots in constant bank 0 before <code>0x380</code>. <code>LDC</code> reads the stack pointer from <code>0x37c</code> into <code>R1</code>, and <code>LDCU.64</code> reads a global memory descriptor (a 64-bit descriptor that Blackwell's <code>LDG</code>/<code>STG</code> instructions require alongside the pointer for cache and memory-space attributes) from <code>0x358</code> into <code>UR4</code> (the <code>U</code> is for uniform, a register that holds one value for the whole warp). <code>LDC.64</code> loads the pointer <code>p</code> from the arguments at <code>0x380</code> into the register pair <code>R2:R3</code> (notice how the later loads and stores address memory as <code>R2.64</code>; each register is 32-bits, so R2.64 refers to the register pair R2:R3). <code>LDG</code> and <code>STG</code> load and store 32 bits using the pointer address in <code>R2:R3</code>. <code>FADD R5, -R0, R5</code> computes <code>R5 - R0</code>. <code>EXIT</code> marks the end of the kernel.</p>
+<p>To understand how instructions are encoded, let's take <code>FADD</code> and modify each of its 128 bits, one at a time, and see what <code>nvdisasm</code> makes of it.</p>
+<details>
+<summary>Code for bit-flipping</summary>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">PYTHON</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight language-python"><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
+
+<span class="n">PTX</span> <span class="o">=</span> <span class="s2">"""</span>
+<span class="s2">.version 9.0</span>
+<span class="s2">.target sm_100a</span>
+<span class="s2">.address_size 64</span>
+<span class="s2">.visible .entry k(.param .u64 p)</span>
+<span class="s2">{</span>
+<span class="s2">    .reg .f32 </span><span class="si">%f</span><span class="s2">&lt;4&gt;;</span>
+<span class="s2">    .reg .b64 </span><span class="si">%r</span><span class="s2">d&lt;2&gt;;</span>
+<span class="s2">    ld.param.u64 </span><span class="si">%r</span><span class="s2">d0, [p];</span>
+<span class="s2">    ld.global.f32 </span><span class="si">%f</span><span class="s2">0, [</span><span class="si">%r</span><span class="s2">d0];</span>
+<span class="s2">    ld.global.f32 </span><span class="si">%f</span><span class="s2">1, [</span><span class="si">%r</span><span class="s2">d0+4];</span>
+<span class="s2">    sub.f32 </span><span class="si">%f</span><span class="s2">2, </span><span class="si">%f</span><span class="s2">1, </span><span class="si">%f</span><span class="s2">0;</span>
+<span class="s2">    st.global.f32 [</span><span class="si">%r</span><span class="s2">d0], </span><span class="si">%f</span><span class="s2">2;</span>
+<span class="s2">    ret;</span>
+<span class="s2">}</span>
+<span class="s2">"""</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compile_ptx</span><span class="p">(</span><span class="n">ptx</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tmp</span><span class="si">}</span><span class="s2">/k.ptx"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ptx</span><span class="p">)</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">"ptxas"</span><span class="p">,</span> <span class="s2">"-arch=sm_100a"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tmp</span><span class="si">}</span><span class="s2">/k.ptx"</span><span class="p">,</span> <span class="s2">"-o"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tmp</span><span class="si">}</span><span class="s2">/k.cubin"</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tmp</span><span class="si">}</span><span class="s2">/k.cubin"</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">text_offset</span><span class="p">(</span><span class="n">cubin</span><span class="p">):</span>
+    <span class="p">(</span><span class="n">shoff</span><span class="p">,)</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&lt;Q"</span><span class="p">,</span> <span class="n">cubin</span><span class="p">,</span> <span class="mh">0x28</span><span class="p">)</span>
+    <span class="n">shnum</span><span class="p">,</span> <span class="n">shstrndx</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&lt;HH"</span><span class="p">,</span> <span class="n">cubin</span><span class="p">,</span> <span class="mh">0x3C</span><span class="p">)</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&lt;IIQQQQIIQQ"</span><span class="p">,</span> <span class="n">cubin</span><span class="p">,</span> <span class="n">shoff</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shnum</span><span class="p">)]</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">headers</span><span class="p">[</span><span class="n">shstrndx</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">names</span> <span class="o">+</span> <span class="n">header</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">cubin</span><span class="p">[</span><span class="n">start</span> <span class="p">:</span> <span class="n">cubin</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">start</span><span class="p">)]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s2">".text."</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">header</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">disassemble</span><span class="p">(</span><span class="n">cubin</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">".cubin"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cubin</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">"nvdisasm"</span><span class="p">,</span> <span class="s2">"-c"</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">stdout</span>
+    <span class="k">return</span> <span class="p">{</span><span class="nb">int</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span> <span class="n">text</span> <span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">"/\*([0-9a-f]</span><span class="si">{4}</span><span class="s2">)\*/\s+(.*?)\s*;"</span><span class="p">,</span> <span class="n">out</span><span class="p">)}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">read_word</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">cubin</span><span class="p">[</span><span class="n">pos</span> <span class="p">:</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">16</span><span class="p">],</span> <span class="s2">"little"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">write_word</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">word</span><span class="p">):</span>
+    <span class="n">patched</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">cubin</span><span class="p">)</span>
+    <span class="n">patched</span><span class="p">[</span><span class="n">pos</span> <span class="p">:</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">16</span><span class="p">]</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="s2">"little"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">patched</span><span class="p">)</span>
+
+
+<span class="n">cubin</span> <span class="o">=</span> <span class="n">compile_ptx</span><span class="p">(</span><span class="n">PTX</span><span class="p">)</span>
+<span class="n">addr</span> <span class="o">=</span> <span class="mh">0x50</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">text_offset</span><span class="p">(</span><span class="n">cubin</span><span class="p">)</span> <span class="o">+</span> <span class="n">addr</span>
+<span class="n">word</span> <span class="o">=</span> <span class="n">read_word</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+<span class="n">original</span> <span class="o">=</span> <span class="n">disassemble</span><span class="p">(</span><span class="n">cubin</span><span class="p">)[</span><span class="n">addr</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">flip</span><span class="p">(</span><span class="n">bit</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">disassemble</span><span class="p">(</span><span class="n">write_word</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">word</span> <span class="o">^</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bit</span><span class="p">)))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="s2">"ILLEGAL"</span><span class="p">)</span>
+
+
+<span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="n">flipped</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">flip</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">128</span><span class="p">)))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">word</span><span class="si">:</span><span class="s2">032x</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">original</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">bit</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">flipped</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">text</span> <span class="o">!=</span> <span class="n">original</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"bit </span><span class="si">{</span><span class="n">bit</span><span class="si">:</span><span class="s2">3</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></code></pre></div>
+</details>
+<p>This <code>FADD</code> encodes as <code>004fca00000001000000000500057221</code> (128 bits written MSB-first, so bit 0 is on the right). The following is the bit-flipping output:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">TEXT</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight">bit   0: FMUL.INVALID0 R5, -R0, R5
+bit   1: FFMA R5, -R0, R5, R0
+bit   3: DADD R5, -R0, R0
+bit   5: ILLEGAL
+...
+bit  12: @P6 FADD R5, -R0, R5
+bit  15: @!PT FADD R5, -R0, R5
+bit  16: FADD R4, -R0, R5
+bit  17: FADD R7, -R0, R5
+bit  18: FADD R1, -R0, R5
+...
+bit  24: FADD R5, -R1, R5
+bit  25: FADD R5, -R2, R5
+...
+bit  32: FADD R5, -R0, R4
+bit  33: FADD R5, -R0, R7
+...
+bit  62: FADD R5, -R0, |R5|
+bit  63: FADD R5, -R0, -R5
+bit  72: FADD R5, R0, R5
+bit  73: FADD R5, -|R0|, R5
+bit  77: FADD.SAT R5, -R0, R5
+bit  78: FADD.RM R5, -R0, R5
+bit  79: FADD.RP R5, -R0, R5
+bit  80: FADD.FTZ R5, -R0, R5
+</code></pre></div>
+<p>Many things become quite obvious:</p>
+<ul>
+<li>Bits 0-11 are the opcode. Flipping them is either illegal or resolves to a different instruction.</li>
+<li>Bits 12-15 are the predicate guard: bits 12-14 select the predicate register (<code>0..6</code> for <code>P0..P6</code>, <code>7</code> for always-true <code>PT</code>, so flipping bit 12 turns <code>7</code> into <code>6</code> = <code>@P6</code>), and bit 15 negates it (<code>@!PT</code>).</li>
+<li>Bits 16-23 are the destination register. Flipping the lowest bit turns <code>R5</code> into <code>R4</code> for example.</li>
+<li>Bits 24-31 and 32-39 are the two source registers.</li>
+<li>Bits 62 and 63 are <code>|abs|</code> and <code>-neg</code> on the second source; bits 72 and 73 are <code>-neg</code> and <code>|abs|</code> (in reverse order) on the first.</li>
+<li>Bits 77-80 are the modifiers <code>.SAT</code>, <code>.RM</code>, <code>.RP</code> and <code>.FTZ</code> (read PTX docs in case you don't know what these modifiers do).</li>
+</ul>
+<p>The same experiment on a load instruction (<code>LDG.E R0, desc[UR4][R2.64]</code>) shows the width of the access:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">TEXT</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight">bit  73: LDG.E.64 R0, desc[UR4][R2.64]
+bit  74: LDG.E.128 R0, desc[UR4][R2.64]
+bit  75: LDG.E.U8 R0, desc[UR4][R2.64]
+</code></pre></div>
+<p>Bits 73-75 together are a 3-bit field. The 32-bit load has the value <code>4</code>, flipping bit 73 makes it <code>5</code> (64-bit), bit 74 makes it <code>6</code> (128-bit), and bit 75 makes it <code>0</code> (8-bit). We will need the 128-bit one later for vectorization.</p>
+<p><img src="sass_128bit.svg" alt="128-bit Blackwell SASS instruction layout" class="theme-adapt" loading="lazy" /></p>
+<p>Unless we do this for multiple different types of instructions, it's hard to learn what every bit does. Fortunately, it seems we don't need to fully understand the role of each bit to do SASS codegen or cubin encoding. For each instruction we plan to use, we can take one encoded 128-bit word from <code>ptxas</code> as a template and overwrite the register, modifier, and constant bits. This, obviously, assumes that there are no unintended side effects (there is a very high chance there could be, since our investigation is quite naive).</p>
+<h2 id="instruction-scheduling">Instruction scheduling<a class="heading-anchor" href="#instruction-scheduling" aria-label="Copy link to Instruction scheduling">#</a></h2>
+<p>In the bit-flipping experiment above, bits 105-127 don't change the <code>nvdisasm</code> output. <code>ptxas</code> still writes different values there for almost every instruction, therefore those bits are clearly doing something. We just don't know what yet.</p>
+<p>Unlike out-of-order CPUs, NVIDIA GPUs don't resolve register hazards automatically in hardware, so the compiler has to encode when it's safe to issue. It turns out those upper 23 bits carry that scheduling info.</p>
+<p>Since <code>nvdisasm</code> ignores them, we can't use it as an oracle here. Instead, we can patch bits of a cubin directly, run the kernel on the GPU, and check the output correctness. Let's use a kernel that loads a float <code>x</code>, adds <code>1.0</code>, squares it, and stores <code>(x + 1)^2</code>. This gives us a global load feeding a <code>FADD</code> that then feeds a <code>FMUL</code>. We test load and arithmetic dependencies using this approach.</p>
+<details>
+<summary>Code for probing scheduling bits</summary>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">PYTHON</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight language-python"><span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+
+<span class="n">PTX</span> <span class="o">=</span> <span class="s2">"""</span>
+<span class="s2">.version 9.0</span>
+<span class="s2">.target sm_100a</span>
+<span class="s2">.address_size 64</span>
+<span class="s2">.visible .entry k(.param .u64 p)</span>
+<span class="s2">{</span>
+<span class="s2">    .reg .f32 </span><span class="si">%f</span><span class="s2">&lt;4&gt;;</span>
+<span class="s2">    .reg .b64 </span><span class="si">%r</span><span class="s2">d&lt;2&gt;;</span>
+<span class="s2">    ld.param.u64 </span><span class="si">%r</span><span class="s2">d0, [p];</span>
+<span class="s2">    ld.global.f32 </span><span class="si">%f</span><span class="s2">0, [</span><span class="si">%r</span><span class="s2">d0];</span>
+<span class="s2">    add.f32 </span><span class="si">%f</span><span class="s2">1, </span><span class="si">%f</span><span class="s2">0, 0f3F800000;</span>
+<span class="s2">    mul.f32 </span><span class="si">%f</span><span class="s2">2, </span><span class="si">%f</span><span class="s2">1, </span><span class="si">%f</span><span class="s2">1;</span>
+<span class="s2">    st.global.f32 [</span><span class="si">%r</span><span class="s2">d0+4], </span><span class="si">%f</span><span class="s2">2;</span>
+<span class="s2">    ret;</span>
+<span class="s2">}</span>
+<span class="s2">"""</span>
+
+<span class="n">cuda</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="s2">"libcuda.so.1"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="n">status</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"CUDA error </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">"</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">init_cuda</span><span class="p">():</span>
+    <span class="n">check</span><span class="p">(</span><span class="n">cuda</span><span class="o">.</span><span class="n">cuInit</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">()</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">()</span>
+    <span class="n">check</span><span class="p">(</span><span class="n">cuda</span><span class="o">.</span><span class="n">cuDeviceGet</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">check</span><span class="p">(</span><span class="n">cuda</span><span class="o">.</span><span class="n">cuDevicePrimaryCtxRetain</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">ctx</span><span class="p">),</span> <span class="n">device</span><span class="p">))</span>
+    <span class="n">check</span><span class="p">(</span><span class="n">cuda</span><span class="o">.</span><span class="n">cuCtxSetCurrent</span><span class="p">(</span><span class="n">ctx</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compile_ptx</span><span class="p">(</span><span class="n">ptx</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tmp</span><span class="si">}</span><span class="s2">/k.ptx"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ptx</span><span class="p">)</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">"ptxas"</span><span class="p">,</span> <span class="s2">"-arch=sm_100a"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tmp</span><span class="si">}</span><span class="s2">/k.ptx"</span><span class="p">,</span> <span class="s2">"-o"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tmp</span><span class="si">}</span><span class="s2">/k.cubin"</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tmp</span><span class="si">}</span><span class="s2">/k.cubin"</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">text_offset</span><span class="p">(</span><span class="n">cubin</span><span class="p">):</span>
+    <span class="p">(</span><span class="n">shoff</span><span class="p">,)</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&lt;Q"</span><span class="p">,</span> <span class="n">cubin</span><span class="p">,</span> <span class="mh">0x28</span><span class="p">)</span>
+    <span class="n">shnum</span><span class="p">,</span> <span class="n">shstrndx</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&lt;HH"</span><span class="p">,</span> <span class="n">cubin</span><span class="p">,</span> <span class="mh">0x3C</span><span class="p">)</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">"&lt;IIQQQQIIQQ"</span><span class="p">,</span> <span class="n">cubin</span><span class="p">,</span> <span class="n">shoff</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shnum</span><span class="p">)]</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">headers</span><span class="p">[</span><span class="n">shstrndx</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">names</span> <span class="o">+</span> <span class="n">header</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">cubin</span><span class="p">[</span><span class="n">start</span> <span class="p">:</span> <span class="n">cubin</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">start</span><span class="p">)]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s2">".text."</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">header</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">disassemble</span><span class="p">(</span><span class="n">cubin</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">".cubin"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cubin</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">"nvdisasm"</span><span class="p">,</span> <span class="s2">"-c"</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">stdout</span>
+    <span class="k">return</span> <span class="p">{</span><span class="nb">int</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span> <span class="n">text</span> <span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">"/\*([0-9a-f]</span><span class="si">{4}</span><span class="s2">)\*/\s+(.*?)\s*;"</span><span class="p">,</span> <span class="n">out</span><span class="p">)}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">read_word</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">cubin</span><span class="p">[</span><span class="n">pos</span> <span class="p">:</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">16</span><span class="p">],</span> <span class="s2">"little"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">write_word</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">word</span><span class="p">):</span>
+    <span class="n">patched</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">cubin</span><span class="p">)</span>
+    <span class="n">patched</span><span class="p">[</span><span class="n">pos</span> <span class="p">:</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">16</span><span class="p">]</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="s2">"little"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">patched</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_bits</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">width</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">word</span> <span class="o">&gt;&gt;</span> <span class="n">start</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">mask</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">set_bits</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="n">word</span> <span class="o">=</span> <span class="n">read_word</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">width</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">start</span>
+    <span class="n">word</span> <span class="o">=</span> <span class="p">(</span><span class="n">word</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">mask</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">value</span> <span class="o">&lt;&lt;</span> <span class="n">start</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">write_word</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">word</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">run_kernel</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">()</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">()</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cubin</span><span class="p">))</span>
+    <span class="n">check</span><span class="p">(</span><span class="n">cuda</span><span class="o">.</span><span class="n">cuModuleLoadData</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">module</span><span class="p">),</span> <span class="n">image</span><span class="p">))</span>
+    <span class="n">check</span><span class="p">(</span><span class="n">cuda</span><span class="o">.</span><span class="n">cuModuleGetFunction</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">kernel</span><span class="p">),</span> <span class="n">module</span><span class="p">,</span> <span class="sa">b</span><span class="s2">"k"</span><span class="p">))</span>
+
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">()</span>
+    <span class="n">check</span><span class="p">(</span><span class="n">cuda</span><span class="o">.</span><span class="n">cuMemAlloc_v2</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="mi">8</span><span class="p">))</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">check</span><span class="p">(</span><span class="n">cuda</span><span class="o">.</span><span class="n">cuMemcpyHtoD_v2</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">))</span>
+    <span class="n">check</span><span class="p">(</span><span class="n">cuda</span><span class="o">.</span><span class="n">cuLaunchKernel</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">check</span><span class="p">(</span><span class="n">cuda</span><span class="o">.</span><span class="n">cuMemcpyDtoH_v2</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+    <span class="n">check</span><span class="p">(</span><span class="n">cuda</span><span class="o">.</span><span class="n">cuMemFree_v2</span><span class="p">(</span><span class="n">buf</span><span class="p">))</span>
+    <span class="n">check</span><span class="p">(</span><span class="n">cuda</span><span class="o">.</span><span class="n">cuModuleUnload</span><span class="p">(</span><span class="n">module</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">check_kernel</span><span class="p">(</span><span class="n">cubin</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">run_kernel</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="n">init_cuda</span><span class="p">()</span>
+<span class="n">cubin</span> <span class="o">=</span> <span class="n">compile_ptx</span><span class="p">(</span><span class="n">PTX</span><span class="p">)</span>
+<span class="n">base</span> <span class="o">=</span> <span class="n">text_offset</span><span class="p">(</span><span class="n">cubin</span><span class="p">)</span>
+<span class="n">instructions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">disassemble</span><span class="p">(</span><span class="n">cubin</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">())[:</span><span class="mi">8</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">instructions</span><span class="p">:</span>
+    <span class="n">word</span> <span class="o">=</span> <span class="n">read_word</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="n">addr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">text</span><span class="si">:</span><span class="s2">34</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">word</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">105</span><span class="si">:</span><span class="s2">023b</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="n">ldg_pos</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x30</span>
+<span class="n">fadd_pos</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="mh">0x40</span>
+
+<span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">105</span><span class="p">,</span> <span class="mi">128</span><span class="p">):</span>
+    <span class="n">word</span> <span class="o">=</span> <span class="n">read_word</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">fadd_pos</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_kernel</span><span class="p">(</span><span class="n">write_word</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">fadd_pos</span><span class="p">,</span> <span class="n">word</span> <span class="o">^</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bit</span><span class="p">))):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"fadd flip fail"</span><span class="p">,</span> <span class="n">bit</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"ldg slot"</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">check_kernel</span><span class="p">(</span><span class="n">set_bits</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">ldg_pos</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">val</span><span class="p">)))</span>
+
+<span class="n">patched</span> <span class="o">=</span> <span class="n">set_bits</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">ldg_pos</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">patched</span> <span class="o">=</span> <span class="n">set_bits</span><span class="p">(</span><span class="n">patched</span><span class="p">,</span> <span class="n">fadd_pos</span><span class="p">,</span> <span class="mi">116</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"ldg slot 5 + wait 5"</span><span class="p">,</span> <span class="n">check_kernel</span><span class="p">(</span><span class="n">patched</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"fadd delay"</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">check_kernel</span><span class="p">(</span><span class="n">set_bits</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">fadd_pos</span><span class="p">,</span> <span class="mi">105</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">val</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">instructions</span><span class="p">:</span>
+    <span class="n">word</span> <span class="o">=</span> <span class="n">read_word</span><span class="p">(</span><span class="n">cubin</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="n">addr</span><span class="p">)</span>
+    <span class="n">delay</span> <span class="o">=</span> <span class="n">get_bits</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="mi">105</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">b109</span> <span class="o">=</span> <span class="n">get_bits</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="mi">109</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">out_slot</span> <span class="o">=</span> <span class="n">get_bits</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">in_slot</span> <span class="o">=</span> <span class="n">get_bits</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="mi">113</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">wait_mask</span> <span class="o">=</span> <span class="n">get_bits</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="mi">116</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">text</span><span class="si">:</span><span class="s2">34</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">delay</span><span class="si">:</span><span class="s2">2</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">b109</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">out_slot</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">in_slot</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">wait_mask</span><span class="si">:</span><span class="s2">06b</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></code></pre></div>
+<p>Output:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">TEXT</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight">LDC R1, c[0x0][0x37c]              00000000000011111111000
+LDC.64 R2, c[0x0][0x380]           00000000000011100010001
+LDCU.64 UR4, c[0x0][0x358]         00000000000011100010010
+LDG.E R0, desc[UR4][R2.64]         00000000000111101010010
+FADD R0, R0, 1                     00000000010011111100100
+FMUL R5, R0, R0                    00000000000011111100101
+STG.E desc[UR4][R2.64+0x4], R5     00000000000011111110001
+EXIT                               00000000000011111110101
+
+fadd flip fail 118
+
+ldg slot 0 False
+ldg slot 1 False
+ldg slot 2 True
+ldg slot 3 False
+ldg slot 4 False
+ldg slot 5 False
+ldg slot 6 False
+ldg slot 7 False
+ldg slot 5 + wait 5 True
+
+fadd delay 0 True
+fadd delay 1 False
+fadd delay 2 False
+fadd delay 3 False
+fadd delay 4 True
+fadd delay 5 True
+fadd delay 6 True
+fadd delay 7 True
+fadd delay 8 True
+fadd delay 9 True
+fadd delay 10 True
+fadd delay 11 True
+fadd delay 12 True
+fadd delay 13 True
+fadd delay 14 True
+fadd delay 15 True
+
+LDC R1, c[0x0][0x37c]               8 1 7 7 000000
+LDC.64 R2, c[0x0][0x380]            1 1 0 7 000000
+LDCU.64 UR4, c[0x0][0x358]          2 1 0 7 000000
+LDG.E R0, desc[UR4][R2.64]          2 1 2 7 000001
+FADD R0, R0, 1                      4 0 7 7 000100
+FMUL R5, R0, R0                     5 0 7 7 000000
+STG.E desc[UR4][R2.64+0x4], R5      1 1 7 7 000000
+EXIT                                5 1 7 7 000000
+</code></pre></div>
+</details>
+<p>Here are bits 105-127 for each instruction (bit 127 on the left):</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">TEXT</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight">LDC R1, c[0x0][0x37c]              00000000000011111111000
+LDC.64 R2, c[0x0][0x380]           00000000000011100010001
+LDCU.64 UR4, c[0x0][0x358]         00000000000011100010010
+LDG.E R0, desc[UR4][R2.64]         00000000000111101010010
+FADD R0, R0, 1                     00000000010011111100100
+FMUL R5, R0, R0                    00000000000011111100101
+STG.E desc[UR4][R2.64+0x4], R5     00000000000011111110001
+EXIT                               00000000000011111110101
+</code></pre></div>
+<p>Flipping bits 105-127 on <code>FADD</code> one at a time breaks the kernel on bit 118. In the binary table above, <code>FADD</code> is the only instruction with bit 118 set. It is also the instruction that reads the value from <code>LDG</code>.</p>
+<p>If you line up the bits across the loads and their consumers, a pattern shows up:</p>
+<ul>
+<li><code>LDC.64</code> and <code>LDCU.64</code> have bits 110-112 set to <code>000</code> (0). <code>LDG</code> uses their output and has bit 116 (<code>116 + 0</code>) set.</li>
+<li><code>LDG</code> has bits 110-112 set to <code>010</code> (2). <code>FADD</code> uses its output and has bit 118 (<code>116 + 2</code>) set.</li>
+</ul>
+<p>Because loads take an unpredictable number of cycles, the hardware tracks them using numbered dependency slots. Multiple loads can share the same slot (like <code>LDC.64</code> and <code>LDCU.64</code> both using slot <code>0</code>), and waiting on that slot waits for all of them to finish. Bits 110-112 look like the slot number a load signals when it finishes, and bits 116-121 look like a bitmask of slots to wait on before running. If that's right, changing bits 110-112 on <code>LDG</code> to anything other than <code>2</code> should break the kernel unless we update <code>FADD</code>'s wait mask to match:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">TEXT</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight">ldg slot 0 False
+ldg slot 1 False
+ldg slot 2 True
+ldg slot 3 False
+ldg slot 4 False
+ldg slot 5 False
+ldg slot 6 False
+ldg slot 7 False
+ldg slot 5 + wait 5 True
+</code></pre></div>
+<p>Only <code>2</code> passes on its own because <code>FADD</code> is waiting on slot <code>2</code> (bit 118). Moving both <code>LDG</code> and <code>FADD</code> to <code>5</code> passes too. Any other value makes <code>FADD</code> read <code>R0</code> before the load finishes. We'll call bits 110-112 <code>out_slot</code> (<code>7</code> means none) and bits 116-121 <code>wait_mask</code>.</p>
+<p><code>FADD</code> has <code>out_slot = 7</code>, so <code>FMUL</code> isn't waiting on a slot for it. Looking at the low four bits (105-108), <code>FADD</code> has <code>0100</code> (4) and <code>FMUL</code> has <code>0101</code> (5). Sweeping bits 105-108 on <code>FADD</code> from 0 to 15 gives:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">TEXT</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight">fadd delay 0 True
+fadd delay 1 False
+fadd delay 2 False
+fadd delay 3 False
+fadd delay 4 True
+...
+fadd delay 15 True
+</code></pre></div>
+<p>For 1, 2, and 3, <code>FMUL</code> runs too early and reads the old value in <code>R0</code>. From 4 up it works. So bits 105-108 seem to be a cycle delay before issuing the next instruction, which we can call <code>delay</code>. (<code>0</code> also passes here for reasons I don't understand, so let's do what all sane people would do and <del>investigate</del> avoid it.)</p>
+<p>Here are the fields:</p>
+<ul>
+<li><code>delay</code> (bits 105-108): cycles to wait before issuing the next instruction.</li>
+<li><code>b109</code> (bit 109): <code>ptxas</code> sets this to 0 or 1 depending on the instruction. Flipping it on <code>FADD</code> doesn't seem to change anything.</li>
+<li><code>out_slot</code> (bits 110-112): slot number signaled when a load finishes writing its output (<code>7</code> means none).</li>
+<li><code>in_slot</code> (bits 113-115): stays <code>7</code> in this small kernel, so the probe above doesn't exercise it. On larger kernels that reuse an address register across back-to-back loads or stores, leaving bits 113-115 at <code>7</code> gave wrong outputs because the memory unit reads its input registers asynchronously after issue; assigning a slot here lets a later writer wait until the load or store has finished reading its inputs.</li>
+<li><code>wait_mask</code> (bits 116-121): 6-bit mask of slots to wait on before running, printed MSB-first below (bit 5 on the left, bit 0 on the right). (Bits 122-127 are always <code>0</code> in our tests, so we leave them <code>0</code>.)</li>
+</ul>
+<p>Decoded for the same kernel:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">TEXT</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight">instruction                        delay b109 out_slot in_slot wait_mask
+LDC R1, c[0x0][0x37c]                  8    1        7       7    000000
+LDC.64 R2, c[0x0][0x380]               1    1        0       7    000000
+LDCU.64 UR4, c[0x0][0x358]             2    1        0       7    000000
+LDG.E R0, desc[UR4][R2.64]             2    1        2       7    000001
+FADD R0, R0, 1                         4    0        7       7    000100
+FMUL R5, R0, R0                        5    0        7       7    000000
+STG.E desc[UR4][R2.64+0x4], R5         1    1        7       7    000000
+EXIT                                   5    1        7       7    000000
+</code></pre></div>
+<p>I ran the <code>delay</code> sweep on every pair of ALU instructions the compiler supports. Most pairs need 4 cycles, although a few (like <code>FMUL</code> -&gt; <code>I2F</code>) need 5. Our toy compiler just uses 5 for all of them <del>to be safe</del> lazily. Predicates are slower: a predicate feeding a branch needs a <code>delay</code> of 13 cycles (anything under 13 gives wrong results).</p>
+<h2 id="compiling-python-to-sass">Compiling Python to SASS<a class="heading-anchor" href="#compiling-python-to-sass" aria-label="Copy link to Compiling Python to SASS">#</a></h2>
+<p>Now we have enough to put the compiler together. It lowers Python's AST directly to a list of SASS instructions, then runs a scheduling pass and a label-patching pass to produce the final bytes. We don't use an IR (intermediate representation) for the simplistic nature of this toy project.</p>
+<p>Let's trace what it does on <code>saxpy</code> from the intro (with the default block size of 256 threads):</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">PYTHON</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight language-python"><span class="nd">@jit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">saxpy</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">ptr_f32</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">ptr_f32</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="n">ptr_f32</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">f32</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">i32</span><span class="p">):</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">gid</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></code></pre></div>
+<p>First, the type annotations tell us the constant-bank layout starting at <code>c[0x0][0x380]</code> (each pointer is 8 bytes aligned to 8, each scalar is 4 bytes). Next, as the compiler walks the body, it assigns registers with a bump counter: local variables and parameters keep their register, while expression temporaries go back onto a free list at the end of each statement. 64-bit pointer pairs align to even registers and 128-bit vector loads align to multiples of 4, because hardware wide-memory instructions require aligned register tuples. There is no support for register spilling; if a kernel runs out of registers, womp womp: compilation fails.</p>
+<p>Parameters, constants, and <code>gid()</code> are loaded lazily into a prologue the first time the body mentions them, so unused arguments aren't loaded and constants are only materialized once (zero just uses <code>RZ</code>, register 255). Since our kernels don't use a stack, we don't need the <code>LDC R1, c[0x0][0x37c]</code> stack setup that <code>ptxas</code> emitted earlier, so <code>R1</code> is free for <code>gid()</code>.</p>
+<p>For the body <code>out[i] = a * x[i] + y[i]</code>, each operation picks a 128-bit instruction template we grabbed from <code>ptxas</code> and overwrites the register, immediate, and scheduling bits (running the same bit-flip script on <code>IMAD</code>, <code>ISETP</code>, <code>LDC</code>, <code>STG</code>, <code>BSSY</code>, and <code>BRA</code> gave us the bit offsets for immediates, constant-bank addresses, and branch targets). For example, the float multiply-add fuses into <code>FFMA R13, R6, R7, R12</code>:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">TEXT</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight">template: 00000000000000000000000809097223   (FFMA R9, R9, R8, R0)
+encoded : 010fe2000000000c00000007060d7223   (FFMA R13, R6, R7, R12)
+</code></pre></div>
+<p>In the encoded word, <code>7223</code> is the <code>FFMA</code> opcode plus <code>PT</code> (<code>7</code>), <code>0d</code> is <code>R13</code> (destination), <code>06</code> and <code>07</code> are <code>R6</code> and <code>R7</code>, <code>0c</code> at bits 64-71 is <code>R12</code>, and the top 23 bits (inside <code>010fe2</code>) hold the scheduling bits (<code>delay = 1</code>, <code>b109 = 0</code>, <code>out_slot = 7</code>, <code>in_slot = 7</code>, <code>wait_mask = 010000</code>).</p>
+<p>For control flow, modern NVIDIA GPUs allow lanes within a 32-thread warp to diverge independently, so the compiler has to tell the hardware where diverging lanes should reconverge. For an <code>if</code>, <code>BSSY</code> records that reconvergence point in a hardware convergence barrier register <code>B0</code>, <code>@!P0 BRA</code> jumps past the body for lanes where the condition is false, and <code>BSYNC</code> waits for all lanes to meet back up. Loops (<code>for</code>, <code>while</code>) use the same <code>BSSY</code>/<code>BSYNC</code> pair around the loop body with a backward <code>BRA</code> to the loop header. Since instructions are emitted before we know where a block ends, branches hold a symbolic label. After scheduling, a final pass computes the signed relative offset <code>delta = target - (i + 1)</code> and patches it into <code>BSSY</code> (in bytes, <code>delta * 16</code>) and <code>BRA</code> (in 32-bit words, <code>delta * 4</code>), since each instruction is 16 bytes (four 32-bit words).</p>
+<p>Once the instruction list is built, a single forward pass fills in the scheduling bits:</p>
+<ul>
+<li>Fixed-latency ALU ops record when their output register will be ready (5 cycles later, or 13 cycles when a predicate feeds a branch). Delays accumulate across intervening instructions, so when a later instruction uses that register, the immediately preceding instruction's <code>delay</code> is bumped to cover whatever cycles remain.</li>
+<li>Variable-latency ops grab one of the 6 dependency slots (<code>0..5</code>). Because the slot numbers are interchangeable (as the slot-5 probe showed), <code>pycubin</code> uses a simple fixed convention: <code>LDG</code> always uses slot <code>4</code>, other loads (<code>LDC</code>, <code>S2R</code>) rotate through slots <code>0..3</code>, and memory ops set <code>in_slot = 5</code> to protect their address registers. Any later instruction that touches a pending register sets that slot's bit in <code>wait_mask</code>.</li>
+<li>Branches and the instruction right before a branch target get a conservative <code>delay = 15</code>, and the first instruction at a merge label waits on all 6 slots (<code>111111</code>).</li>
+</ul>
+<p>Here is the full <code>saxpy</code> kernel <code>pycubin</code> emits:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">TEXT</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight">instruction                          delay out in   wait
+LDCU.64 UR4, c[0x0][0x358]               1   0  7 000000
+S2R R2, SR_CTAID.X                       1   1  7 000000
+IMAD.MOV.U32 R3, RZ, RZ, 0x100           1   7  7 000000
+S2R R4, SR_TID.X                         5   2  7 000000
+IMAD R1, R2, R3, R4                      1   7  7 000110
+LDC R5, c[0x0][0x39c]                    1   3  7 000000
+LDC R6, c[0x0][0x398]                    1   0  7 000000
+LDC.64 R8, c[0x0][0x380]                 1   1  7 000000
+LDC.64 R14, c[0x0][0x388]                1   2  7 000000
+LDC.64 R18, c[0x0][0x390]                1   3  7 000000
+IADD3 R0, PT, PT, R1, RZ, RZ             5   7  7 000000
+ISETP.LT.AND P0, PT, R0, R5, PT          1   7  7 001000
+BSSY.RECONVERGENT B0, `(.L_x_0)         12   7  7 000000
+@!P0 BRA `(.L_x_0)                      15   7  7 000000
+IMAD.WIDE R10, R0, 0x4, R8               5   7  7 000010
+LDG.E R7, desc[UR4][R10.64]              1   4  5 000001
+IMAD.WIDE R16, R0, 0x4, R14              5   7  7 000100
+LDG.E R12, desc[UR4][R16.64]             5   4  5 000000
+FFMA R13, R6, R7, R12                    1   7  7 010000
+IMAD.WIDE R20, R0, 0x4, R18              5   7  7 000000
+STG.E desc[UR4][R20.64], R13            15   7  5 000000
+BSYNC.RECONVERGENT B0                    1   7  7 111111
+EXIT                                     1   7  7 000000
+</code></pre></div>
+<p>A few things to notice in that table:</p>
+<ul>
+<li><code>S2R</code> (special-register read) loads the block index into <code>R2</code> (slot <code>1</code>) and thread index into <code>R4</code> (slot <code>2</code>), <code>IMAD.MOV.U32</code> loads <code>0x100 = 256</code> into <code>R3</code>, and <code>IMAD R1, R2, R3, R4</code> (<code>blockIdx * 256 + threadIdx</code>) waits on <code>000110</code>.</li>
+<li><code>LDC.64 R8</code>, <code>R14</code>, and <code>R18</code> jump around in register numbers because they were added to the prologue lazily as the body walked <code>x[i]</code>, <code>y[i]</code>, and <code>out[i]</code>.</li>
+<li><code>IADD3</code> (SASS's 3-input integer add, here adding <code>RZ</code> twice as a register copy; the <code>PT</code> operands are unused predicate slots) moves <code>R1</code> into <code>i</code> (<code>R0</code>). <code>ISETP.LT.AND</code> waits on slot <code>3</code> (<code>n</code> in <code>R5</code>) and writes <code>R0 &lt; R5</code> to predicate <code>P0</code> (its <code>PT</code> operands are the unused inverted output and always-true input predicates). Then <code>ISETP</code> (<code>delay = 1</code>) plus <code>BSSY</code> (<code>delay = 12</code>) gives the 13 cycles <code>P0</code> needs before <code>@!P0 BRA</code>.</li>
+<li><code>IMAD.WIDE</code> computes each 64-bit byte address (<code>i * 4 + base</code>, using register pairs like <code>R8:R9</code> and <code>R10:R11</code>) and delays 5 cycles before <code>LDG.E</code>. Both loads signal slot <code>4</code>, and <code>FFMA</code> waits on <code>010000</code>.</li>
+<li><code>BSYNC</code> sits at <code>.L_x_0</code> and waits on <code>111111</code>.</li>
+</ul>
+<p>These 23 instructions, wrapped with the minimal ELF sections from earlier, can be passed to <code>cuModuleLoadData</code>, and launched with <code>cuLaunchKernel</code>! No NVCC, PTXAS, or LLVM anywhere!</p>
+<h2 id="auto-vectorization-and-benchmarks">Auto-vectorization and benchmarks<a class="heading-anchor" href="#auto-vectorization-and-benchmarks" aria-label="Copy link to Auto-vectorization and benchmarks">#</a></h2>
+<p>A B200 has ~8 TB/s of HBM3e bandwidth, yet a scalar vector add (<code>out[i] = x[i] + y[i]</code>) using 4-byte <code>LDG.E</code> / <code>STG.E</code> instructions only reaches ~3.8 TB/s, roughly half of peak.</p>
+<p>Earlier we found that bits 73-75 on <code>LDG.E</code> set the access width (<code>4</code> for 32-bit, <code>6</code> for 128-bit). When a kernel has the simple elementwise shape <code>i = gid(); if i &lt; n: ...</code> where every load and store indexes a parameter pointer by <code>i</code>, <code>pycubin</code> automatically rewrites the AST into a vectorized kernel that processes 4 elements per thread:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">PYTHON</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight language-python"><span class="k">def</span><span class="w"> </span><span class="nf">vadd</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">ptr_f32</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">ptr_f32</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="n">ptr_f32</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">i32</span><span class="p">):</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">gid</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">g</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">n</span> <span class="o">&gt;&gt;</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span> <span class="o">=</span> <span class="n">load4</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+        <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">y3</span> <span class="o">=</span> <span class="n">load4</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+        <span class="n">store4</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">+</span> <span class="n">y2</span><span class="p">,</span> <span class="n">x3</span> <span class="o">+</span> <span class="n">y3</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">g</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span></code></pre></div>
+<p>For example, with <code>n = 10</code>, threads <code>0</code> and <code>1</code> take the vectorized path (<code>0..3</code> and <code>4..7</code>), thread <code>2</code> runs the <code>while</code> loop for elements <code>8</code> and <code>9</code>, and any extra threads from rounding up to a full block skip the loop because <code>g &lt;&lt; 2 &gt;= n</code>. The vectorized branch compiles to:</p>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">SASS</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight language-sass"><span class="k">IMAD.WIDE</span><span class="w"> </span><span class="nv">R14</span><span class="p">,</span><span class="w"> </span><span class="nv">R0</span><span class="p">,</span><span class="w"> </span><span class="mh">0x10</span><span class="p">,</span><span class="w"> </span><span class="nv">R12</span>
+<span class="k">LDG.E.128</span><span class="w"> </span><span class="nv">R8</span><span class="p">,</span><span class="w"> </span><span class="nv">desc</span><span class="p">[</span><span class="nv">UR4</span><span class="p">][</span><span class="nv">R14.64</span><span class="p">]</span>
+<span class="k">IMAD.WIDE</span><span class="w"> </span><span class="nv">R14</span><span class="p">,</span><span class="w"> </span><span class="nv">R0</span><span class="p">,</span><span class="w"> </span><span class="mh">0x10</span><span class="p">,</span><span class="w"> </span><span class="nv">R20</span>
+<span class="k">LDG.E.128</span><span class="w"> </span><span class="nv">R16</span><span class="p">,</span><span class="w"> </span><span class="nv">desc</span><span class="p">[</span><span class="nv">UR4</span><span class="p">][</span><span class="nv">R14.64</span><span class="p">]</span>
+<span class="k">FADD</span><span class="w"> </span><span class="nv">R24</span><span class="p">,</span><span class="w"> </span><span class="nv">R8</span><span class="p">,</span><span class="w"> </span><span class="nv">R16</span>
+<span class="k">FADD</span><span class="w"> </span><span class="nv">R25</span><span class="p">,</span><span class="w"> </span><span class="nv">R9</span><span class="p">,</span><span class="w"> </span><span class="nv">R17</span>
+<span class="k">FADD</span><span class="w"> </span><span class="nv">R26</span><span class="p">,</span><span class="w"> </span><span class="nv">R10</span><span class="p">,</span><span class="w"> </span><span class="nv">R18</span>
+<span class="k">FADD</span><span class="w"> </span><span class="nv">R27</span><span class="p">,</span><span class="w"> </span><span class="nv">R11</span><span class="p">,</span><span class="w"> </span><span class="nv">R19</span>
+<span class="k">IMAD.WIDE</span><span class="w"> </span><span class="nv">R14</span><span class="p">,</span><span class="w"> </span><span class="nv">R0</span><span class="p">,</span><span class="w"> </span><span class="mh">0x10</span><span class="p">,</span><span class="w"> </span><span class="nv">R28</span>
+<span class="k">STG.E.128</span><span class="w"> </span><span class="nv">desc</span><span class="p">[</span><span class="nv">UR4</span><span class="p">][</span><span class="nv">R14.64</span><span class="p">],</span><span class="w"> </span><span class="nv">R24</span></code></pre></div>
+<p><code>LDG.E.128 R8, ...</code> loads 4 floats (16 bytes) into four consecutive registers (<code>R8:R11</code>) in one instruction. <code>IMAD.WIDE</code> steps by <code>0x10</code> (16 bytes) instead of <code>0x4</code>.</p>
+<p>Below is vector add bandwidth on a B200 compared against eager <code>torch.add(a, b, out=c)</code>:</p>
+<p><img src="vadd_bench.svg" alt="Vector add bandwidth on B200" class="theme-adapt" loading="lazy" /></p>
+<p>At small sizes (<code>&lt;= 2^20</code>), the GPU runs the kernel faster than Python can queue a launch, so our measurements are host dispatch latency bound. At larger sizes, the scalar kernel tops out around 3.8 TB/s while the vectorized kernel and <code>torch.add</code> reach roughly the same bandwidth utilization of ~6.9-7.0 TB/s (even with our lazy hack of <code>delay = 5</code> scheduler).</p>
+<h2 id="closing-thoughts">Closing thoughts<a class="heading-anchor" href="#closing-thoughts" aria-label="Copy link to Closing thoughts">#</a></h2>
+<p>This post is a moderately friendly intro to SASS. The reason for writing and sharing this is because I believe that being able to program powerful hardware as close to the very essence of what the hardware can do is how we achieve an order of magnitude worth of speedups. Historically, almost nobody works at this level because the human cost is too high. Encodings are undocumented, scheduling is super tedious (well, who the heck outside of NVIDIA's IC7s knows how to do it?), and everything changes with every new architecture. We, as users, just have to believe and accept that closed-source compiler stacks are giving us the maximal performance.</p>
+<p>As AI agents become more powerful, this changes. Most of what we did in this post, such as probing undocumented fields and iterating on instruction layouts/schedules, is a mechanical, verifiable loop that agents can run tirelessly. Agents will be able to drop straight to the metal and find instruction sequences humans would never have the patience to design. The limit should truly just be the physics.</p>
+<h2 id="additional-reading">Additional reading<a class="heading-anchor" href="#additional-reading" aria-label="Copy link to Additional reading">#</a></h2>
+<ul>
+<li><a href="https://docs.nvidia.com/cuda/parallel-thread-execution/" target="_blank" rel="noopener noreferrer">NVIDIA PTX ISA Documentation</a></li>
+<li><a href="https://docs.nvidia.com/cuda/cuda-driver-api/" target="_blank" rel="noopener noreferrer">CUDA Driver API</a></li>
+<li><a href="https://docs.nvidia.com/cutlass/media/docs/pythonDSL/cute_dsl_general/dsl_introduction.html" target="_blank" rel="noopener noreferrer">CuTeDSL Documentation</a></li>
+<li><a href="https://uclibc.org/docs/elf-64-gen.pdf" target="_blank" rel="noopener noreferrer">ELF-64 Object File Format</a></li>
+</ul>
+<h2 id="citation">Citation<a class="heading-anchor" href="#citation" aria-label="Copy link to Citation">#</a></h2>
+<div class="code-block-wrapper"><div class="code-plate-header"><span class="code-lang">BIBTEX</span><button class="copy-code-btn" type="button" onclick="copyCode(this)">Copy</button></div><pre><code class="highlight language-bibtex"><span class="nc">@misc</span><span class="p">{</span><span class="nl">pycubin2026</span><span class="p">,</span>
+<span class="w">  </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Aryan V S}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Compiling Python to SASS}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2026}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://a-r-r-o-w.github.io/blog/00006_compiling_python_to_sass/}</span>
+<span class="p">}</span></code></pre></div>
+
+            </main>
+        </div>
+        <aside class="post-toc" id="post-toc" aria-label="Table of contents"><div class="toc-title">On this page</div><ul class="toc-list"><li class="toc-item toc-h2"><a class="toc-link" href="#table-of-contents">Table of contents</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#anatomy-of-a-minimal-cubin">Anatomy of a minimal cubin</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#reverse-engineering-blackwell-sass">Reverse engineering Blackwell SASS</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#instruction-scheduling">Instruction scheduling</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#compiling-python-to-sass">Compiling Python to SASS</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#auto-vectorization-and-benchmarks">Auto-vectorization and benchmarks</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#closing-thoughts">Closing thoughts</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#additional-reading">Additional reading</a></li><li class="toc-item toc-h2"><a class="toc-link" href="#citation">Citation</a></li></ul></aside>
+    </div>
+    <div class="lightbox-overlay" id="lightbox">
+      <div class="lightbox-close" onclick="closeLightbox()">×</div>
+      <div class="lightbox-content">
+          <img class="lightbox-media" id="lightbox-media" src="" alt="">
+      </div>
+      <div class="lightbox-controls">
+          <button class="lightbox-btn" onclick="zoomOut()" title="Zoom Out (-)">−</button>
+          <div class="zoom-level" id="zoom-level">100%</div>
+          <button class="lightbox-btn" onclick="zoomIn()" title="Zoom In (+)">+</button>
+          <button class="lightbox-btn" onclick="resetZoom()" title="Reset (0)">⟲</button>
+      </div>
+  </div>
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/a-r-r-o-w" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.76 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.66.79.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg></a>
+<a href="https://x.com/aryanvs_" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+<a href="https://linkedin.com/in/aryan-v-s" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg></a>
+<a href="mailto:contact.aryanvs@gmail.com" aria-label="Email"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3h15A2.5 2.5 0 0 1 22 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5v-13zm2.3-.5L12 10.7 19.7 5H4.3zM20 7.25l-7.4 5.47a1 1 0 0 1-1.2 0L4 7.25V18.5c0 .28.22.5.5.5h15a.5.5 0 0 0 .5-.5V7.25z"/></svg></a>
+<a href="/feed.xml" aria-label="RSS Feed" title="RSS Feed"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.18 15.64a2.18 2.18 0 1 1 0 4.36 2.18 2.18 0 0 1 0-4.36zM4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44zm0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg></a>
+        </div>
+    </footer>
+    <script src="/assets/particle-life.js?v=f4a24e94"></script>
+    <script src="/assets/script.js?v=f62a7337"></script>
+</body>
+</html>

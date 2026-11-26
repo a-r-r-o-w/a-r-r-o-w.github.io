@@ -12,7 +12,10 @@
         document.documentElement.dataset.theme = t;
       })();
     </script>
-    <link rel="stylesheet" href="/assets/style.css?v=dd83ab1b">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/style.css?v=356508d5">
 </head>
 <body>
     <canvas id="particle-life"></canvas>
@@ -30,6 +33,7 @@
                 <a href="/posts/">Posts</a>
             </nav>
             <div class="header-controls">
+                <button class="cmd-trigger" id="cmd-trigger" type="button" aria-label="Open command palette" title="Command palette (⌘K)">⌘K</button>
                 <button class="immersive-toggle" id="immersive-toggle" aria-label="Toggle immersive mode"></button>
                 <div class="theme-toggle">
                     <label class="switch">
@@ -63,6 +67,6 @@
         </div>
     </footer>
     <script src="/assets/particle-life.js?v=f4a24e94"></script>
-    <script src="/assets/script.js?v=d006a192"></script>
+    <script src="/assets/script.js?v=f62a7337"></script>
 </body>
 </html>

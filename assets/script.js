@@ -49,11 +49,18 @@ function fallbackCopy(text) {
 window.copyWithToast = copyWithToast;
 
 function copyCode(button) {
-    const code = button.nextElementSibling.querySelector('code').textContent;
+    const wrapper = button.closest('.code-block-wrapper');
+    const codeEl = wrapper ? wrapper.querySelector('pre code') : button.nextElementSibling.querySelector('code');
+    if (!codeEl) return;
+    const code = codeEl.textContent;
     const original = button.textContent;
     copyWithToast(code, 'Code copied!', () => {
-        button.textContent = 'Copied!';
-        setTimeout(() => button.textContent = original, 2000);
+        button.textContent = 'Copied';
+        button.classList.add('copied');
+        setTimeout(() => {
+            button.textContent = original;
+            button.classList.remove('copied');
+        }, 1600);
     });
 }
 
@@ -225,7 +232,10 @@ function openLightbox(element) {
             img.id = 'lightbox-media';
             media.replaceWith(img);
         }
-        document.getElementById('lightbox-media').src = element.src;
+        const lbImg = document.getElementById('lightbox-media');
+        lbImg.src = element.src;
+        lbImg.classList.toggle('theme-adapt', element.classList.contains('theme-adapt'));
+        lbImg.classList.toggle('theme-adapt-dark', element.classList.contains('theme-adapt-dark'));
     }
 
     lightbox.classList.add('active');
@@ -439,11 +449,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const authorLinks = document.querySelectorAll('.coauthor-link');
-    if (authorLinks.length > 0) {
+    if (authorLinks.length > 0 && window.matchMedia('(hover: hover)').matches) {
         const card = document.createElement('div');
         card.className = 'author-preview-card';
         card.innerHTML =
-            '<div class="ap-shot-wrap"><img class="ap-shot" alt=""></div>' +
+            '<div class="ap-shot-wrap"></div>' +
             '<div class="ap-meta">' +
               '<div class="ap-top">' +
                 '<span class="ap-name"></span>' +
@@ -460,15 +470,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const elAffil = card.querySelector('.ap-affil');
         const elHost = card.querySelector('.ap-host');
         const elShotWrap = card.querySelector('.ap-shot-wrap');
-        const elShot = card.querySelector('.ap-shot');
         let hideTimer = null;
-        let activeToken = 0;
-        const previewCache = new Map();
+        const frameCache = new Map();
 
         const positionCard = (link) => {
             const rect = link.getBoundingClientRect();
             const cw = card.offsetWidth || 300;
-            const ch = card.offsetHeight || 220;
+            const ch = card.offsetHeight || 240;
             let left = rect.left + rect.width / 2 - cw / 2;
             left = Math.max(12, Math.min(window.innerWidth - cw - 12, left));
             let top = rect.top - ch - 10;
@@ -480,47 +488,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const showCard = (link) => {
             clearTimeout(hideTimer);
-            const token = ++activeToken;
             elName.textContent = link.dataset.name || link.textContent;
             const affil = link.dataset.affil || '';
             elAffil.textContent = affil;
             elAffil.style.display = affil ? 'inline' : 'none';
             elHost.textContent = link.dataset.host || '';
 
-            const previewUrl = link.dataset.preview ||
-                ('https://s0.wp.com/mshots/v1/' + encodeURIComponent(link.href) + '?w=640&h=400');
-            elShotWrap.style.display = 'block';
-
-            const cached = previewCache.get(previewUrl);
-            if (cached && cached.complete && cached.naturalWidth > 0) {
-                elShot.src = previewUrl;
-                elShot.style.opacity = '1';
-            } else {
-                elShot.style.opacity = '0';
-                elShot.removeAttribute('src');
-                const loader = cached || new Image();
-                if (!cached) {
-                    loader.src = previewUrl;
-                    previewCache.set(previewUrl, loader);
-                }
-                const reveal = () => {
-                    if (token !== activeToken) return;
-                    if (loader.naturalWidth > 0) {
-                        elShot.src = previewUrl;
-                        elShot.style.opacity = '1';
-                    } else {
-                        elShotWrap.style.display = 'none';
-                    }
-                };
-                if (loader.complete) {
-                    reveal();
-                } else {
-                    loader.addEventListener('load', reveal, { once: true });
-                    loader.addEventListener('error', () => {
-                        if (token === activeToken) elShotWrap.style.display = 'none';
-                    }, { once: true });
-                }
+            const url = link.href;
+            let entry = frameCache.get(url);
+            if (!entry) {
+                const iframe = document.createElement('iframe');
+                iframe.className = 'ap-frame';
+                iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
+                iframe.setAttribute('referrerpolicy', 'no-referrer');
+                iframe.setAttribute('tabindex', '-1');
+                iframe.setAttribute('aria-hidden', 'true');
+                iframe.style.opacity = '0';
+                entry = { iframe, loaded: false };
+                iframe.addEventListener('load', () => {
+                    entry.loaded = true;
+                    iframe.style.opacity = '1';
+                }, { once: true });
+                iframe.src = url;
+                elShotWrap.appendChild(iframe);
+                frameCache.set(url, entry);
             }
+
+            frameCache.forEach((item, key) => {
+                item.iframe.style.display = key === url ? 'block' : 'none';
+            });
+            entry.iframe.style.opacity = entry.loaded ? '1' : '0';
 
             card.classList.add('visible');
             positionCard(link);
@@ -536,5 +533,163 @@ document.addEventListener('DOMContentLoaded', () => {
             link.addEventListener('focus', () => showCard(link));
             link.addEventListener('blur', hideCard);
         });
+    }
+
+    const cmdTrigger = document.getElementById('cmd-trigger');
+    let cmdEl = null;
+    let cmdPosts = null;
+    let cmdItems = [];
+    let cmdIdx = 0;
+
+    const buildBaseActions = () => {
+        const actions = [
+            { label: 'Home', kind: 'NAV', run: () => { window.location.href = '/'; } },
+            { label: 'Posts', kind: 'NAV', run: () => { window.location.href = '/posts/'; } },
+            {
+                label: 'Papers, experience & talks',
+                kind: 'VIEW',
+                run: () => {
+                    const trigger = document.getElementById('past-work-trigger');
+                    if (trigger) trigger.click();
+                    else window.location.href = '/#work';
+                }
+            },
+            {
+                label: 'Toggle light / dark theme',
+                kind: 'SYS',
+                run: () => {
+                    const sw = document.querySelector('.switch input');
+                    if (sw) { sw.checked = !sw.checked; sw.dispatchEvent(new Event('change')); }
+                }
+            },
+            {
+                label: 'Toggle Particle Life simulation',
+                kind: 'SYS',
+                run: () => {
+                    const btn = document.getElementById('immersive-toggle');
+                    if (btn) btn.click();
+                }
+            }
+        ];
+        if (cmdPosts) {
+            cmdPosts.forEach(p => {
+                actions.push({
+                    label: p.title,
+                    meta: p.date,
+                    kind: 'POST',
+                    run: () => { window.location.href = p.url; }
+                });
+            });
+        }
+        return actions;
+    };
+
+    const ensureCmdPalette = () => {
+        if (cmdEl) return cmdEl;
+        cmdEl = document.createElement('div');
+        cmdEl.className = 'cmd-palette';
+        cmdEl.innerHTML =
+            '<div class="cmd-backdrop"></div>' +
+            '<div class="cmd-palette-box" role="dialog" aria-label="Command palette">' +
+              '<div class="cmd-input-row">' +
+                '<span class="cmd-prompt">&gt;</span>' +
+                '<input type="text" class="cmd-input" placeholder="Jump to page, post, or command..." autocomplete="off" spellcheck="false">' +
+                '<kbd class="cmd-esc">ESC</kbd>' +
+              '</div>' +
+              '<ul class="cmd-list"></ul>' +
+            '</div>';
+        document.body.appendChild(cmdEl);
+
+        const input = cmdEl.querySelector('.cmd-input');
+        const list = cmdEl.querySelector('.cmd-list');
+        const backdrop = cmdEl.querySelector('.cmd-backdrop');
+
+        const renderList = () => {
+            const q = input.value.trim().toLowerCase();
+            const all = buildBaseActions();
+            cmdItems = q
+                ? all.filter(it => (it.label + ' ' + (it.meta || '') + ' ' + it.kind).toLowerCase().includes(q))
+                : all;
+            if (cmdIdx >= cmdItems.length) cmdIdx = 0;
+            list.innerHTML = '';
+            if (cmdItems.length === 0) {
+                const empty = document.createElement('li');
+                empty.className = 'cmd-empty';
+                empty.textContent = 'No matching commands.';
+                list.appendChild(empty);
+                return;
+            }
+            cmdItems.forEach((it, idx) => {
+                const li = document.createElement('li');
+                li.className = 'cmd-item' + (idx === cmdIdx ? ' active' : '');
+                li.innerHTML =
+                    '<span class="cmd-kind">' + it.kind + '</span>' +
+                    '<span class="cmd-label"></span>' +
+                    (it.meta ? '<span class="cmd-meta">' + it.meta + '</span>' : '');
+                li.querySelector('.cmd-label').textContent = it.label;
+                li.addEventListener('mouseenter', () => {
+                    cmdIdx = idx;
+                    list.querySelectorAll('.cmd-item').forEach((n, i) => n.classList.toggle('active', i === cmdIdx));
+                });
+                li.addEventListener('click', () => {
+                    closeCmd();
+                    it.run();
+                });
+                list.appendChild(li);
+            });
+        };
+
+        input.addEventListener('input', () => { cmdIdx = 0; renderList(); });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (cmdItems.length) { cmdIdx = (cmdIdx + 1) % cmdItems.length; renderList(); }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (cmdItems.length) { cmdIdx = (cmdIdx - 1 + cmdItems.length) % cmdItems.length; renderList(); }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (cmdItems[cmdIdx]) { const fn = cmdItems[cmdIdx].run; closeCmd(); fn(); }
+            } else if (e.key === 'Escape') {
+                closeCmd();
+            }
+        });
+        backdrop.addEventListener('click', closeCmd);
+        cmdEl._render = renderList;
+        return cmdEl;
+    };
+
+    const openCmd = () => {
+        const el = ensureCmdPalette();
+        el.classList.add('active');
+        const input = el.querySelector('.cmd-input');
+        input.value = '';
+        cmdIdx = 0;
+        el._render();
+        setTimeout(() => input.focus(), 10);
+        if (cmdPosts === null) {
+            fetch('/posts.json')
+                .then(r => r.ok ? r.json() : [])
+                .then(data => { cmdPosts = Array.isArray(data) ? data : []; el._render(); })
+                .catch(() => { cmdPosts = []; });
+        }
+    };
+
+    const closeCmd = () => {
+        if (cmdEl) cmdEl.classList.remove('active');
+    };
+
+    if (cmdTrigger) cmdTrigger.addEventListener('click', openCmd);
+    document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            if (cmdEl && cmdEl.classList.contains('active')) closeCmd();
+            else openCmd();
+        }
+    });
+
+    if (window.location.hash === '#work') {
+        const trigger = document.getElementById('past-work-trigger');
+        if (trigger) trigger.click();
     }
 });

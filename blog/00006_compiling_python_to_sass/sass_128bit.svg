@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 310" width="820" height="310">
+  <defs>
+    <style>
+      .hd { font: 600 12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; fill: #111; }
+      .mono { font: 12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; fill: #111; }
+      .idx { font: 10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; fill: #444; }
+      .note { font: 11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; fill: #111; }
+      .box { fill: #fff; stroke: #111; stroke-width: 1; }
+      .gap { fill: #f2f2f2; stroke: #111; stroke-width: 1; }
+      .leader { fill: none; stroke: #111; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="820" height="310" fill="#fff"/>
+
+  <!-- Scale: 1 bit = 12px, 64 bits = 768px, x = 26..794 -->
+
+  <!-- ==================== ROW 1: bits 0..63 ==================== -->
+  <text class="hd" x="26" y="24">bits 0..63</text>
+
+  <!-- Bit indices above Row 1 -->
+  <text class="idx" x="26" y="42">0</text>
+  <text class="idx" x="167" y="42" text-anchor="end">11</text>
+  <text class="idx" x="172" y="42">12</text>
+  <text class="idx" x="215" y="42" text-anchor="end">15</text>
+  <text class="idx" x="220" y="42">16</text>
+  <text class="idx" x="311" y="42" text-anchor="end">23</text>
+  <text class="idx" x="316" y="42">24</text>
+  <text class="idx" x="407" y="42" text-anchor="end">31</text>
+  <text class="idx" x="412" y="42">32</text>
+  <text class="idx" x="503" y="42" text-anchor="end">39</text>
+  <text class="idx" x="508" y="42">40</text>
+  <text class="idx" x="779" y="42" text-anchor="end">62</text>
+  <text class="idx" x="788" y="42" text-anchor="middle">63</text>
+
+  <!-- Row 1 cells (y=48, h=40) -->
+  <!-- 0..11 (12b = 144px): x=26..170 -->
+  <rect class="box" x="26" y="48" width="144" height="40"/>
+  <text class="mono" x="98" y="72" text-anchor="middle">opcode</text>
+
+  <!-- 12..15 (4b = 48px): x=170..218 -->
+  <rect class="box" x="170" y="48" width="48" height="40"/>
+  <text class="mono" x="194" y="72" text-anchor="middle">pred</text>
+
+  <!-- 16..23 (8b = 96px): x=218..314 -->
+  <rect class="box" x="218" y="48" width="96" height="40"/>
+  <text class="mono" x="266" y="72" text-anchor="middle">Rd</text>
+
+  <!-- 24..31 (8b = 96px): x=314..410 -->
+  <rect class="box" x="314" y="48" width="96" height="40"/>
+  <text class="mono" x="362" y="72" text-anchor="middle">Ra</text>
+
+  <!-- 32..39 (8b = 96px): x=410..506 -->
+  <rect class="box" x="410" y="48" width="96" height="40"/>
+  <text class="mono" x="458" y="72" text-anchor="middle">Rb</text>
+
+  <!-- 40..62 (23b = 276px): x=506..782 -->
+  <rect class="gap" x="506" y="48" width="276" height="40"/>
+  <text class="idx" x="644" y="72" text-anchor="middle">imm / op-specific</text>
+
+  <!-- 63 (1b = 12px): x=782..794 -->
+  <rect class="box" x="782" y="48" width="12" height="40"/>
+
+  <!-- Leader for bit 63 -->
+  <path class="leader" d="M 788 88 L 788 106 L 760 106"/>
+  <text class="note" x="754" y="110" text-anchor="end">63: neg(Rb) / abs(Rb)</text>
+
+
+  <!-- ==================== ROW 2: bits 64..127 ==================== -->
+  <text class="hd" x="26" y="152">bits 64..127</text>
+
+  <!-- Bit indices above Row 2 -->
+  <text class="idx" x="26" y="170">64</text>
+  <text class="idx" x="119" y="170" text-anchor="end">71</text>
+  <text class="idx" x="128" y="170" text-anchor="middle">72</text>
+  <text class="idx" x="169" y="170" text-anchor="end">75</text>
+  <text class="idx" x="183" y="170">77</text>
+  <text class="idx" x="229" y="170" text-anchor="end">80</text>
+  <text class="idx" x="272" y="170" text-anchor="middle">84</text>
+  <text class="idx" x="520" y="170">105</text>
+  <text class="idx" x="794" y="170" text-anchor="end">127</text>
+
+  <!-- Row 2 cells (y=176, h=40) -->
+  <!-- 64..71 (8b = 96px): x=26..122 -->
+  <rect class="box" x="26" y="176" width="96" height="40"/>
+  <text class="mono" x="74" y="200" text-anchor="middle">Rc</text>
+
+  <!-- 72 (1b = 12px): x=122..134 -->
+  <rect class="box" x="122" y="176" width="12" height="40"/>
+
+  <!-- 73..75 (3b = 36px): x=134..170 -->
+  <rect class="box" x="134" y="176" width="36" height="40"/>
+
+  <!-- 76 (1b = 12px): x=170..182 -->
+  <rect class="gap" x="170" y="176" width="12" height="40"/>
+
+  <!-- 77..80 (4b = 48px): x=182..230 -->
+  <rect class="box" x="182" y="176" width="48" height="40"/>
+
+  <!-- 81..83 (3b = 36px): x=230..266 -->
+  <rect class="gap" x="230" y="176" width="36" height="40"/>
+
+  <!-- 84 (1b = 12px): x=266..278 -->
+  <rect class="box" x="266" y="176" width="12" height="40"/>
+
+  <!-- 85..104 (20b = 240px): x=278..518 -->
+  <rect class="gap" x="278" y="176" width="240" height="40"/>
+  <text class="idx" x="398" y="200" text-anchor="middle">op-specific</text>
+
+  <!-- 105..127 (23b = 276px): x=518..794 -->
+  <rect class="box" x="518" y="176" width="276" height="40"/>
+  <text class="mono" x="656" y="200" text-anchor="middle">scheduling (delay, slots, wait_mask)</text>
+
+  <!-- Leaders for narrow fields in Row 2 -->
+  <!-- bit 72 (center x=128) -->
+  <path class="leader" d="M 128 216 L 128 292 L 146 292"/>
+  <text class="note" x="152" y="296">72: neg(Ra)</text>
+
+  <!-- bits 73..75 (center x=152) -->
+  <path class="leader" d="M 152 216 L 152 272 L 170 272"/>
+  <text class="note" x="176" y="276">73-75: LDG width (4=32b, 5=64b, 6=128b) / abs(Ra)</text>
+
+  <!-- bits 77..80 (center x=206) -->
+  <path class="leader" d="M 206 216 L 206 252 L 224 252"/>
+  <text class="note" x="230" y="256">77-80: SAT, RM, RP, FTZ</text>
+
+  <!-- bit 84 (center x=272) -->
+  <path class="leader" d="M 272 216 L 272 232 L 290 232"/>
+  <text class="note" x="296" y="236">84: cache</text>
+</svg>
